@@ -24,6 +24,43 @@ const typographyVariants = cva("scroll-m-20", {
   },
 })
 
+const defaultElements = {
+  h1: "h1",
+  h2: "h2",
+  h3: "h3",
+  h4: "h4",
+  lead: "p",
+  p: "p",
+  large: "div",
+  small: "small",
+  muted: "span",
+  code: "code",
+  quote: "blockquote",
+} as const
+
+type Variant = keyof typeof defaultElements
+
+type TypographyProps = React.ComponentProps<"p"> & {
+  variant?: Variant
+}
+
+function Typography({
+  variant = "p",
+  className,
+  ...props
+}: TypographyProps) {
+  const Comp = defaultElements[variant] as React.ElementType
+
+  return (
+    <Comp
+      data-slot="typography"
+      data-variant={variant}
+      className={cn(typographyVariants({ variant, className }))}
+      {...props}
+    />
+  )
+}
+
 function H1({ className, ...props }: React.ComponentProps<"h1">) {
   return (
     <h1
@@ -135,6 +172,7 @@ function Quote({ className, ...props }: React.ComponentProps<"blockquote">) {
 }
 
 export {
+  Typography,
   H1,
   H2,
   H3,

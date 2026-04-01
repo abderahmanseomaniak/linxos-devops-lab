@@ -1,6 +1,5 @@
 import { AppSidebar } from "@/components/screens/dashboard/app-sidebar"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function DashboardLayout({

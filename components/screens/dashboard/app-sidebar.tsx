@@ -12,13 +12,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { GalleryVerticalEnd, Home, LogIn, Search, Settings } from "lucide-react"
+import { Calendar, GalleryVerticalEnd, Home, LogIn, Search, Settings } from "lucide-react"
 import Link from "next/link"
 
 const navItems = [
   { title: "Home", href: "/", icon: Home },
   { title: "Search", href: "#", icon: Search },
   { title: "Settings", href: "#", icon: Settings },
+]
+
+const devItems = [
+  { title: "Events", href: "/dev/events", icon: Calendar },
 ]
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
@@ -39,23 +43,40 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+<SidebarGroup>
+            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link href={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>Développement</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {devItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link href={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

@@ -82,31 +82,31 @@
   {
     "id": 9,
     "priority": 3,
-    "eventName": "Community Event",
-    "organization": "Community Org",
-    "date": "2024-04-20",
+    "eventName": "Summer Festival",
+    "organization": "Summer Fest",
+    "date": "2024-05-01",
     "product": "Flyers",
     "quantity": 800,
-    "status": "Rejected"
+    "status": "Pending"
   },
   {
     "id": 10,
-    "priority": 3,
-    "eventName": "Community Event",
-    "organization": "Community Org",
-    "date": "2024-04-20",
-    "product": "Flyers",
-    "quantity": 800,
-    "status": "Rejected"
+    "priority": 2,
+    "eventName": "Winter Gala",
+    "organization": "Winter Corp",
+    "date": "2024-05-15",
+    "product": "Invitations",
+    "quantity": 500,
+    "status": "Accepted"
   },
-    {
+  {
     "id": 11,
-    "priority": 3,
-    "eventName": "Community Event",
-    "organization": "Community Org",
-    "date": "2024-04-20",
-    "product": "Flyers",
-    "quantity": 800,
-    "status": "Rejected"
+    "priority": 1,
+    "eventName": "Tech Meetup",
+    "organization": "TechHub",
+    "date": "2024-05-20",
+    "product": "Stickers",
+    "quantity": 1000,
+    "status": "Pending"
   }
 ]

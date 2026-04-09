@@ -79,6 +79,25 @@ const STATUS_VARIANTS: Record<EventStatus, "secondary" | "default" | "destructiv
   Delivered: "outline",
 }
 
+const AVATAR_COLORS = [
+  "bg-blue-500/20 text-blue-600 dark:text-blue-400",
+  "bg-green-500/20 text-green-600 dark:text-green-400",
+  "bg-purple-500/20 text-purple-600 dark:text-purple-400",
+  "bg-orange-500/20 text-orange-600 dark:text-orange-400",
+  "bg-pink-500/20 text-pink-600 dark:text-pink-400",
+  "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400",
+  "bg-rose-500/20 text-rose-600 dark:text-rose-400",
+  "bg-amber-500/20 text-amber-600 dark:text-amber-400",
+]
+
+function getAvatarColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
+
 export const columns: ColumnDef<EventApplication>[] = [
   {
     id: "select",
@@ -101,6 +120,31 @@ export const columns: ColumnDef<EventApplication>[] = [
     ),
   },
   {
+    id: "name",
+    header: "Nom",
+    cell: ({ row }) => {
+      const organization = row.original.organization
+      const eventName = row.original.eventName
+      const colorClass = getAvatarColor(organization)
+      return (
+        <div className="flex items-center gap-3">
+          <div className={cn("size-10 rounded-full flex items-center justify-center", colorClass)}>
+            <span className="text-sm font-medium">
+              {organization.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium text-base">{eventName}</span>
+            <span className="text-sm text-muted-foreground">@{organization}</span>
+          </div>
+        </div>
+      )
+    },
+    size: 250,
+    enableHiding: false,
+    filterFn: multiColumnFilterFn,
+  },
+  {
     accessorKey: "priority",
     header: "Priorité",
     cell: ({ row }) => (
@@ -110,19 +154,6 @@ export const columns: ColumnDef<EventApplication>[] = [
       </div>
     ),
     size: 100,
-  },
-  {
-    accessorKey: "eventName",
-    header: "Événement",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("eventName")}</div>,
-    size: 180,
-    enableHiding: false,
-    filterFn: multiColumnFilterFn,
-  },
-  {
-    accessorKey: "organization",
-    header: "Organisation",
-    size: 150,
   },
   {
     accessorKey: "date",
@@ -261,21 +292,21 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
           <div className="relative">
             <Input
               aria-label="Filter by name or organization"
-              className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("eventName")?.getFilterValue()) && "pe-9")}
+              className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9")}
               id={`${id}-input`}
-              onChange={(e) => table.getColumn("eventName")?.setFilterValue(e.target.value)}
+              onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
               placeholder="Rechercher..."
               type="text"
-              value={(table.getColumn("eventName")?.getFilterValue() ?? "") as string}
+              value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80">
               <SearchIcon size={16} />
             </div>
-            {Boolean(table.getColumn("eventName")?.getFilterValue()) && (
+            {Boolean(table.getColumn("name")?.getFilterValue()) && (
               <button
                 aria-label="Clear filter"
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-colors hover:text-foreground"
-                onClick={() => table.getColumn("eventName")?.setFilterValue("")}
+                onClick={() => table.getColumn("name")?.setFilterValue("")}
                 type="button"
               >
                 <CircleXIcon size={16} />

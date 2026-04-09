@@ -5,6 +5,7 @@ export interface EventApplication {
   priority: number;
   eventName: string;
   organization: string;
+  organizationLogo?: string;
   date: string; // YYYY-MM-DD
   product: string;
   quantity: number;

@@ -7,7 +7,8 @@
     "date": "2024-03-15",
     "product": "Stand",
     "quantity": 500,
-    "status": "Pending"
+    "status": "Pending",
+    "deliveryStatus": "Non livrée"
   },
   {
     "id": 2,
@@ -17,7 +18,8 @@
     "date": "2024-03-20",
     "product": "Flyers",
     "quantity": 2000,
-    "status": "Accepted"
+    "status": "Accepted",
+    "deliveryStatus": "Livrée"
   },
   {
     "id": 3,
@@ -27,7 +29,8 @@
     "date": "2024-03-25",
     "product": "Banner",
     "quantity": 100,
-    "status": "Rejected"
+    "status": "Rejected",
+    "deliveryStatus": "Non livrée"
   },
   {
     "id": 4,
@@ -37,7 +40,8 @@
     "date": "2024-04-01",
     "product": "Invitations",
     "quantity": 300,
-    "status": "In Logistics"
+    "status": "Rejected",
+    "deliveryStatus": "Livrée"
   },
   {
     "id": 5,
@@ -47,7 +51,8 @@
     "date": "2024-04-05",
     "product": "Trophies",
     "quantity": 50,
-    "status": "Delivered"
+    "status": "Rejected",
+    "deliveryStatus": "Livrée"
   },
   {
     "id": 6,
@@ -57,7 +62,8 @@
     "date": "2024-04-10",
     "product": "Posters",
     "quantity": 1000,
-    "status": "Pending"
+    "status": "Pending",
+    "deliveryStatus": "Livrée"
   },
   {
     "id": 7,
@@ -67,7 +73,8 @@
     "date": "2024-04-15",
     "product": "Brochures",
     "quantity": 5000,
-    "status": "Accepted"
+    "status": "Accepted",
+    "deliveryStatus": "Non livrée"
   },
   {
     "id": 8,
@@ -77,7 +84,8 @@
     "date": "2024-04-20",
     "product": "Flyers",
     "quantity": 800,
-    "status": "Rejected"
+    "status": "Rejected",
+    "deliveryStatus": "Non livrée"
   },
   {
     "id": 9,
@@ -87,7 +95,8 @@
     "date": "2024-05-01",
     "product": "Flyers",
     "quantity": 800,
-    "status": "Pending"
+    "status": "Pending",
+    "deliveryStatus": "Livrée"
   },
   {
     "id": 10,
@@ -97,7 +106,8 @@
     "date": "2024-05-15",
     "product": "Invitations",
     "quantity": 500,
-    "status": "Accepted"
+    "status": "Accepted",
+    "deliveryStatus": "Livrée"
   },
   {
     "id": 11,
@@ -107,6 +117,7 @@
     "date": "2024-05-20",
     "product": "Stickers",
     "quantity": 1000,
-    "status": "Pending"
+    "status": "Pending",
+    "deliveryStatus": "Non livrée"
   }
 ]

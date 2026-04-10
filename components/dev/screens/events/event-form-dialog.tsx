@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { EventApplication, EventStatus } from "@/types/event"
+import { EventApplication, EventStatus, DeliveryStatus } from "@/types/event"
 
 const eventSchema = z.object({
   eventName: z.string().min(1, "Le nom est requis"),
@@ -16,7 +16,8 @@ const eventSchema = z.object({
   product: z.string().min(1, "Le produit est requis"),
   quantity: z.number().min(1, "La quantité doit être > 0"),
   priority: z.number().min(1, "La priorité doit être >= 1"),
-  status: z.enum(["Pending", "Accepted", "Rejected", "In Logistics", "Delivered"]),
+  status: z.enum(["Pending", "Accepted", "Rejected"]),
+  deliveryStatus: z.enum(["Livrée", "Non livrée"]),
 })
 
 type EventFormData = z.infer<typeof eventSchema>
@@ -28,7 +29,8 @@ interface EventFormDialogProps {
   onSave: (data: EventApplication) => void
 }
 
-const STATUS_OPTIONS: EventStatus[] = ["Pending", "Accepted", "Rejected", "In Logistics", "Delivered"]
+const STATUS_OPTIONS: EventStatus[] = ["Pending", "Accepted", "Rejected"]
+const DELIVERY_OPTIONS: DeliveryStatus[] = ["Livrée", "Non livrée"]
 
 export function EventFormDialog({ open, onOpenChange, event, onSave }: EventFormDialogProps) {
   const isEdit = !!event
@@ -52,6 +54,7 @@ export function EventFormDialog({ open, onOpenChange, event, onSave }: EventForm
       quantity: 1,
       priority: 1,
       status: "Pending",
+      deliveryStatus: "Non livrée",
     },
   })
 
@@ -65,6 +68,7 @@ export function EventFormDialog({ open, onOpenChange, event, onSave }: EventForm
         setValue("quantity", event.quantity)
         setValue("priority", event.priority)
         setValue("status", event.status)
+        setValue("deliveryStatus", event.deliveryStatus)
         setQuantityValue(String(event.quantity))
         setPriorityValue(String(event.priority))
       } else {
@@ -75,7 +79,7 @@ export function EventFormDialog({ open, onOpenChange, event, onSave }: EventForm
     }
   }, [open, event, setValue, reset])
 
-  const onSubmit = (data: EventFormData) => {
+  const onSubmit = useCallback((data: EventFormData) => {
     const savedEvent: EventApplication = {
       ...data,
       id: event?.id || Date.now(),
@@ -83,7 +87,7 @@ export function EventFormDialog({ open, onOpenChange, event, onSave }: EventForm
     onSave(savedEvent)
     onOpenChange(false)
     reset()
-  }
+  }, [event, onSave, onOpenChange, reset])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

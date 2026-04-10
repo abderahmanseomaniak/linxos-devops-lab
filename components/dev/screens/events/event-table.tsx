@@ -35,7 +35,7 @@ import {
   PencilIcon,
   CopyIcon,
 } from "lucide-react"
-import { useId, useMemo, useRef, useState } from "react"
+import { useId, useMemo, useRef, useState, useCallback, memo } from "react"
 
 import { cn } from "@/lib/utils"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
@@ -49,7 +49,7 @@ import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/p
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { EventApplication, EventStatus } from "@/types/event"
+import { EventApplication, EventStatus, DeliveryStatus } from "@/types/event"
 
 const multiColumnFilterFn: FilterFn<EventApplication> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.eventName} ${row.original.organization} ${row.original.product}`.toLowerCase()
@@ -67,16 +67,22 @@ const STATUS_LABELS: Record<EventStatus, string> = {
   Pending: "En attente",
   Accepted: "Acceptée",
   Rejected: "Rejetée",
-  "In Logistics": "En logistique",
-  Delivered: "Livrée",
 }
 
 const STATUS_VARIANTS: Record<EventStatus, "secondary" | "default" | "destructive" | "outline"> = {
   Pending: "secondary",
   Accepted: "default",
   Rejected: "destructive",
-  "In Logistics": "outline",
-  Delivered: "outline",
+}
+
+const DELIVERY_LABELS: Record<DeliveryStatus, string> = {
+  Livrée: "Livrée",
+  "Non livrée": "Non livrée",
+}
+
+const DELIVERY_VARIANTS: Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline"> = {
+  Livrée: "default",
+  "Non livrée": "destructive",
 }
 
 const AVATAR_COLORS = [
@@ -189,6 +195,15 @@ export const columns: ColumnDef<EventApplication>[] = [
     size: 120,
   },
   {
+    accessorKey: "deliveryStatus",
+    header: "Livraison",
+    cell: ({ row }) => {
+      const deliveryStatus = row.getValue("deliveryStatus") as DeliveryStatus
+      return <Badge variant={DELIVERY_VARIANTS[deliveryStatus]}>{DELIVERY_LABELS[deliveryStatus]}</Badge>
+    },
+    size: 120,
+  },
+  {
     id: "actions",
     size: 60,
     enableHiding: false,
@@ -213,8 +228,8 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowToDelete, setRowToDelete] = useState<EventApplication | null>(null)
 
-  const table = useReactTable({
-    columns: columns.map((col) => {
+  const columnsWithActions = useMemo(() => {
+    return columns.map((col) => {
       if (col.id === "actions") {
         return {
           ...col,
@@ -223,16 +238,17 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
               row={row}
               onEdit={() => onEdit?.(row.original)}
               onDelete={() => setRowToDelete(row.original)}
-              onDuplicate={() => {
-                const original = row.original
-                onAdd?.()
-              }}
+              onDuplicate={() => onAdd?.()}
             />
           ),
         }
       }
       return col
-    }),
+    })
+  }, [onEdit, onAdd])
+
+  const table = useReactTable({
+    columns: columnsWithActions,
     data,
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
@@ -251,7 +267,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
     const statusColumn = table.getColumn("status")
     if (!statusColumn) return []
     return Array.from(statusColumn.getFacetedUniqueValues().keys()).sort()
-  }, [table.getColumn])
+  }, [table])
 
   const statusCounts = useMemo(() => {
     const statusColumn = table.getColumn("status")
@@ -264,7 +280,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
     return filterValue ?? []
   }, [table])
 
-  const handleStatusChange = (checked: boolean, value: string) => {
+  const handleStatusChange = useCallback((checked: boolean, value: string) => {
     const filterValue = table.getColumn("status")?.getFilterValue() as string[] ?? []
     const newFilterValue = [...filterValue]
 
@@ -276,14 +292,14 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
     }
 
     table.getColumn("status")?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
-  }
+  }, [table])
 
-  const handleDeleteRows = () => {
+  const handleDeleteRows = useCallback(() => {
     const selectedRows = table.getSelectedRowModel().rows
     const ids = selectedRows.map((row) => row.original.id)
     onDeleteMultiple?.(ids)
     table.resetRowSelection()
-  }
+  }, [table, onDeleteMultiple])
 
   return (
     <div className="space-y-4">
@@ -515,7 +531,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd }: 
   )
 }
 
-function RowActions({ row, onEdit, onDelete, onDuplicate }: { row: Row<EventApplication>; onEdit?: () => void; onDelete?: () => void; onDuplicate?: () => void }) {
+const RowActions = memo(function RowActions({ row, onEdit, onDelete, onDuplicate }: { row: Row<EventApplication>; onEdit?: () => void; onDelete?: () => void; onDuplicate?: () => void }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -544,4 +560,4 @@ function RowActions({ row, onEdit, onDelete, onDuplicate }: { row: Row<EventAppl
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
+})

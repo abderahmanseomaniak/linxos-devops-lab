@@ -1,4 +1,6 @@
-export type EventStatus = 'Pending' | 'Accepted' | 'Rejected' | 'In Logistics' | 'Delivered';
+export type EventStatus = 'Pending' | 'Accepted' | 'Rejected';
+
+export type DeliveryStatus = 'Livrée' | 'Non livrée';
 
 export interface EventApplication {
   id: number;
@@ -10,6 +12,7 @@ export interface EventApplication {
   product: string;
   quantity: number;
   status: EventStatus;
+  deliveryStatus: DeliveryStatus;
 }
 
 export interface FilterCounts {

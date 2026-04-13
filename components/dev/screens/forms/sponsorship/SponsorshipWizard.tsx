@@ -8,8 +8,10 @@ import { Step1Form } from "./Step1Form"
 import { Step2Form } from "./Step2Form"
 import { Step3Form } from "./Step3Form"
 import { Step4Form } from "./Step4Form"
-import { Step5Form } from "./Step5Form"
+import { Step5Form, ContentFiles } from "./Step5Form"
 import { Step6Form } from "./Step6Form"
+import { Step7Form } from "./Step7Form"
+import { LegalEngagementStepUI } from "./LegalEngagementStepUI"
 
 interface Step {
   id: number
@@ -33,6 +35,10 @@ export function SponsorshipWizard() {
   const [creators, setCreators] = useState<Creator[]>([
     { id: "1", name: "", instagram: "", tiktok: "", followersInstagram: "", followersTikTok: "", available: false, contentTypes: [] }
   ])
+  const [contentData, setContentData] = useState<{ selectedContentTypes: string[]; files: ContentFiles }>({
+    selectedContentTypes: [],
+    files: {}
+  })
 
   const steps = useMemo(() => {
   const baseSteps: Step[] = [
@@ -43,11 +49,15 @@ export function SponsorshipWizard() {
 
   if (hasUGC) {
     baseSteps.push({ id: 4, title: "UGC" });
-    baseSteps.push({ id: 5, title: "Visibilité" });
-    baseSteps.push({ id: 6, title: "Résumé" });
+    baseSteps.push({ id: 5, title: "Contenus" });
+    baseSteps.push({ id: 6, title: "Visibilité" });
+    baseSteps.push({ id: 7, title: "Résumé" });
+    baseSteps.push({ id: 8, title: "Engagement" });
   } else {
-      baseSteps.push({ id: 4, title: "Visibilité" });
-      baseSteps.push({ id: 5, title: "Résumé" });
+      baseSteps.push({ id: 4, title: "Contenus" });
+      baseSteps.push({ id: 5, title: "Visibilité" });
+      baseSteps.push({ id: 6, title: "Résumé" });
+      baseSteps.push({ id: 7, title: "Engagement" });
   }
 
   return baseSteps;
@@ -60,7 +70,7 @@ export function SponsorshipWizard() {
   const handleHasUGCChange = useCallback((value: boolean) => {
     setHasUGC(value)
     if (!value) {
-      const newMaxIndex = 4
+      const newMaxIndex = 5
       setActiveStepIndex(Math.min(activeStepIndex, newMaxIndex))
     }
   }, [activeStepIndex])
@@ -114,14 +124,24 @@ case 1:
             />
           )
         }
-        return <Step5Form />
+        return <Step5Form selectedContentTypes={contentData.selectedContentTypes} files={contentData.files} onChange={setContentData} />
       case 5:
         if (hasUGC) {
-          return <Step5Form />
+          return <Step5Form selectedContentTypes={contentData.selectedContentTypes} files={contentData.files} onChange={setContentData} />
         }
-        return <Step6Form summaryStep={4} onEdit={handleEdit} />
+        return <Step6Form />
       case 6:
-        return <Step6Form summaryStep={hasUGC ? 5 : 4} onEdit={handleEdit} />
+        if (hasUGC) {
+          return <Step6Form />
+        }
+        return <Step7Form summaryStep={hasUGC ? 5 : 4} onEdit={handleEdit} />
+      case 7:
+        if (hasUGC) {
+          return <Step7Form summaryStep={6} onEdit={handleEdit} />
+        }
+        return <LegalEngagementStepUI />
+      case 8:
+        return <LegalEngagementStepUI />
       default:
         return null
     }
@@ -141,8 +161,10 @@ case 1:
   }
 
   const handleBack = () => {
-    if (!hasUGC && currentStepIndex >= 4) {
-      setActiveStepIndex(3)
+    if (!hasUGC && currentStepIndex >= 5) {
+      setActiveStepIndex(4)
+    } else if (hasUGC && currentStepIndex >= 6) {
+      setActiveStepIndex(5)
     } else if (currentStepIndex > 0) {
       setActiveStepIndex(currentStepIndex - 1)
     }
@@ -159,14 +181,14 @@ case 1:
           <CardDescription>Étape {currentStepIndex + 1} sur {steps.length}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-center gap-4 overflow-x-auto py-4">
+          <div className="flex items-center justify-center gap-0 overflow-x-auto py-4">
             {steps.map((s, index) => {
               const isCompleted = index < currentStepIndex
               const isActive = index === currentStepIndex
 
               return (
                 <div key={s.id} className="flex items-center">
-                  <div className="flex flex-col items-center min-w-[80px]">
+                  <div className="flex flex-col items-center ">
                     <div
                       className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${
                         isCompleted || isActive

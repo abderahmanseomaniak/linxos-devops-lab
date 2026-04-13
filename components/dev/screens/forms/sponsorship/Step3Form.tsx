@@ -76,6 +76,7 @@ export function Step3Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
           <Label htmlFor="targetAudience">Public cible</Label>
           <Textarea id="targetAudience" placeholder="Décrivez votre public cible" className="min-h-[100px]" />
         </div>
+        
       </CardContent>
     </Card>
   )

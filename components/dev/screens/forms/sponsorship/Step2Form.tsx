@@ -28,6 +28,7 @@ export function Step2Form() {
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" placeholder="contact@club.fr" />
         </div>
+       
       </CardContent>
     </Card>
   )

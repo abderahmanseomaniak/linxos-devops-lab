@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Step2Form } from "./Step2Form"
 
 export function Step1Form() {
   return (
@@ -32,6 +33,9 @@ export function Step1Form() {
             <Input placeholder="Facebook" />
           </div>
         </div>
+         {/* <div className="space-y-2">
+          <Step2Form />          
+        </div> */}
       </CardContent>
     </Card>
   )

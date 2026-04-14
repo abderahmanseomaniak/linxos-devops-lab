@@ -181,7 +181,7 @@ case 1:
           <CardDescription>Étape {currentStepIndex + 1} sur {steps.length}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-center gap-0 overflow-x-auto py-4">
+          <div className="flex items-center justify-center gap-0 overflow-x-auto py-0">
             {steps.map((s, index) => {
               const isCompleted = index < currentStepIndex
               const isActive = index === currentStepIndex

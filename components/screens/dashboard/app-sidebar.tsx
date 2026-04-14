@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Calendar, GalleryVerticalEnd, Home, LogIn, Search, Settings } from "lucide-react"
+import { Calendar, GalleryVerticalEnd, Home, LayoutGrid, LogIn, Search, Settings, Truck } from "lucide-react"
 import Link from "next/link"
 
 const navItems = [
@@ -23,6 +23,8 @@ const navItems = [
 
 const devItems = [
   { title: "Events", href: "/dev/events", icon: Calendar },
+  { title: "Kanban", href: "/dev/kanban", icon: LayoutGrid },
+  { title: "Logistics", href: "/dev/logistics", icon: Truck },
 ]
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {

@@ -2,6 +2,25 @@ export type EventStatus = 'Pending' | 'Accepted' | 'Rejected';
 
 export type DeliveryStatus = 'Livrée' | 'Non livrée';
 
+export type KanbanStage = 
+  | 'Validée' 
+  | 'Préparation' 
+  | 'Logistique' 
+  | 'Livré' 
+  | 'Terminé';
+
+export interface KanbanEvent {
+  id: number;
+  name: string;
+  clubName: string;
+  city: string;
+  date: string;
+  participants: number;
+  stage: KanbanStage;
+  ugcCount: number;
+  isHighPriority?: boolean;
+}
+
 export interface EventApplication {
   id: number;
   priority: number;

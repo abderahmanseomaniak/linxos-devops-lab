@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { EventTable } from "@/components/dev/screens/events/event-table"
 import { EventFormDialog } from "@/components/dev/screens/events/event-form-dialog"
 import { DeleteConfirmDialog } from "@/components/dev/screens/events/delete-confirm-dialog"
+import { DashboardStats } from "@/components/dev/screens/events/dashboard-stats"
 import { EventApplication } from "@/types/event"
 import eventsData from "@/data/mock-events/events.json"
 
@@ -14,6 +15,13 @@ export default function EventsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<EventApplication | null>(null)
   const [deleteEvent, setDeleteEvent] = useState<EventApplication | null>(null)
+
+  const stats = useMemo(() => ({
+    total: applications.length,
+    accepted: applications.filter((e) => e.status === "Accepted").length,
+    pending: applications.filter((e) => e.status === "Pending").length,
+    rejected: applications.filter((e) => e.status === "Rejected").length,
+  }), [applications])
 
   const handleAdd = () => {
     setEditingEvent(null)
@@ -49,7 +57,8 @@ export default function EventsPage() {
   }
 
   return (
-    <>
+    <div className="flex h-full flex-col gap-6 min-h-0">
+      <DashboardStats data={stats} />
       <EventTable
         data={applications}
         onAdd={handleAdd}
@@ -69,6 +78,6 @@ export default function EventsPage() {
         onConfirm={confirmDelete}
         eventName={deleteEvent?.eventName}
       />
-    </>
+    </div>
   )
 }

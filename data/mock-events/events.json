@@ -2,13 +2,56 @@
   {
     "id": 1,
     "priority": 1,
-    "eventName": "Tech Conference 2024",
-    "organization": "TechCorp",
-    "date": "2024-03-15",
+    "eventName": "Tournoi International de Marseille",
+    "organization": "Olympique de Marseille",
+    "date": "2026-06-15",
     "product": "Stand",
     "quantity": 500,
     "status": "Pending",
-    "deliveryStatus": "Non livrée"
+    "deliveryStatus": "Non livrée",
+    "step1": {
+      "nomClub": "Olympique de Marseille",
+      "sport": "Football",
+      "ville": "Marseille",
+      "email": "contact@om.fr",
+      "telephone": "+33 4 91 11 22 33"
+    },
+    "step2": {
+      "nomResponsable": "Jean Dupont",
+      "fonction": "Directeur sportif",
+      "emailResponsable": "jean.dupont@om.fr",
+      "telephoneResponsable": "+33 6 12 34 56 78"
+    },
+    "step3": {
+      "nomEvenement": "Tournoi International de Marseille",
+      "dateDebut": "2026-06-15",
+      "dateFin": "2026-06-20",
+      "lieu": "Stade Vélodrome, Marseille",
+      "description": "Compétition internationale regroupant 16 équipes européennes",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Sophie Martin",
+          "instagram": "@sophiemartin",
+          "tiktok": "@sophiemartin_tiktok",
+          "followersInstagram": "150K",
+          "followersTikTok": "200K",
+          "available": true
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["Instagram", "TikTok"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Logo sur maillots + panneau publicitaire",
+      "mentions": "@sponsors + hashtag officiel",
+      "autresConditions": "Droit d'utilisation des images"
+    }
   },
   {
     "id": 2,
@@ -19,7 +62,40 @@
     "product": "Flyers",
     "quantity": 2000,
     "status": "Accepted",
-    "deliveryStatus": "Livrée"
+    "deliveryStatus": "Livrée",
+    "step1": {
+      "nomClub": "Paris Saint-Germain",
+      "sport": "Football",
+      "ville": "Paris",
+      "email": "contact@psg.fr",
+      "telephone": "+33 1 47 27 60 00"
+    },
+    "step2": {
+      "nomResponsable": "Marie Dubois",
+      "fonction": "Responsable communication",
+      "emailResponsable": "marie.dubois@psg.fr",
+      "telephoneResponsable": "+33 6 23 45 67 89"
+    },
+    "step3": {
+      "nomEvenement": "Lancement Produit 2024",
+      "dateDebut": "2024-03-20",
+      "dateFin": "2024-03-22",
+      "lieu": "Parc des Princes, Paris",
+      "description": "Événement de lancement du nouveau produit",
+      "hasUGC": false
+    },
+    "step4": {
+      "creators": []
+    },
+    "step5": {
+      "selectedContentTypes": ["Instagram"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Panneau publicitaire",
+      "mentions": "@sponsors",
+      "autresConditions": ""
+    }
   },
   {
     "id": 3,
@@ -30,7 +106,40 @@
     "product": "Banner",
     "quantity": 100,
     "status": "Rejected",
-    "deliveryStatus": "Non livrée"
+    "deliveryStatus": "Non livrée",
+    "step1": {
+      "nomClub": "Olympique Lyonnais",
+      "sport": "Football",
+      "ville": "Lyon",
+      "email": "contact@ol.fr",
+      "telephone": "+33 4 72 11 22 33"
+    },
+    "step2": {
+      "nomResponsable": "Pierre Martin",
+      "fonction": "Entraineur",
+      "emailResponsable": "p.martin@ol.fr",
+      "telephoneResponsable": "+33 6 45 67 89 01"
+    },
+    "step3": {
+      "nomEvenement": "Stage équipes jeunes",
+      "dateDebut": "2024-03-25",
+      "dateFin": "2024-03-28",
+      "lieu": "Groupama Stadium, Lyon",
+      "description": "Stage de perfectionnement pour les équipes jeunes",
+      "hasUGC": false
+    },
+    "step4": {
+      "creators": []
+    },
+    "step5": {
+      "selectedContentTypes": [],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "",
+      "mentions": "",
+      "autresConditions": ""
+    }
   },
   {
     "id": 4,
@@ -41,7 +150,50 @@
     "product": "Invitations",
     "quantity": 300,
     "status": "Rejected",
-    "deliveryStatus": "Livrée"
+    "deliveryStatus": "Livrée",
+    "step1": {
+      "nomClub": "AS Monaco",
+      "sport": "Football",
+      "ville": "Monaco",
+      "email": "contact@asm.fr",
+      "telephone": "+377 92 05 25 25"
+    },
+    "step2": {
+      "nomResponsable": "Jean-Luc Petit",
+      "fonction": "Directeur général",
+      "emailResponsable": "jl.petit@asm.fr",
+      "telephoneResponsable": "+33 6 78 90 12 34"
+    },
+    "step3": {
+      "nomEvenement": "Gala annuel du club",
+      "dateDebut": "2024-04-01",
+      "dateFin": "2024-04-01",
+      "lieu": "Stade Louis II, Monaco",
+      "description": "Soirée de gala pour les partenaires et supporters",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Lucas Bernard",
+          "instagram": "@lucasb",
+          "tiktok": "@lucasbernard",
+          "followersInstagram": "85K",
+          "followersTikTok": "120K",
+          "available": true
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["Instagram", "TikTok", "YouTube"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Logo sur tenue + réseaux sociaux",
+      "mentions": "#ClubSponsor",
+      "autresConditions": "Video promo obligatoire"
+    }
   },
   {
     "id": 5,
@@ -51,8 +203,60 @@
     "date": "2024-04-05",
     "product": "Trophies",
     "quantity": 50,
-    "status": "Rejected",
-    "deliveryStatus": "Livrée"
+    "status": "Pending",
+    "deliveryStatus": "Livrée",
+    "step1": {
+      "nomClub": "Stade Rennais",
+      "sport": "Football",
+      "ville": "Rennes",
+      "email": "contact@staderennais.fr",
+      "telephone": "+33 2 99 14 55 00"
+    },
+    "step2": {
+      "nomResponsable": "Sophie Leblanc",
+      "fonction": "Responsable événementiel",
+      "emailResponsable": "s.leblanc@staderennais.fr",
+      "telephoneResponsable": "+33 6 11 22 33 44"
+    },
+    "step3": {
+      "nomEvenement": "Journée du sport",
+      "dateDebut": "2024-04-05",
+      "dateFin": "2024-04-06",
+      "lieu": "Roazhon Park, Rennes",
+      "description": "Journée portes ouvertes et animations sportives",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Emma Dubois",
+          "instagram": "@emmad",
+          "tiktok": "@emmadubois",
+          "followersInstagram": "200K",
+          "followersTikTok": "180K",
+          "available": true
+        },
+        {
+          "id": "2",
+          "nom": "Thomas Roche",
+          "instagram": "@thomasr",
+          "tiktok": "@thomasroche",
+          "followersInstagram": "95K",
+          "followersTikTok": "110K",
+          "available": false
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["Instagram", "TikTok"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Banderole + réseaux sociaux",
+      "mentions": "@clubSponsors",
+      "autresConditions": "3 stories"
+    }
   },
   {
     "id": 6,
@@ -62,8 +266,41 @@
     "date": "2024-04-10",
     "product": "Posters",
     "quantity": 1000,
-    "status": "Pending",
-    "deliveryStatus": "Livrée"
+    "status": "Accepted",
+    "deliveryStatus": "Livrée",
+    "step1": {
+      "nomClub": "FC Nantes",
+      "sport": "Football",
+      "ville": "Nantes",
+      "email": "contact@fcnantes.fr",
+      "telephone": "+33 2 40 68 50 00"
+    },
+    "step2": {
+      "nomResponsable": "Michel Dubois",
+      "fonction": "Président",
+      "emailResponsable": "m.dubois@fcnantes.fr",
+      "telephoneResponsable": "+33 6 55 66 77 88"
+    },
+    "step3": {
+      "nomEvenement": "Festival de musique",
+      "dateDebut": "2024-04-10",
+      "dateFin": "2024-04-12",
+      "lieu": "La Beaujoire, Nantes",
+      "description": "Festival musical avec artistes locaux",
+      "hasUGC": false
+    },
+    "step4": {
+      "creators": []
+    },
+    "step5": {
+      "selectedContentTypes": [],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "",
+      "mentions": "",
+      "autresConditions": ""
+    }
   },
   {
     "id": 7,
@@ -74,7 +311,50 @@
     "product": "Brochures",
     "quantity": 5000,
     "status": "Accepted",
-    "deliveryStatus": "Non livrée"
+    "deliveryStatus": "Non livrée",
+    "step1": {
+      "nomClub": "LOSC Lille",
+      "sport": "Football",
+      "ville": "Lille",
+      "email": "contact@lille.fr",
+      "telephone": "+33 3 28 52 60 00"
+    },
+    "step2": {
+      "nomResponsable": "Catherine Moreau",
+      "fonction": "Directrice marketing",
+      "emailResponsable": "c.moreau@lille.fr",
+      "telephoneResponsable": "+33 6 99 88 77 66"
+    },
+    "step3": {
+      "nomEvenement": "Salon professionnel",
+      "dateDebut": "2024-04-15",
+      "dateFin": "2024-04-17",
+      "lieu": "Stade Pierre-Mauroy, Lille",
+      "description": "Salon B2B pour les entreprises régionales",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Antoine Blanc",
+          "instagram": "@antoineb",
+          "tiktok": "@antoineblanc",
+          "followersInstagram": "120K",
+          "followersTikTok": "140K",
+          "available": true
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["LinkedIn", "Instagram"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Stand + logo site web",
+      "mentions": "Logo sur tous les supports",
+      "autresConditions": "Mention dans le programme"
+    }
   },
   {
     "id": 8,
@@ -85,7 +365,40 @@
     "product": "Flyers",
     "quantity": 800,
     "status": "Rejected",
-    "deliveryStatus": "Non livrée"
+    "deliveryStatus": "Non livrée",
+    "step1": {
+      "nomClub": "Girondins de Bordeaux",
+      "sport": "Football",
+      "ville": "Bordeaux",
+      "email": "contact@girondins.com",
+      "telephone": "+33 5 56 00 00 00"
+    },
+    "step2": {
+      "nomResponsable": "François Levy",
+      "fonction": "Responsable partenariats",
+      "emailResponsable": "f.levy@girondins.com",
+      "telephoneResponsable": "+33 6 12 23 34 45"
+    },
+    "step3": {
+      "nomEvenement": "Événement communautaire",
+      "dateDebut": "2024-04-20",
+      "dateFin": "2024-04-21",
+      "lieu": "Matmut Stadium, Bordeaux",
+      "description": "Journée de sensibilisation pour la jeunesse",
+      "hasUGC": false
+    },
+    "step4": {
+      "creators": []
+    },
+    "step5": {
+      "selectedContentTypes": [],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "",
+      "mentions": "",
+      "autresConditions": ""
+    }
   },
   {
     "id": 9,
@@ -96,7 +409,50 @@
     "product": "Flyers",
     "quantity": 800,
     "status": "Pending",
-    "deliveryStatus": "Livrée"
+    "deliveryStatus": "Livrée",
+    "step1": {
+      "nomClub": "RC Strasbourg",
+      "sport": "Football",
+      "ville": "Strasbourg",
+      "email": "contact@rcstrasbourg.fr",
+      "telephone": "+33 3 88 15 20 00"
+    },
+    "step2": {
+      "nomResponsable": "Julie Wagner",
+      " fonction": "Responsable communication",
+      "emailResponsable": "j.wagner@rcstrasbourg.fr",
+      "telephoneResponsable": "+33 6 78 90 11 22"
+    },
+    "step3": {
+      "nomEvenement": "Festival d'été",
+      "dateDebut": "2024-05-01",
+      "dateFin": "2024-05-03",
+      "lieu": "Stade de la Meinau, Strasbourg",
+      "description": "Festival musical estival",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Marie Petit",
+          "instagram": "@mariep",
+          "tiktok": "@mariepetit",
+          "followersInstagram": "180K",
+          "followersTikTok": "220K",
+          "available": true
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["Instagram", "TikTok", "Facebook"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Affichage urbain + digital",
+      "mentions": "@sponsors + stories quotidiennes",
+      "autresConditions": "2 reels promotionnels"
+    }
   },
   {
     "id": 10,
@@ -107,7 +463,40 @@
     "product": "Invitations",
     "quantity": 500,
     "status": "Accepted",
-    "deliveryStatus": "Livrée"
+    "deliveryStatus": "Livrée",
+    "step1": {
+      "nomClub": "OGC Nice",
+      "sport": "Football",
+      "ville": "Nice",
+      "email": "contact@ogcnice.com",
+      "telephone": "+33 4 92 15 30 00"
+    },
+    "step2": {
+      "nomResponsable": "Philippe Garnier",
+      "fonction": "Président adjoint",
+      "emailResponsable": "p.garnier@ogcnice.com",
+      "telephoneResponsable": "+33 6 33 44 55 66"
+    },
+    "step3": {
+      "nomEvenement": "Gala d'hiver",
+      "dateDebut": "2024-05-15",
+      "dateFin": "2024-05-15",
+      "lieu": "Allianz Riviera, Nice",
+      "description": "Soirée de gala pour les sponsors",
+      "hasUGC": false
+    },
+    "step4": {
+      "creators": []
+    },
+    "step5": {
+      "selectedContentTypes": [],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Logo sur invitations",
+      "mentions": "Remerciements oral",
+      "autresConditions": ""
+    }
   },
   {
     "id": 11,
@@ -118,6 +507,49 @@
     "product": "Stickers",
     "quantity": 1000,
     "status": "Pending",
-    "deliveryStatus": "Non livrée"
+    "deliveryStatus": "Non livrée",
+    "step1": {
+      "nomClub": "Montpellier HSC",
+      "sport": "Football",
+      "ville": "Montpellier",
+      "email": "contact@mhsc.com",
+      "telephone": "+33 4 67 50 00 00"
+    },
+    "step2": {
+      "nomResponsable": "Laurent Roux",
+      "fonction": "Responsable technique",
+      "emailResponsable": "l.roux@mhsc.com",
+      "telephoneResponsable": "+33 6 55 77 88 99"
+    },
+    "step3": {
+      "nomEvenement": "Meetup tech",
+      "dateDebut": "2024-05-20",
+      "dateFin": "2024-05-20",
+      "lieu": "Stade de la Mosson, Montpellier",
+      "description": "Rencontre entre développeurs et passionnés de tech",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Kevin Nguyen",
+          "instagram": "@kevinng",
+          "tiktok": "@kevinnguyen",
+          "followersInstagram": "75K",
+          "followersTikTok": "90K",
+          "available": true
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["Twitter", "LinkedIn"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Affiches + story Twitter",
+      "mentions": "@sponsor",
+      "autresConditions": "1 thread LinkedIn"
+    }
   }
 ]

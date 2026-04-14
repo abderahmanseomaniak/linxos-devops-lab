@@ -18,7 +18,7 @@ export default function DevLayout({
             <ThemeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col p-4 overflow-hidden h-full">
+        <div className="flex flex-1 flex-col overflow-hidden p-4">
           {children}
         </div>
       </SidebarInset>

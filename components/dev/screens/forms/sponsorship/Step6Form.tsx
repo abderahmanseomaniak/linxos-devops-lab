@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import formOptions from "@/data/form-options.json"
 
 export function Step6Form() {
   return (
@@ -20,22 +21,12 @@ export function Step6Form() {
         <div className="space-y-2">
           <Label>Logistique disponible</Label>
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Checkbox id="stand" />
-              <Label htmlFor="stand">Stand</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox id="stockage" />
-              <Label htmlFor="stockage">Stockage</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox id="electricite" />
-              <Label htmlFor="electricite">Électricité</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox id="equipe" />
-              <Label htmlFor="equipe">Équipe d'aide</Label>
-            </div>
+            {formOptions.logisticOptions.map((option) => (
+              <div key={option.id} className="flex items-center gap-2">
+                <Checkbox id={option.id} />
+                <Label htmlFor={option.id}>{option.label}</Label>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>

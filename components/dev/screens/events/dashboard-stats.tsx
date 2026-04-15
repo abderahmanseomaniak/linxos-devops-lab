@@ -26,16 +26,16 @@ function StatsCard({ title, value, icon, variant = "default" }: StatsCardProps) 
   }
 
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={cn("flex size-10 items-center justify-center rounded-md", variantStyles[variant])}>
+    <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ">
+      <CardContent className="flex items-center gap-3 p-3 h-25">
+        <div className={cn("flex size-9 items-center justify-center rounded-lg", variantStyles[variant])}>
           {icon}
         </div>
         <div>
-          <Typography variant="small" className="text-muted-foreground">
+          <Typography variant="small" className="text-muted-foreground text-[10px]">
             {title}
           </Typography>
-          <Typography variant="h2" className="font-semibold">
+          <Typography variant="h3" className="font-semibold leading-tight">
             {value}
           </Typography>
         </div>
@@ -59,25 +59,25 @@ export function DashboardStats({ data }: DashboardStatsProps) {
       <StatsCard
         title="Total événements"
         value={data.total}
-        icon={<CalendarDaysIcon className="size-5" />}
+        icon={<CalendarDaysIcon className="size-6" />}
         variant="default"
       />
       <StatsCard
         title="Acceptés"
         value={data.accepted}
-        icon={<CheckCircle2Icon className="size-5" />}
+        icon={<CheckCircle2Icon className="size-6" />}
         variant="success"
       />
       <StatsCard
         title="En attente"
         value={data.pending}
-        icon={<ClockIcon className="size-5" />}
+        icon={<ClockIcon className="size-6" />}
         variant="warning"
       />
       <StatsCard
         title="Rejetés"
         value={data.rejected}
-        icon={<XCircleIcon className="size-5" />}
+        icon={<XCircleIcon className="size-6" />}
         variant="destructive"
       />
     </div>

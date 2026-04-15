@@ -1,14 +1,14 @@
 [
   {
     "id": 1,
+    "reference": "SPO-2024-001",
     "priority": 1,
     "eventName": "Tournoi International de Marseille",
     "organization": "Olympique de Marseille",
     "date": "2026-06-15",
-    "product": "Stand",
-    "quantity": 500,
     "status": "Pending",
     "deliveryStatus": "Non livrée",
+    "isRealized": true,
     "step1": {
       "nomClub": "Olympique de Marseille",
       "sport": "Football",
@@ -55,14 +55,14 @@
   },
   {
     "id": 2,
+    "reference": "SPO-2024-002",
     "priority": 2,
     "eventName": "Product Launch",
     "organization": "Launch Inc",
     "date": "2024-03-20",
-    "product": "Flyers",
-    "quantity": 2000,
     "status": "Accepted",
     "deliveryStatus": "Livrée",
+    "isRealized": true,
     "step1": {
       "nomClub": "Paris Saint-Germain",
       "sport": "Football",
@@ -99,6 +99,7 @@
   },
   {
     "id": 3,
+    "reference": "SPO-2024-001",
     "priority": 3,
     "eventName": "Team Workshop",
     "organization": "Workshop Co",
@@ -143,6 +144,7 @@
   },
   {
     "id": 4,
+    "reference": "SPO-2024-001",
     "priority": 1,
     "eventName": "Annual Gala",
     "organization": "Gala Org",
@@ -197,6 +199,7 @@
   },
   {
     "id": 5,
+    "reference": "SPO-2024-001",
     "priority": 2,
     "eventName": "Sports Day",
     "organization": "Sports Club",
@@ -260,6 +263,7 @@
   },
   {
     "id": 6,
+    "reference": "SPO-2024-001",
     "priority": 4,
     "eventName": "Music Festival",
     "organization": "Music Fest",
@@ -304,6 +308,7 @@
   },
   {
     "id": 7,
+    "reference": "SPO-2024-001",
     "priority": 1,
     "eventName": "Trade Show",
     "organization": "TradeShow Inc",
@@ -358,6 +363,7 @@
   },
   {
     "id": 8,
+    "reference": "SPO-2024-001",
     "priority": 3,
     "eventName": "Community Event",
     "organization": "Community Org",
@@ -402,6 +408,7 @@
   },
   {
     "id": 9,
+    "reference": "SPO-2024-001",
     "priority": 3,
     "eventName": "Summer Festival",
     "organization": "Summer Fest",
@@ -456,6 +463,7 @@
   },
   {
     "id": 10,
+    "reference": "SPO-2024-001",
     "priority": 2,
     "eventName": "Winter Gala",
     "organization": "Winter Corp",
@@ -500,6 +508,7 @@
   },
   {
     "id": 11,
+    "reference": "SPO-2024-001",
     "priority": 1,
     "eventName": "Tech Meetup",
     "organization": "TechHub",

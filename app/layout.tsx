@@ -26,11 +26,11 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-background`}
       suppressHydrationWarning
     >
-      <body>
+      <body className="min-h-screen overflow-auto">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

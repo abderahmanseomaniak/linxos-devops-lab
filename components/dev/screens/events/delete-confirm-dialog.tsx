@@ -46,7 +46,7 @@ interface DeleteButtonProps {
 
 export function DeleteButton({ onClick }: DeleteButtonProps) {
   return (
-    <Button variant="ghost" size="icon-sm" onClick={onClick}>
+    <Button variant="ghost" size="icon" onClick={onClick}>
       <Trash2 className="size-4 text-destructive" />
       <span className="sr-only">Supprimer</span>
     </Button>

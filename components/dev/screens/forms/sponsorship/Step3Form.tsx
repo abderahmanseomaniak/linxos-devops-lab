@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import formOptions from "@/data/form-options.json"
 
 interface Step3FormProps {
   hasUGC: boolean
@@ -39,10 +40,9 @@ export function Step3Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
                 <SelectValue placeholder="Sélectionnez le type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sport">Sport</SelectItem>
-                <SelectItem value="culturel">Culturel</SelectItem>
-                <SelectItem value="tech">Tech</SelectItem>
-                <SelectItem value="autre">Autre</SelectItem>
+                {formOptions.eventTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>{type.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

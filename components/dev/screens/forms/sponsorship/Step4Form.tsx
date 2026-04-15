@@ -6,32 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-
-interface Creator {
-  id: string
-  name: string
-  instagram: string
-  tiktok: string
-  followersInstagram: string
-  followersTikTok: string
-  available: boolean
-  contentTypes: string[]
-}
+import formOptions from "@/data/form-options.json"
+import type { Creator } from "@/types/sponsorship-form"
 
 interface Step4FormProps {
   creators: Creator[]
   onAddCreator: () => void
   onRemoveCreator: (id: string) => void
-  onUpdateCreator: (id: string, field: keyof Creator, value: any) => void
+  onUpdateCreator: (id: string, field: keyof Creator, value: unknown) => void
 }
-
-const contentTypeOptions = [
-  { id: "reels", label: "Reels" },
-  { id: "tiktok", label: "TikTok vidéos" },
-  { id: "stories", label: "Stories" },
-  { id: "interviews", label: "Interviews" },
-  { id: "aftermovie", label: "Aftermovie" },
-]
 
 export function Step4Form({ creators, onAddCreator, onRemoveCreator, onUpdateCreator }: Step4FormProps) {
   const handleContentTypeToggle = (creatorId: string, contentType: string) => {
@@ -129,7 +112,7 @@ export function Step4Form({ creators, onAddCreator, onRemoveCreator, onUpdateCre
             <div className="space-y-2">
               <Label>Types de contenus</Label>
               <div className="flex flex-wrap gap-4">
-                {contentTypeOptions.map((option) => (
+                {formOptions.creatorContentTypes.map((option) => (
                   <div key={option.id} className="flex items-center gap-2">
                     <Checkbox 
                       id={`${creator.id}-${option.id}`}

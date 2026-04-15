@@ -5,18 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-
-export const CONTENT_TYPES = [
-  { id: "affiche", label: "Affiche de l'événement" },
-  { id: "dossier", label: "Dossier de sponsoring" },
-  { id: "photos", label: "Photos des éditions précédentes" },
-  { id: "video", label: "Vidéo de présentation" },
-  { id: "logo", label: "Logo du club / événement" },
-] as const
-
-export interface ContentFiles {
-  [key: string]: File | File[] | null
-}
+import formOptions from "@/data/form-options.json"
+import type { ContentFiles } from "@/types/sponsorship-form"
+import { Typography } from "@/components/ui/typography"
 
 interface Step5FormProps {
   selectedContentTypes?: string[]
@@ -51,7 +42,7 @@ export function Step5Form({ selectedContentTypes: initialTypes, files: initialFi
   }, [selectedContentTypes, files, onChange])
 
   const filePreviews = useMemo(() => {
-    return CONTENT_TYPES.map((type) => {
+    return formOptions.contentTypes.map((type) => {
       const file = files[type.id]
       if (!file) return null
       if (Array.isArray(file)) {
@@ -82,7 +73,7 @@ export function Step5Form({ selectedContentTypes: initialTypes, files: initialFi
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          {CONTENT_TYPES.map((type) => (
+          {formOptions.contentTypes.map((type) => (
             <div key={type.id} className="flex items-center gap-2">
               <Checkbox
                 id={type.id}
@@ -97,7 +88,7 @@ export function Step5Form({ selectedContentTypes: initialTypes, files: initialFi
         {selectedContentTypes.length > 0 && (
           <div className="space-y-4">
             <Label>Fichiers à téléverser</Label>
-            {CONTENT_TYPES.filter((type) => selectedContentTypes.includes(type.id)).map((type) => (
+            {formOptions.contentTypes.filter((type) => selectedContentTypes.includes(type.id)).map((type) => (
               <div key={type.id} className="space-y-2">
                 <Label htmlFor={`file-${type.id}`}>{type.label}</Label>
                 <Input
@@ -115,13 +106,13 @@ export function Step5Form({ selectedContentTypes: initialTypes, files: initialFi
                     }
                   }}
                 />
-                {files[type.id] && (
-                  <p className="text-sm text-muted-foreground">
-                    {Array.isArray(files[type.id])
-                      ? `${(files[type.id] as File[]).length} fichier(s) sélectionné(s)`
-                      : `Fichier sélectionné: ${(files[type.id] as File).name}`}
-                  </p>
-                )}
+              {files[type.id] && (
+                <Typography variant="p" className="text-sm">
+                  {Array.isArray(files[type.id])
+                    ? `${(files[type.id] as File[]).length} fichier(s) sélectionné(s)`
+                    : `Fichier sélectionné: ${(files[type.id] as File).name}`}
+                </Typography>
+              )}
               </div>
             ))}
           </div>

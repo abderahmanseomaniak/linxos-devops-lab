@@ -1,12 +1,19 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import dynamic from "next/dynamic"
 import { EventTable } from "@/components/dev/screens/events/event-table"
-import { EventFormDialog } from "@/components/dev/screens/events/event-form-dialog"
-import { DeleteConfirmDialog } from "@/components/dev/screens/events/delete-confirm-dialog"
 import { DashboardStats } from "@/components/dev/screens/events/dashboard-stats"
-import { EventApplication } from "@/types/event"
-import eventsData from "@/data/mock-events/events.json"
+import { EventApplication } from "@/types/events"
+import eventsData from "@/data/events.json"
+
+const EventFormDialog = dynamic(() => import("@/components/dev/screens/events/event-form-dialog").then((mod) => mod.EventFormDialog), {
+  loading: () => null,
+})
+
+const DeleteConfirmDialog = dynamic(() => import("@/components/dev/screens/events/delete-confirm-dialog").then((mod) => mod.DeleteConfirmDialog), {
+  loading: () => null,
+})
 
 const initialApplications: EventApplication[] = eventsData as EventApplication[]
 
@@ -57,7 +64,7 @@ export default function EventsPage() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-6 min-h-0">
+    <div className="flex flex-col gap-6">
       <DashboardStats data={stats} />
       <EventTable
         data={applications}

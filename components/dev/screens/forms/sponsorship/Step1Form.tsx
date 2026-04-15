@@ -33,9 +33,6 @@ export function Step1Form() {
             <Input placeholder="Facebook" />
           </div>
         </div>
-         {/* <div className="space-y-2">
-          <Step2Form />          
-        </div> */}
       </CardContent>
     </Card>
   )

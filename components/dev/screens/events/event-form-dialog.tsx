@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { EventApplication, EventStatus, DeliveryStatus } from "@/types/event"
+import { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"
 
 const eventSchema = z.object({
   eventName: z.string().min(1, "Le nom est requis"),
@@ -64,13 +64,10 @@ export function EventFormDialog({ open, onOpenChange, event, onSave }: EventForm
         setValue("eventName", event.eventName)
         setValue("organization", event.organization)
         setValue("date", event.date)
-        setValue("product", event.product)
-        setValue("quantity", event.quantity)
         setValue("priority", event.priority)
         setValue("status", event.status)
         setValue("deliveryStatus", event.deliveryStatus)
-        setQuantityValue(String(event.quantity))
-        setPriorityValue(String(event.priority))
+     
       } else {
         reset()
         setQuantityValue("")
@@ -117,26 +114,10 @@ export function EventFormDialog({ open, onOpenChange, event, onSave }: EventForm
               <Input id="date" type="date" {...register("date")} />
               {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="product">Produit</Label>
-              <Input id="product" {...register("product")} />
-              {errors.product && <p className="text-xs text-destructive">{errors.product.message}</p>}
-            </div>
+            
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantité</Label>
-              <Input
-                id="quantity"
-                type="number"
-                value={quantityValue}
-                onChange={(e) => {
-                  setQuantityValue(e.target.value)
-                  setValue("quantity", Number(e.target.value) || 0)
-                }}
-              />
-              {errors.quantity && <p className="text-xs text-destructive">{errors.quantity.message}</p>}
-            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="priority">Priorité</Label>
               <Input

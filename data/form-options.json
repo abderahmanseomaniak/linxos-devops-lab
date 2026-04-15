@@ -1,0 +1,28 @@
+{
+  "contentTypes": [
+    { "id": "affiche", "label": "Affiche de l'événement" },
+    { "id": "dossier", "label": "Dossier de sponsoring" },
+    { "id": "photos", "label": "Photos des éditions précédentes" },
+    { "id": "video", "label": "Vidéo de présentation" },
+    { "id": "logo", "label": "Logo du club / événement" }
+  ],
+  "creatorContentTypes": [
+    { "id": "reels", "label": "Reels" },
+    { "id": "tiktok", "label": "TikTok vidéos" },
+    { "id": "stories", "label": "Stories" },
+    { "id": "interviews", "label": "Interviews" },
+    { "id": "aftermovie", "label": "Aftermovie" }
+  ],
+  "eventTypes": [
+    { "id": "sport", "label": "Sport" },
+    { "id": "culturel", "label": "Culturel" },
+    { "id": "tech", "label": "Tech" },
+    { "id": "autre", "label": "Autre" }
+  ],
+  "logisticOptions": [
+    { "id": "stand", "label": "Stand" },
+    { "id": "stockage", "label": "Stockage" },
+    { "id": "electricite", "label": "Électricité" },
+    { "id": "equipe", "label": "Équipe d'aide" }
+  ]
+}

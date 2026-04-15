@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Typography } from "@/components/ui/typography"
 
 export function LegalEngagementStepUI() {
   return (
@@ -30,8 +31,10 @@ export function LegalEngagementStepUI() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="border rounded-md bg-background h-[150px] w-full max-w-[300px]" />
-          <p className="text-sm text-muted-foreground">Signez dans le cadre ci-dessus</p>
-          <Button variant="outline">Effacer</Button>
+
+      
+      <Typography variant="muted">Signez dans le cadre ci-dessus</Typography>     
+      <Button variant="outline">Effacer</Button>
         </CardContent>
       </Card>
     </div>

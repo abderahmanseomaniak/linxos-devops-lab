@@ -3,19 +3,13 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Typography } from "@/components/ui/typography"
 import { cn } from "@/lib/utils"
+import type { StatsCardProps, DashboardStatsProps } from "@/types/events"
 import {
   CalendarDaysIcon,
   CheckCircle2Icon,
   ClockIcon,
   XCircleIcon,
 } from "lucide-react"
-
-interface StatsCardProps {
-  title: string
-  value: number
-  icon: React.ReactNode
-  variant?: "default" | "success" | "warning" | "destructive"
-}
 
 function StatsCard({ title, value, icon, variant = "default" }: StatsCardProps) {
   const variantStyles = {
@@ -42,15 +36,6 @@ function StatsCard({ title, value, icon, variant = "default" }: StatsCardProps) 
       </CardContent>
     </Card>
   )
-}
-
-interface DashboardStatsProps {
-  data: {
-    total: number
-    accepted: number
-    pending: number
-    rejected: number
-  }
 }
 
 export function DashboardStats({ data }: DashboardStatsProps) {

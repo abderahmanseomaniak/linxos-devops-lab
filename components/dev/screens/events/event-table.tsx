@@ -53,10 +53,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"
+import { EventApplication, EventStatus, DeliveryStatus, type EventTableProps } from "@/types/events"
+import uiConstants from "@/data/ui-constants.json"
 
-
-
+const STATUS_LABELS = uiConstants.eventStatus.labels as Record<EventStatus, string>
+const STATUS_VARIANTS = uiConstants.eventStatus.variants as Record<EventStatus, "secondary" | "default" | "destructive" | "outline">
+const DELIVERY_LABELS = uiConstants.deliveryStatus.labels as Record<DeliveryStatus, string>
+const DELIVERY_VARIANTS = uiConstants.deliveryStatus.variants as Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline">
 
 const multiColumnFilterFn: FilterFn<EventApplication> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.eventName} ${row.original.organization}`.toLowerCase()
@@ -68,28 +71,6 @@ const statusFilterFn: FilterFn<EventApplication> = (row, columnId, filterValue: 
   if (!filterValue?.length) return true
   const status = row.getValue(columnId) as string
   return filterValue.includes(status)
-}
-
-const STATUS_LABELS: Record<EventStatus, string> = {
-  Pending: "En attente",
-  Accepted: "Acceptée",
-  Rejected: "Rejetée",
-}
-
-const STATUS_VARIANTS: Record<EventStatus, "secondary" | "default" | "destructive" | "outline"> = {
-  Pending: "secondary",
-  Accepted: "default",
-  Rejected: "destructive",
-}
-
-const DELIVERY_LABELS: Record<DeliveryStatus, string> = {
-  Livrée: "Livrée",
-  "Non livrée": "Non livrée",
-}
-
-const DELIVERY_VARIANTS: Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline"> = {
-  Livrée: "default",
-  "Non livrée": "destructive",
 }
 
 export const columns: ColumnDef<EventApplication>[] = [
@@ -199,15 +180,6 @@ export const columns: ColumnDef<EventApplication>[] = [
     header: () => <span className="sr-only">Actions</span>,
   },
 ]
-
-interface EventTableProps {
-  data: EventApplication[]
-  onEdit?: (event: EventApplication) => void
-  onDelete?: (event: EventApplication) => void
-  onDeleteMultiple?: (ids: number[]) => void
-  onAdd?: () => void
-  onDetail?: (event: EventApplication) => void
-}
 
 export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, onDetail }: EventTableProps) {
   const id = useId()

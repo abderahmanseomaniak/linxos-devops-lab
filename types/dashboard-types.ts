@@ -25,3 +25,7 @@ export interface DashboardData {
   stats: DashboardStats
   overview: OverviewItem[]
 }
+
+export interface DashboardGlobalProps {
+  data?: DashboardData
+}

@@ -2,11 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-interface Step7FormProps {
-  summaryStep: number
-  onEdit: (step: number) => void
-}
+import { type Step7FormProps } from "@/types/sponsorship-form"
 
 export function Step7Form({ summaryStep, onEdit }: Step7FormProps) {
   return (

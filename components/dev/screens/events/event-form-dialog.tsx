@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"
+import { EventApplication, EventStatus, DeliveryStatus, type EventFormDialogProps } from "@/types/events"
 
 const eventSchema = z.object({
   eventName: z.string().min(1, "Le nom est requis"),
@@ -21,13 +21,6 @@ const eventSchema = z.object({
 })
 
 type EventFormData = z.infer<typeof eventSchema>
-
-interface EventFormDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  event?: EventApplication | null
-  onSave: (data: EventApplication) => void
-}
 
 const STATUS_OPTIONS: EventStatus[] = ["Pending", "Accepted", "Rejected"]
 const DELIVERY_OPTIONS: DeliveryStatus[] = ["Livrée", "Non livrée"]

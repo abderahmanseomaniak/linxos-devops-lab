@@ -7,14 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import formOptions from "@/data/form-options.json"
-import type { Creator } from "@/types/sponsorship-form"
-
-interface Step4FormProps {
-  creators: Creator[]
-  onAddCreator: () => void
-  onRemoveCreator: (id: string) => void
-  onUpdateCreator: (id: string, field: keyof Creator, value: unknown) => void
-}
+import { type Creator, type Step4FormProps } from "@/types/sponsorship-form"
 
 export function Step4Form({ creators, onAddCreator, onRemoveCreator, onUpdateCreator }: Step4FormProps) {
   const handleContentTypeToggle = (creatorId: string, contentType: string) => {

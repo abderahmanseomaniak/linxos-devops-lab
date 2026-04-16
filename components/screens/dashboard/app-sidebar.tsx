@@ -14,21 +14,31 @@ import {
 } from "@/components/ui/sidebar"
 import { Calendar, GalleryVerticalEnd, Home, LayoutDashboard, LogIn, Search, Settings, Users } from "lucide-react"
 import Link from "next/link"
+import uiConstants from "@/data/ui-constants.json"
 
-const generalItems = [
-  { title: "Dashboard", href: "/dev/dashboard", icon: LayoutDashboard },
-]
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  LayoutDashboard,
+  Home,
+  Search,
+  Settings,
+  Calendar,
+  Users,
+}
 
-const mainItems = [
-  { title: "Home", href: "/", icon: Home },
-  { title: "Search", href: "#", icon: Search },
-  { title: "Settings", href: "#", icon: Settings },
-]
+const generalItems = uiConstants.sidebar.general.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
 
-const managementItems = [
-  { title: "Events", href: "/dev/events", icon: Calendar },
-  { title: "Users", href: "/dev/users", icon: Users },
-]
+const mainItems = uiConstants.sidebar.main.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
+
+const managementItems = uiConstants.sidebar.management.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (

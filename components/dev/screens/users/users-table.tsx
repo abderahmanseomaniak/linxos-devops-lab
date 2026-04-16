@@ -88,15 +88,10 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Typography } from "@/components/ui/typography"
-import { User, UserRole } from "@/types/users"
+import { User, UserRole, type UsersTableProps, type UserItem } from "@/types/users"
+import uiConstants from "@/data/ui-constants.json"
 
-
-
-
-type UserItem = User & {
-  statusDisplay: "Active" | "Inactive" | "Pending"
-  performance: number
-}
+const ROLE_LABELS = uiConstants.userRole.labels as Record<UserRole, string>
 
 const multiColumnFilterFn: FilterFn<UserItem> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.name} ${row.original.email}`.toLowerCase()
@@ -108,12 +103,6 @@ const statusFilterFn: FilterFn<UserItem> = (row, columnId, filterValue: string[]
   if (!filterValue?.length) return true
   const status = row.getValue(columnId) as string
   return filterValue.includes(status)
-}
-
-const ROLE_LABELS: Record<UserRole, string> = {
-  admin: "Admin",
-  moderator: "Moderator",
-  user: "User",
 }
 
 const columns: ColumnDef<UserItem>[] = [
@@ -250,13 +239,6 @@ function RowActions({ row }: { row: Row<UserItem> }) {
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-interface UsersTableProps {
-  data: User[]
-  onEdit?: (user: User) => void
-  onDelete?: (user: User) => void
-  onAdd?: () => void
 }
 
 export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: UsersTableProps) {

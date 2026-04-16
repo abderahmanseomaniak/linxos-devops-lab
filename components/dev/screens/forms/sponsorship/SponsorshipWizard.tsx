@@ -9,26 +9,10 @@ import { Step2Form } from "./Step2Form"
 import { Step3Form } from "./Step3Form"
 import { Step4Form } from "./Step4Form"
 import { Step5Form } from "./Step5Form"
-import type { ContentFiles } from "@/types/sponsorship-form"
 import { Step6Form } from "./Step6Form"
 import { Step7Form } from "./Step7Form"
 import { LegalEngagementStepUI } from "./LegalEngagementStepUI"
-
-interface Step {
-  id: number
-  title: string
-}
-
-interface Creator {
-  id: string
-  name: string
-  instagram: string
-  tiktok: string
-  followersInstagram: string
-  followersTikTok: string
-  available: boolean
-  contentTypes: string[]
-}
+import { type ContentFiles, type Step, type Creator } from "@/types/sponsorship-form"
 
 export function SponsorshipWizard() {
   const [activeStepIndex, setActiveStepIndex] = useState(0)

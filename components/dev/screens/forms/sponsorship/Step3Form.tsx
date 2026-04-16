@@ -14,11 +14,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import formOptions from "@/data/form-options.json"
-
-interface Step3FormProps {
-  hasUGC: boolean
-  onHasUGCChange: (value: boolean) => void
-}
+import { type Step3FormProps } from "@/types/sponsorship-form"
 
 export function Step3Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
   return (

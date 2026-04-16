@@ -75,3 +75,41 @@ export interface FormOptionsData {
   avatarColors: string[]
   userAvatarColors: string[]
 }
+
+export interface Step {
+  id: number
+  title: string
+}
+
+export interface WizardState {
+  activeStepIndex: number
+  hasUGC: boolean
+  creators: Creator[]
+  contentData: {
+    selectedContentTypes: string[]
+    files: ContentFiles
+  }
+}
+
+export interface Step3FormProps {
+  hasUGC: boolean
+  onHasUGCChange: (value: boolean) => void
+}
+
+export interface Step4FormProps {
+  creators: Creator[]
+  onAddCreator: () => void
+  onRemoveCreator: (id: string) => void
+  onUpdateCreator: (id: string, field: keyof Creator, value: unknown) => void
+}
+
+export interface Step5FormProps {
+  selectedContentTypes?: string[]
+  files?: ContentFiles
+  onChange?: (data: { selectedContentTypes: string[]; files: ContentFiles }) => void
+}
+
+export interface Step7FormProps {
+  summaryStep: number
+  onEdit: (step: number) => void
+}

@@ -1,0 +1,52 @@
+{
+  "eventStatus": {
+    "labels": {
+      "Pending": "En attente",
+      "Accepted": "Acceptée",
+      "Rejected": "Rejetée"
+    },
+    "variants": {
+      "Pending": "secondary",
+      "Accepted": "default",
+      "Rejected": "destructive"
+    }
+  },
+  "deliveryStatus": {
+    "labels": {
+      "Livrée": "Livrée",
+      "Non livrée": "Non livrée"
+    },
+    "variants": {
+      "Livrée": "default",
+      "Non livrée": "destructive"
+    }
+  },
+  "userRole": {
+    "labels": {
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "user": "User"
+    }
+  },
+  "sidebar": {
+    "general": [
+      { "title": "Dashboard", "href": "/dev/dashboard", "icon": "LayoutDashboard" }
+    ],
+    "main": [
+      { "title": "Home", "href": "/", "icon": "Home" },
+      { "title": "Search", "href": "#", "icon": "Search" },
+      { "title": "Settings", "href": "#", "icon": "Settings" }
+    ],
+    "management": [
+      { "title": "Events", "href": "/dev/events", "icon": "Calendar" },
+      { "title": "Users", "href": "/dev/users", "icon": "Users" }
+    ]
+  },
+  "iconMap": {
+    "Package": "Package",
+    "Calendar": "Calendar",
+    "Clock": "Clock",
+    "CheckCircle2": "CheckCircle2",
+    "TrendingUp": "TrendingUp"
+  }
+}

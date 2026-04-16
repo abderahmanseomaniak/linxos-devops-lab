@@ -6,14 +6,8 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import formOptions from "@/data/form-options.json"
-import type { ContentFiles } from "@/types/sponsorship-form"
+import { type ContentFiles, type Step5FormProps } from "@/types/sponsorship-form"
 import { Typography } from "@/components/ui/typography"
-
-interface Step5FormProps {
-  selectedContentTypes?: string[]
-  files?: ContentFiles
-  onChange?: (data: { selectedContentTypes: string[]; files: ContentFiles }) => void
-}
 
 export function Step5Form({ selectedContentTypes: initialTypes, files: initialFiles, onChange }: Step5FormProps) {
   const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(initialTypes || [])

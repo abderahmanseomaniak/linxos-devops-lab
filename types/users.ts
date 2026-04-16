@@ -10,3 +10,15 @@ export interface User {
   status: boolean;
   avatar?: string;
 }
+
+export interface UsersTableProps {
+  data: User[];
+  onEdit?: (user: User) => void;
+  onDelete?: (user: User) => void;
+  onAdd?: () => void;
+}
+
+export type UserItem = User & {
+  statusDisplay: "Active" | "Inactive" | "Pending"
+  performance: number
+}

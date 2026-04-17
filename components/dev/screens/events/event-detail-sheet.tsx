@@ -26,7 +26,7 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="sm:max-w-2xl overflow-y-auto w-full border-l border-border/20 bg-background flex flex-col">
+        <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
         <SheetHeader>
           <SheetTitle>Demande de sponsoring</SheetTitle>
           <SheetDescription>

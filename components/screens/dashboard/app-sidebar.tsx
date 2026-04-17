@@ -47,11 +47,20 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <span className="font-medium">LynxOS</span>
+              <Link href="/" className="flex items-center justify-center">
+                {/* Light mode */}
+                <img
+                  src="/assets/logos/logo-texte-noir.svg"
+                  alt="Logo"
+                  className="h-7 block dark:hidden"
+                />
+
+                {/* Dark mode */}
+                <img
+                  src="/assets/logos/logo-texte-blanc.svg"
+                  alt="Logo"
+                  className="h-7 hidden dark:block"
+                />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

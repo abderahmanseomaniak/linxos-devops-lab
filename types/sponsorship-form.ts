@@ -92,8 +92,8 @@ export interface WizardState {
 }
 
 export interface Step3FormProps {
-  hasUGC: boolean
-  onHasUGCChange: (value: boolean) => void
+  hasUGC?: boolean
+  onHasUGCChange?: (value: boolean) => void
 }
 
 export interface Step4FormProps {
@@ -110,6 +110,6 @@ export interface Step5FormProps {
 }
 
 export interface Step7FormProps {
-  summaryStep: number
-  onEdit: (step: number) => void
+  summaryStep?: number
+  onEdit?: (step: number) => void
 }

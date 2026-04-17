@@ -5,7 +5,7 @@ import { Typography } from "@/components/ui/typography"
 import { cn } from "@/lib/utils"
 import type { StatsCardProps, DashboardStatsProps } from "@/types/events"
 import {
-  CalendarDaysIcon,
+  CalendarDaysIcon, 
   CheckCircle2Icon,
   ClockIcon,
   XCircleIcon,

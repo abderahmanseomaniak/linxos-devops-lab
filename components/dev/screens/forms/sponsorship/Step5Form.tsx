@@ -1,128 +1,146 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import formOptions from "@/data/form-options.json"
-import { type ContentFiles, type Step5FormProps } from "@/types/sponsorship-form"
-import { Typography } from "@/components/ui/typography"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { type Step7FormProps } from "@/types/sponsorship-form"
 
-export function Step5Form({ selectedContentTypes: initialTypes, files: initialFiles, onChange }: Step5FormProps) {
-  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(initialTypes || [])
-  const [files, setFiles] = useState<ContentFiles>(initialFiles || {})
-
-  const handleCheckboxChange = useCallback((typeId: string, checked: boolean) => {
-    const newTypes = checked
-      ? [...selectedContentTypes, typeId]
-      : selectedContentTypes.filter((id) => id !== typeId)
-    
-    setSelectedContentTypes(newTypes)
-    
-    const newFiles = { ...files }
-    if (!checked) {
-      delete newFiles[typeId]
-    }
-    setFiles(newFiles)
-    
-    onChange?.({ selectedContentTypes: newTypes, files: newFiles })
-  }, [selectedContentTypes, files, onChange])
-
-  const handleFileChange = useCallback((typeId: string, fileOrFiles: File | File[] | null) => {
-    const newFiles = { ...files, [typeId]: fileOrFiles }
-    setFiles(newFiles)
-    onChange?.({ selectedContentTypes, files: newFiles })
-  }, [selectedContentTypes, files, onChange])
-
-  const filePreviews = useMemo(() => {
-    return formOptions.contentTypes.map((type) => {
-      const file = files[type.id]
-      if (!file) return null
-      if (Array.isArray(file)) {
-        return file.length > 0 ? file.map((f) => f.name).join(", ") : null
-      }
-      return file.name
-    }).filter(Boolean)
-  }, [files])
-
-  const getAcceptedTypes = (typeId: string): string => {
-    switch (typeId) {
-      case "photos": return "image/*"
-      case "video": return "video/*"
-      case "logo": return "image/svg+xml,image/png,image/jpeg"
-      case "affiche": return "image/*,.pdf"
-      case "dossier": return ".pdf,.doc,.docx"
-      default: return "*"
-    }
-  }
-
+export function Step5Form({ summaryStep, onEdit }: Step7FormProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Types de contenus proposés</CardTitle>
-        <CardDescription>
-          Sélectionnez les types de contenus et téléversez les fichiers correspondants
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          {formOptions.contentTypes.map((type) => (
-            <div key={type.id} className="flex items-center gap-2">
-              <Checkbox
-                id={type.id}
-                checked={selectedContentTypes.includes(type.id)}
-                onCheckedChange={(checked) => handleCheckboxChange(type.id, checked as boolean)}
-              />
-              <Label htmlFor={type.id}>{type.label}</Label>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Club</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Nom du club:</span>
+              <span>Paris Sports Club</span>
             </div>
-          ))}
-        </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Ville:</span>
+              <span>Paris</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Université:</span>
+              <span>Sorbonne Université</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Instagram:</span>
+              <span>@parissports</span>
+            </div>
+          </div>
+          <Button variant="link" size="sm" onClick={() => onEdit?.(1)}>
+            Modifier
+          </Button>
+        </CardContent>
+      </Card>
 
-        {selectedContentTypes.length > 0 && (
-          <div className="space-y-4">
-            <Label>Fichiers à téléverser</Label>
-            {formOptions.contentTypes.filter((type) => selectedContentTypes.includes(type.id)).map((type) => (
-              <div key={type.id} className="space-y-2">
-                <Label htmlFor={`file-${type.id}`}>{type.label}</Label>
-                <Input
-                  id={`file-${type.id}`}
-                  type="file"
-                  accept={getAcceptedTypes(type.id)}
-                  multiple={type.id === "photos"}
-                  onChange={(e) => {
-                    const target = e.target as HTMLInputElement
-                    if (type.id === "photos") {
-                      const filesArray = target.files ? Array.from(target.files) : null
-                      handleFileChange(type.id, filesArray)
-                    } else {
-                      handleFileChange(type.id, target.files?.[0] || null)
-                    }
-                  }}
-                />
-              {files[type.id] && (
-                <Typography variant="p" className="text-sm">
-                  {Array.isArray(files[type.id])
-                    ? `${(files[type.id] as File[]).length} fichier(s) sélectionné(s)`
-                    : `Fichier sélectionné: ${(files[type.id] as File).name}`}
-                </Typography>
-              )}
+      <Card>
+        <CardHeader>
+          <CardTitle>Responsable</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Nom:</span>
+              <span>Jean Dupont</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Fonction:</span>
+              <span>Président</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Téléphone:</span>
+              <span>+33 6 00 00 00 00</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Email:</span>
+              <span>contact@club.fr</span>
+            </div>
+          </div>
+          <Button variant="link" size="sm" onClick={() => onEdit?.(2)}>
+            Modifier
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Événement</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Nom:</span>
+              <span>Tournoi de tennis</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Type:</span>
+              <span>Sport</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Dates:</span>
+              <span>15/06/2026 - 17/06/2026</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Lieu:</span>
+              <span>Stade de Paris</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Participants:</span>
+              <span>200</span>
+            </div>
+          </div>
+          <Button variant="link" size="sm" onClick={() => onEdit?.(3)}>
+            Modifier
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Visibilité et logistique</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Visibilité:</span>
+              <span>Logo sur les panneaux</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Logistique:</span>
+              <span>Stand, Électricité</span>
+            </div>
+          </div>
+          <Button variant="link" size="sm" onClick={() => onEdit?.(4)}>
+            Modifier
+          </Button>
+        </CardContent>
+      </Card>
+
+      {summaryStep === 5 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>UGC / Ambassadeurs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Créateurs:</span>
+                <span>2</span>
               </div>
-            ))}
-          </div>
-        )}
-
-        {filePreviews.length > 0 && (
-          <div className="space-y-2">
-            <Label>Aperçu des fichiers</Label>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              {filePreviews.map((preview, index) => (
-                <li key={index}>{preview}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Types:</span>
+                <span>Reels, TikTok, Interviews</span>
+              </div>
+            </div>
+            <Button variant="link" size="sm" onClick={() => onEdit?.(5)}>
+              Modifier
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   )
 }

@@ -3,8 +3,7 @@
     { "id": "affiche", "label": "Affiche de l'événement" },
     { "id": "dossier", "label": "Dossier de sponsoring" },
     { "id": "photos", "label": "Photos des éditions précédentes" },
-    { "id": "video", "label": "Vidéo de présentation" },
-    { "id": "logo", "label": "Logo du club / événement" }
+    { "id": "video", "label": "Vidéo de présentation" }
   ],
   "creatorContentTypes": [
     { "id": "reels", "label": "Reels" },

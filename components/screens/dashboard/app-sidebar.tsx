@@ -39,6 +39,10 @@ const managementItems = uiConstants.sidebar.management.map(item => ({
   ...item,
   icon: iconMap[item.icon],
 }))
+const testItems = uiConstants.sidebar.test.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -106,6 +110,23 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <SidebarMenu>
               {managementItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+         <SidebarGroup>
+          <SidebarGroupLabel>Test</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {testItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.href}>

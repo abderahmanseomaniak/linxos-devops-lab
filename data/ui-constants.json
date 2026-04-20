@@ -40,6 +40,9 @@
     "management": [
       { "title": "Events", "href": "/dev/events", "icon": "Calendar" },
       { "title": "Users", "href": "/dev/users", "icon": "Users" }
+    ],
+    "test": [
+      { "title": "forms", "href": "/dev/forms/sponsorship", "icon": "Calendar" }
     ]
   },
   "iconMap": {

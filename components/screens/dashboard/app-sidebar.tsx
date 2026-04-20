@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Calendar, GalleryVerticalEnd, Home, LayoutDashboard, LogIn, Search, Settings, Users } from "lucide-react"
+import { Calendar, GalleryVerticalEnd, Home, LayoutDashboard, LogIn, Search, Settings, Users, LayoutGrid, Truck, FileText, MapPin, ClipboardList } from "lucide-react"
 import Link from "next/link"
 import uiConstants from "@/data/ui-constants.json"
 
@@ -23,6 +23,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Settings,
   Calendar,
   Users,
+  LayoutGrid,
+  Truck,
+  FileText,
+  MapPin,
+  ClipboardList,
 }
 
 const generalItems = uiConstants.sidebar.general.map(item => ({

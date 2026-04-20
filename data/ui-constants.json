@@ -39,10 +39,14 @@
     ],
     "management": [
       { "title": "Events", "href": "/dev/events", "icon": "Calendar" },
-      { "title": "Users", "href": "/dev/users", "icon": "Users" }
+      { "title": "Users", "href": "/dev/users", "icon": "Users" },
+      { "title": "kanban", "href": "/dev/kanban", "icon": "LayoutGrid" },
+      { "title": "logistics", "href": "/dev/logistics", "icon": "Truck" },
+      { "title": "content", "href": "/dev/content", "icon": "FileText" }
     ],
     "test": [
-      { "title": "forms", "href": "/dev/forms/sponsorship", "icon": "Calendar" }
+      { "title": "tracking", "href": "/dev/tracking", "icon": "MapPin" },
+      { "title": "forms", "href": "/dev/forms/sponsorship", "icon": "ClipboardList" }
     ]
   },
   "iconMap": {
@@ -50,6 +54,11 @@
     "Calendar": "Calendar",
     "Clock": "Clock",
     "CheckCircle2": "CheckCircle2",
-    "TrendingUp": "TrendingUp"
+    "TrendingUp": "TrendingUp",
+    "LayoutGrid": "LayoutGrid",
+    "Truck": "Truck",
+    "FileText": "FileText",
+    "MapPin": "MapPin",
+    "ClipboardList": "ClipboardList"
   }
 }

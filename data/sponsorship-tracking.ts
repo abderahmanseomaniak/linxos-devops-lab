@@ -1,0 +1,146 @@
+export type StepStatus = "completed" | "current" | "upcoming";
+
+export interface TrackingStep {
+  id: number;
+  title: string;
+  description?: string;
+  status: StepStatus;
+  message?: string;
+  actionLabel?: string;
+  actionType?: string;
+}
+
+export interface Phase {
+  id: string;
+  title: string;
+  steps: TrackingStep[];
+}
+
+export interface SponsorshipTrackingData {
+  currentStep: number;
+  eventName: string;
+  date: string;
+  city: string;
+  reference?: string;
+  phases: Phase[];
+}
+
+export const sponsorshipTrackingData: SponsorshipTrackingData = {
+  currentStep: 2,
+  eventName: "Basketball Championship 2026",
+  date: "2026-05-15",
+  city: "Paris",
+  reference: "SPO-2026-001",
+  phases: [
+    {
+      id: "request",
+      title: "Request Phase",
+      steps: [
+        {
+          id: 1,
+          title: "Request Submitted",
+          description: "Your sponsorship request has been received",
+          status: "completed",
+          message: "Your request was submitted successfully",
+        },
+        {
+          id: 2,
+          title: "Under Review",
+          description: "Our team is reviewing your request",
+          status: "current",
+          message: "Your request is under review by our team",
+        },
+        {
+          id: 3,
+          title: "Approved",
+          description: "Your request has been approved",
+          status: "upcoming",
+        },
+      ],
+    },
+    {
+      id: "event-setup",
+      title: "Event Setup Phase",
+      steps: [
+        {
+          id: 4,
+          title: "Event Confirmation Required",
+          description: "Please confirm your event details",
+          status: "upcoming",
+          message: "Please confirm your event details",
+          actionLabel: "Confirm Event Details",
+          actionType: "confirm",
+        },
+        {
+          id: 5,
+          title: "Logistics Preparation",
+          description: "We're preparing your products",
+          status: "upcoming",
+        },
+        {
+          id: 6,
+          title: "Products Shipped",
+          description: "Your products are on the way",
+          status: "upcoming",
+          message: "Your products are being shipped",
+        },
+      ],
+    },
+    {
+      id: "content",
+      title: "Content Phase",
+      steps: [
+        {
+          id: 7,
+          title: "Content Submission",
+          description: "Submit your content materials",
+          status: "upcoming",
+          message: "Please upload your content drive link",
+          actionLabel: "Upload Drive Link",
+          actionType: "upload",
+        },
+        {
+          id: 8,
+          title: "Content Review",
+          description: "We're reviewing your content",
+          status: "upcoming",
+        },
+        {
+          id: 9,
+          title: "Published",
+          description: "Your content has been published",
+          status: "upcoming",
+        },
+      ],
+    },
+    {
+      id: "completion",
+      title: "Completion Phase",
+      steps: [
+        {
+          id: 10,
+          title: "Completed",
+          description: "Sponsorship process completed",
+          status: "upcoming",
+          actionLabel: "Contact Support",
+          actionType: "support",
+        },
+      ],
+    },
+  ],
+};
+
+export function calculateProgress(data: SponsorshipTrackingData): number {
+  const totalSteps = data.phases.reduce((acc, phase) => acc + phase.steps.length, 0);
+  const completedSteps = data.phases.reduce(
+    (acc, phase) => acc + phase.steps.filter((s) => s.status === "completed").length,
+    0
+  );
+  return Math.round((completedSteps / totalSteps) * 100);
+}
+
+export function getActivePhase(data: SponsorshipTrackingData): Phase | undefined {
+  return data.phases.find((phase) =>
+    phase.steps.some((step) => step.status === "current")
+  );
+}

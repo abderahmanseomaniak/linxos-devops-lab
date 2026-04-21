@@ -12,25 +12,19 @@ import {
   type DragStartEvent,
   type DragEndEvent,
   type DragOverEvent,
+  type PointerSensorOptions,
 } from "@dnd-kit/core"
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable"
-import { KanbanEvent, KanbanStage } from "@/types/event"
+import { KanbanEvent, KanbanStage, KanbanStages, KanbanBoardProps } from "@/types/kanban"
 import { KanbanColumn } from "./KanbanColumn"
 import { EventCard } from "./EventCard"
 
-const STAGES: KanbanStage[] = [
-  "Validée",
-  "Préparation",
-  "Logistique",
-  "Livré",
-  "Terminé",
-]
+const STAGES = KanbanStages
 
-interface KanbanBoardProps {
-  events: KanbanEvent[]
-  onEventMove: (eventId: number, newStage: KanbanStage) => void
-  searchQuery: string
-  cityFilter: string
+const defaultPointerSensorOptions: PointerSensorOptions = {
+  activationConstraint: {
+    distance: 8,
+  },
 }
 
 export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: KanbanBoardProps) {
@@ -42,11 +36,7 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
   }, [])
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
+    useSensor(PointerSensor, defaultPointerSensorOptions),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -112,7 +102,7 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
 
   if (!mounted) {
     return (
-      <div className="grid grid-cols-5 h-full gap-2 p-1">
+      <div className="h-screen overflow-auto">
         {STAGES.map((stage) => (
           <div key={stage} className="rounded-2xl border bg-muted/30 p-2" />
         ))}
@@ -127,20 +117,22 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+        autoScroll={false}
+
     >
-      <div className="grid grid-cols-5 h-full gap-2 p-1">
+      <div className="grid grid-cols-5 h-full gap-2 p-1 overflow-hidden min-h-0">
         {STAGES.map((stage) => (
           <KanbanColumn key={stage} stage={stage} events={eventsByStage[stage]} />
         ))}
       </div>
 
-      <DragOverlay>
-        {activeEvent ? (
-          <div className="opacity-90">
-            <EventCard event={activeEvent} />
-          </div>
-        ) : null}
-      </DragOverlay>
+      <DragOverlay dropAnimation={null}>
+  {activeEvent ? (
+    <div className="opacity-90 pointer-events-none fixed">
+      <EventCard event={activeEvent} />
+    </div>
+  ) : null}
+</DragOverlay>
     </DndContext>
   )
 }

@@ -73,7 +73,7 @@ interface UseFilterReturn<T> {
   toggleFilter: (value: T) => void
   setFilter: (values: T[]) => void
   clearFilter: () => void
-  isAllSelected: boolean
+  isAllSelected: (allValues: T[]) => boolean
   isSelected: (value: T) => boolean
   selectAll: (allValues: T[]) => void
   selectedCount: number

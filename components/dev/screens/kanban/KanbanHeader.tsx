@@ -2,15 +2,9 @@
 
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Typography } from "@/components/ui/typography"
 import { SearchIcon } from "lucide-react"
-
-interface KanbanHeaderProps {
-  searchQuery: string
-  onSearchChange: (value: string) => void
-  cityFilter: string
-  onCityFilterChange: (value: string) => void
-  cities: string[]
-}
+import { KanbanHeaderProps } from "@/types/kanban"
 
 export function KanbanHeader({
   searchQuery,
@@ -22,10 +16,10 @@ export function KanbanHeader({
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-4 shrink-0">
       <div>
-        <h1 className="text-xl font-bold text-foreground">Pipeline Sponsorship</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <Typography variant="h3">Pipeline Sponsorship</Typography>
+        <Typography variant="muted" className="mt-0.5">
           Suivez et gérez vos événements sponsorisés
-        </p>
+        </Typography>
       </div>
 
       <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -42,7 +36,7 @@ export function KanbanHeader({
         </div>
 
         <Select value={cityFilter} onValueChange={onCityFilterChange}>
-          <SelectTrigger className="h-8 w-36 text-sm">
+          <SelectTrigger className=" text-sm">
             <SelectValue placeholder="Ville" />
           </SelectTrigger>
           <SelectContent>

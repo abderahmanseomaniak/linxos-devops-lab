@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { ReactNode } from "react"
 
-export default function DevLayout({
+export default function eventsLayout({
   children,
 }: {
   children: ReactNode
@@ -18,7 +18,7 @@ export default function DevLayout({
             <ThemeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col overflow-hidden p-4">
+        <div className="flex flex-1 flex-col p-4 overflow-auto">
           {children}
         </div>
       </SidebarInset>

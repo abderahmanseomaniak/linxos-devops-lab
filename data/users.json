@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "name": "Jean Dupont",
+    "email": "jean.dupont@example.com",
+    "phone": "+33 6 12 34 56 78",
+    "cin": "AB123456",
+    "role": "admin",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 2,
+    "name": "Marie Dubois",
+    "email": "marie.dubois@example.com",
+    "phone": "+33 6 23 45 67 89",
+    "cin": "CD789012",
+    "role": "user",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 3,
+    "name": "Pierre Martin",
+    "email": "pierre.martin@example.com",
+    "phone": "+33 6 34 56 78 90",
+    "cin": "EF345678",
+    "role": "user",
+    "status": false,
+    "avatar": ""
+  },
+  {
+    "id": 4,
+    "name": "Sophie Bernard",
+    "email": "sophie.bernard@example.com",
+    "phone": "+33 6 45 67 89 01",
+    "cin": "GH901234",
+    "role": "user",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 5,
+    "name": "Lucas Petit",
+    "email": "lucas.petit@example.com",
+    "phone": "+33 6 56 78 90 12",
+    "cin": "IJ567890",
+    "role": "moderator",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 6,
+    "name": "Emma Richard",
+    "email": "emma.richard@example.com",
+    "phone": "+33 6 67 89 01 23",
+    "cin": "KL123456",
+    "role": "user",
+    "status": false,
+    "avatar": ""
+  },
+  {
+    "id": 7,
+    "name": "Thomas Moreau",
+    "email": "thomas.moreau@example.com",
+    "phone": "+33 6 78 90 12 34",
+    "cin": "MN789012",
+    "role": "user",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 8,
+    "name": "Julie Torres",
+    "email": "julie.torres@example.com",
+    "phone": "+33 6 89 01 23 45",
+    "cin": "OP345678",
+    "role": "user",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 9,
+    "name": "Nicolas Fournier",
+    "email": "nicolas.fournier@example.com",
+    "phone": "+33 6 90 12 34 56",
+    "cin": "QR901234",
+    "role": "user",
+    "status": false,
+    "avatar": ""
+  },
+  {
+    "id": 10,
+    "name": "Camille Laurent",
+    "email": "camille.laurent@example.com",
+    "phone": "+33 7 01 23 45 67",
+    "cin": "ST567890",
+    "role": "admin",
+    "status": true,
+    "avatar": ""
+  },
+  {
+    "id": 11,
+    "name": "Camille Laurent",
+    "email": "camille.laurent@example.com",
+    "phone": "+33 7 01 23 45 67",
+    "cin": "ST567890",
+    "role": "admin",
+    "status": true,
+    "avatar": ""
+  }
+]

@@ -10,13 +10,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
-
-interface DeleteConfirmDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onConfirm: () => void
-  eventName?: string
-}
+import type { DeleteConfirmDialogProps, DeleteButtonProps } from "@/types/events"
 
 export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, eventName }: DeleteConfirmDialogProps) {
   return (
@@ -40,13 +34,9 @@ export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, eventName }
   )
 }
 
-interface DeleteButtonProps {
-  onClick: () => void
-}
-
 export function DeleteButton({ onClick }: DeleteButtonProps) {
   return (
-    <Button variant="ghost" size="icon-sm" onClick={onClick}>
+    <Button variant="ghost" size="icon" onClick={onClick}>
       <Trash2 className="size-4 text-destructive" />
       <span className="sr-only">Supprimer</span>
     </Button>

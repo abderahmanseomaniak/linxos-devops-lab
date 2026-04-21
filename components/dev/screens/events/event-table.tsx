@@ -52,7 +52,14 @@ import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/p
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { EventApplication, EventStatus, DeliveryStatus } from "@/types/event"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { EventApplication, EventStatus, DeliveryStatus, type EventTableProps } from "@/types/events"
+import uiConstants from "@/data/ui-constants.json"
+
+const STATUS_LABELS = uiConstants.eventStatus.labels as Record<EventStatus, string>
+const STATUS_VARIANTS = uiConstants.eventStatus.variants as Record<EventStatus, "secondary" | "default" | "destructive" | "outline">
+const DELIVERY_LABELS = uiConstants.deliveryStatus.labels as Record<DeliveryStatus, string>
+const DELIVERY_VARIANTS = uiConstants.deliveryStatus.variants as Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline">
 
 const multiColumnFilterFn: FilterFn<EventApplication> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.eventName} ${row.original.organization}`.toLowerCase()
@@ -64,47 +71,6 @@ const statusFilterFn: FilterFn<EventApplication> = (row, columnId, filterValue: 
   if (!filterValue?.length) return true
   const status = row.getValue(columnId) as string
   return filterValue.includes(status)
-}
-
-const STATUS_LABELS: Record<EventStatus, string> = {
-  Pending: "En attente",
-  Accepted: "Acceptée",
-  Rejected: "Rejetée",
-}
-
-const STATUS_VARIANTS: Record<EventStatus, "secondary" | "default" | "destructive" | "outline"> = {
-  Pending: "secondary",
-  Accepted: "default",
-  Rejected: "destructive",
-}
-
-const DELIVERY_LABELS: Record<DeliveryStatus, string> = {
-  Livrée: "Livrée",
-  "Non livrée": "Non livrée",
-}
-
-const DELIVERY_VARIANTS: Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline"> = {
-  Livrée: "default",
-  "Non livrée": "destructive",
-}
-
-const AVATAR_COLORS = [
-  "bg-blue-500/20 text-blue-600 dark:text-blue-400",
-  "bg-green-500/20 text-green-600 dark:text-green-400",
-  "bg-purple-500/20 text-purple-600 dark:text-purple-400",
-  "bg-orange-500/20 text-orange-600 dark:text-orange-400",
-  "bg-pink-500/20 text-pink-600 dark:text-pink-400",
-  "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400",
-  "bg-rose-500/20 text-rose-600 dark:text-rose-400",
-  "bg-amber-500/20 text-amber-600 dark:text-amber-400",
-]
-
-function getAvatarColor(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
 }
 
 export const columns: ColumnDef<EventApplication>[] = [
@@ -134,20 +100,17 @@ export const columns: ColumnDef<EventApplication>[] = [
     cell: ({ row }) => {
       const organization = row.original.organization
       const eventName = row.original.eventName
-      const colorClass = getAvatarColor(organization)
-      return (
-        <div className="flex items-center gap-3">
-          <div className={cn("size-10 rounded-full flex items-center justify-center", colorClass)}>
-            <span className="text-sm font-medium">
-              {organization.charAt(0).toUpperCase()}
-            </span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-medium text-base">{eventName}</span>
-            <span className="text-sm text-muted-foreground">@{organization}</span>
-          </div>
-        </div>
-      )
+       return (
+         <div className="flex items-center gap-3">
+           <Avatar size="lg">
+             <AvatarFallback>{organization.charAt(0).toUpperCase()}</AvatarFallback>
+           </Avatar>
+           <div className="flex flex-col">
+             <span className="font-medium text-base">{eventName}</span>
+             <span className="text-sm text-muted-foreground">@{organization}</span>
+           </div>
+         </div>
+       )
     },
     size: 250,
     enableHiding: false,
@@ -193,21 +156,30 @@ export const columns: ColumnDef<EventApplication>[] = [
     size: 120,
   },
   {
+    accessorKey: "reference",
+    header: "Référence",
+    cell: ({ row }) => {
+      const ref = row.getValue("reference") as string
+      return <span className="text-sm font-mono">{ref || "-"}</span>
+    },
+    size: 120,
+  },
+  {
+    accessorKey: "isRealized",
+    header: "Statut de réalisation",
+    cell: ({ row }) => {
+      const isRealized = row.getValue("isRealized") as boolean
+      return <Badge variant={isRealized ? "default" : "secondary"}>{isRealized ? "Réalisé" : "Non réalisé"}</Badge>
+    },
+    size: 150,
+  },
+  {
     id: "actions",
     size: 60,
     enableHiding: false,
     header: () => <span className="sr-only">Actions</span>,
   },
 ]
-
-interface EventTableProps {
-  data: EventApplication[]
-  onEdit?: (event: EventApplication) => void
-  onDelete?: (event: EventApplication) => void
-  onDeleteMultiple?: (ids: number[]) => void
-  onAdd?: () => void
-  onDetail?: (event: EventApplication) => void
-}
 
 export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, onDetail }: EventTableProps) {
   const id = useId()
@@ -309,8 +281,8 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
   }, [table, onDeleteMultiple])
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 shrink-0">
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Input
@@ -350,7 +322,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto min-w-36 p-3">
               <div className="space-y-3">
-                <div className="font-medium text-muted-foreground text-xs">Filtres</div>
+                <Typography variant="small" className="font-medium">Filtres</Typography>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Checkbox
@@ -360,7 +332,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
                     />
                     <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-all`}>
                       Tous
-                      <span className="ms-2 text-muted-foreground text-xs">{table.getFilteredRowModel().rows.length}</span>
+                      <Typography variant="code" className="ms-2">{table.getFilteredRowModel().rows.length}</Typography>
                     </Label>
                   </div>
                   {uniqueStatusValues.map((value, i) => (
@@ -372,7 +344,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
                       />
                       <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-${i}`}>
                         {STATUS_LABELS[value as EventStatus] || value}
-                        <span className="ms-2 text-muted-foreground text-xs">{statusCounts.get(value)}</span>
+                        <Typography variant="code" className="ms-2">{statusCounts.get(value)}</Typography>
                       </Label>
                     </div>
                   ))}
@@ -450,7 +422,6 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto mt-3">
         <div className="overflow-hidden rounded-md border bg-background">
           <Table className="table-fixed ">
           <TableHeader>
@@ -499,7 +470,6 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
           </TableBody>
         </Table>
         </div>
-      </div>
 
       <div className="flex items-center justify-between gap-8 shrink-0">
         <div className="flex items-center gap-3">

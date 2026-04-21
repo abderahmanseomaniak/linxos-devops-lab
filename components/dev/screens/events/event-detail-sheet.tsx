@@ -6,77 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-
-interface EventDetailSheetProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  event: EventApplication | null
-}
-
-interface Step1Data {
-  nomClub: string
-  sport: string
-  ville: string
-  email: string
-  telephone: string
-}
-
-interface Step2Data {
-  nomResponsable: string
-  fonction: string
-  emailResponsable: string
-  telephoneResponsable: string
-}
-
-interface Step3Data {
-  nomEvenement: string
-  dateDebut: string
-  dateFin: string
-  lieu: string
-  description: string
-  hasUGC: boolean
-}
-
-interface Creator {
-  id: string
-  nom: string
-  instagram: string
-  tiktok: string
-  followersInstagram: string
-  followersTikTok: string
-  available: boolean
-}
-
-interface Step4Data {
-  creators: Creator[]
-}
-
-interface Step5Data {
-  selectedContentTypes: string[]
-  files: Record<string, unknown>
-}
-
-interface Step6Data {
-  visibilite: string
-  mentions: string
-  autresConditions: string
-}
-
-interface EventApplication {
-  id: number
-  priority: number
-  eventName: string
-  organization: string
-  date: string
-  status: string
-  deliveryStatus: string
-  step1?: Step1Data
-  step2?: Step2Data
-  step3?: Step3Data
-  step4?: Step4Data
-  step5?: Step5Data
-  step6?: Step6Data
-}
+import { EventApplication, type EventDetailSheetProps, type Step1Data, type Step2Data, type Step3Data, type Creator, type Step4Data, type Step5Data, type Step6Data } from "@/types/events"
 
 function InfoRow({ label, value, isBadge }: { label: string; value: string | React.ReactNode; isBadge?: boolean }) {
   return (
@@ -96,7 +26,7 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="sm:max-w-2xl overflow-y-auto w-full border-l border-border/20 bg-background flex flex-col">
+        <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
         <SheetHeader>
           <SheetTitle>Demande de sponsoring</SheetTitle>
           <SheetDescription>

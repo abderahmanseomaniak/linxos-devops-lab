@@ -12,20 +12,39 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Calendar, GalleryVerticalEnd, Home, LayoutGrid, LogIn, Search, Settings, Truck } from "lucide-react"
+import { Calendar, GalleryVerticalEnd, Home, LayoutDashboard, LogIn, Search, Settings, Users, LayoutGrid, Truck, FileText, MapPin, ClipboardList } from "lucide-react"
 import Link from "next/link"
+import uiConstants from "@/data/ui-constants.json"
 
-const navItems = [
-  { title: "Home", href: "/", icon: Home },
-  { title: "Search", href: "#", icon: Search },
-  { title: "Settings", href: "#", icon: Settings },
-]
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  LayoutDashboard,
+  Home,
+  Search,
+  Settings,
+  Calendar,
+  Users,
+  LayoutGrid,
+  Truck,
+  FileText,
+  MapPin,
+  ClipboardList,
+}
 
-const devItems = [
-  { title: "Events", href: "/dev/events", icon: Calendar },
-  { title: "Kanban", href: "/dev/kanban", icon: LayoutGrid },
-  { title: "Logistics", href: "/dev/logistics", icon: Truck },
-]
+const generalItems = uiConstants.sidebar.general.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
+
+
+
+const managementItems = uiConstants.sidebar.management.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
+const testItems = uiConstants.sidebar.test.map(item => ({
+  ...item,
+  icon: iconMap[item.icon],
+}))
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -34,51 +53,78 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <span className="font-medium">LynxOS</span>
+              <Link href="/" >
+                {/* Light mode */}
+                <img
+                  src="/assets/logos/logo-texte-noir.svg"
+                  alt="Logo"
+                  className="h-7 block dark:hidden"
+                />
+
+                {/* Dark mode */}
+                <img
+                  src="/assets/logos/logo-texte-blanc.svg"
+                  alt="Logo"
+                  className="h-7 hidden dark:block"
+                />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-<SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {navItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-          <SidebarGroup>
-            <SidebarGroupLabel>Développement</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {devItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Général</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {generalItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+       
+        <SidebarGroup>
+          <SidebarGroupLabel>Gestion</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {managementItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+         <SidebarGroup>
+          <SidebarGroupLabel>Test</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {testItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

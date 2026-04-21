@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus, ContentCardProps } from "@/types/contents"
+import { UGCEvent, ContentStatus, ContentCardProps } from "@/types/content"
 import { MapPin,  AlertTriangle, CheckCircle } from "lucide-react"
 
 const statusColors: Record<ContentStatus, string> = {

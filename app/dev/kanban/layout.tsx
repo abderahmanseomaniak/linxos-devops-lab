@@ -3,22 +3,18 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { ReactNode } from "react"
 
-export default function KanbanLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
+export default function KanbanLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="h-screen overflow-hidden flex flex-col">
         <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <div className="ml-auto">
             <ThemeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col p-4 overflow-hidden h-full">
+        <div className="flex-1 overflow-hidden p-4">
           {children}
         </div>
       </SidebarInset>

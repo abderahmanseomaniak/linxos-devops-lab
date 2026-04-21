@@ -26,7 +26,7 @@ export function EventCard({ event }: EventCardProps) {
       ref={setNodeRef}
       style={style}
       className={`
-        group relative rounded-xl border bg-white p-3 shadow-sm transition-all duration-200
+        group relative rounded-xl border bg-white p-3 
         hover:shadow-md hover:-translate-y-0.5 cursor-grab active:cursor-grabbing
         touch-none select-none
         ${isDragging ? "opacity-50 shadow-2xl" : ""}

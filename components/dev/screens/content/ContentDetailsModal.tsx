@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus, ContentDetailsModalProps } from "@/types/contents"
+import { UGCEvent, ContentStatus, ContentDetailsModalProps } from "@/types/content"
 import { MapPin, Users, Calendar, ExternalLink, Globe, Clock, CheckCircle, AlertTriangle, Plus, MessageSquare } from "lucide-react"
 
 const statusColors: Record<ContentStatus, string> = {

@@ -19,8 +19,8 @@ export function Step6Form() {
           <div className="flex items-start gap-3">
             <Checkbox id="imageConsent" />
             <Label htmlFor="imageConsent" className="text-sm leading-relaxed cursor-pointer">
-              J'autorise l'organisation à utiliser, à des fins de promotion et de communication,
-              les photos et vidéos me représentant ainsi que ma voix, dans le cadre de l'événement.
+              J&apos;autorise l&apos;organisation à utiliser, à des fins de promotion et de communication,
+              les photos et vidéos me représentant ainsi que ma voix, dans le cadre de l&apos;événement.
               Cette autorisation est valable pour une durée de 3 ans.
             </Label>
           </div>

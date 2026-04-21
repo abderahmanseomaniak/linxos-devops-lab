@@ -32,11 +32,7 @@
     "general": [
       { "title": "Dashboard", "href": "/dev/dashboard", "icon": "LayoutDashboard" }
     ],
-    "main": [
-      { "title": "Home", "href": "/", "icon": "Home" },
-      { "title": "Search", "href": "#", "icon": "Search" },
-      { "title": "Settings", "href": "#", "icon": "Settings" }
-    ],
+   
     "management": [
       { "title": "Events", "href": "/dev/events", "icon": "Calendar" },
       { "title": "Users", "href": "/dev/users", "icon": "Users" },

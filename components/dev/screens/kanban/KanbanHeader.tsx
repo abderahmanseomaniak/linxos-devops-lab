@@ -4,14 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Typography } from "@/components/ui/typography"
 import { SearchIcon } from "lucide-react"
-
-interface KanbanHeaderProps {
-  searchQuery: string
-  onSearchChange: (value: string) => void
-  cityFilter: string
-  onCityFilterChange: (value: string) => void
-  cities: string[]
-}
+import { KanbanHeaderProps } from "@/types/kanban"
 
 export function KanbanHeader({
   searchQuery,
@@ -43,7 +36,7 @@ export function KanbanHeader({
         </div>
 
         <Select value={cityFilter} onValueChange={onCityFilterChange}>
-          <SelectTrigger className="h-8 w-36 text-sm">
+          <SelectTrigger className=" text-sm">
             <SelectValue placeholder="Ville" />
           </SelectTrigger>
           <SelectContent>

@@ -8,112 +8,252 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Typography } from "@/components/ui/typography"
 
+type Platform = "instagram" | "tiktok" | "facebook" | "twitter" | "unknown"
+
+const platformPatterns: Record<Platform, RegExp> = {
+  instagram: /instagram\.com\//i,
+  tiktok: /tiktok\.com\//i,
+  facebook: /facebook\.com\/|fb\.com\//i,
+  twitter: /twitter\.com\/|x\.com\//i,
+  unknown: /./,
+}
+
+const InstagramIcon = () => (
+  <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+  </svg>
+)
+
+const TikTokIcon = () => (
+  <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.59 2.59 0 01-5.2 1.74 2.59 2.59 0 012.59-2.86 11.15 11.15 0 001.69.08V6.52a10.93 10.93 0 01-7.38-1.47 2.6 2.6 0 01-1.87-2.61 2.6 2.6 0 012.6-2.6 2.59 2.59 0 011.87 1.07 2.59 2.59 0 01-1.08 3.33 2.59 2.59 0 01-1.52-2.14 2.59 2.59 0 012.59-2.6h.13a10.9 10.9 0 007.36 2.51 2.59 2.59 0 012.59-2.6 2.59 2.59 0 012.59 2.6 2.59 2.59 0 01-2.17 2.72v-2.64z"/>
+  </svg>
+)
+
+const FacebookIcon = () => (
+  <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+)
+
+const TwitterIcon = () => (
+  <svg className="size-4" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+)
+
+const platformIcons: Record<Platform, React.ReactNode> = {
+  instagram: <InstagramIcon />,
+  tiktok: <TikTokIcon />,
+  facebook: <FacebookIcon />,
+  twitter: <TwitterIcon />,
+  unknown: <span className="size-4">🔗</span>,
+}
+
+function SocialInput({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const detectPlatform = (url: string): Platform => {
+    if (!url) return "unknown"
+    for (const [platform, pattern] of Object.entries(platformPatterns)) {
+      if (pattern.test(url)) return platform as Platform
+    }
+    return "unknown"
+  }
+
+  const platform = detectPlatform(value)
+  const icon = platformIcons[platform]
+  const hasError = value.length > 0 && platform === "unknown"
+
+  return (
+    <div className="space-y-1">
+      <div className="relative">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+          {icon}
+        </div>
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Collez votre lien social..."
+          className={`pl-10 ${hasError ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+        />
+      </div>
+
+      {hasError && (
+        <p className="text-xs text-red-500">
+          Lien non reconnu (Instagram, TikTok, Facebook, Twitter)
+        </p>
+      )}
+    </div>
+  )
+}
+
+function SocialLinkInput({
+  links,
+  onAdd,
+  onRemove,
+  onChange,
+}: {
+  links: string[]
+  onAdd: () => void
+  onRemove: (index: number) => void
+  onChange: (index: number, value: string) => void
+}) {
+  return (
+    <div className="space-y-2">
+      {links.map((link, index) => (
+        <div key={index} className="flex gap-2">
+          <div className="relative flex-1">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <span className="size-4">🔗</span>
+            </div>
+            <Input
+              value={link}
+              onChange={(e) => onChange(index, e.target.value)}
+              placeholder="Autre lien..."
+              className="pl-10"
+            />
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onRemove(index)}
+          >
+            <span className="text-red-500">×</span>
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={onAdd}
+        className="w-full"
+      >
+        + Ajouter un autre lien
+      </Button>
+    </div>
+  )
+}
+
 export function Step1Form() {
+  const [social, setSocial] = useState("")
+  const [otherLinks, setOtherLinks] = useState<string[]>([])
   const [showOTP, setShowOTP] = useState(false)
   const [otp, setOtp] = useState("")
   const [emailVerified, setEmailVerified] = useState(false)
+
+  const addOtherLink = () => {
+    setOtherLinks([...otherLinks, ""])
+  }
+
+  const removeOtherLink = (index: number) => {
+    setOtherLinks(otherLinks.filter((_, i) => i !== index))
+  }
+
+  const updateOtherLink = (index: number, value: string) => {
+    const newLinks = [...otherLinks]
+    newLinks[index] = value
+    setOtherLinks(newLinks)
+  }
+
   return (
     <Card>
-       <CardHeader>
-          <CardTitle>Informations du club</CardTitle>
-          <CardDescription>Remplissez les informations du club et du responsable</CardDescription>
+      <CardHeader>
+        <CardTitle>Informations du club</CardTitle>
+        <CardDescription>Remplissez les informations du club et du responsable</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <Typography variant="large" className="mb-1">Club</Typography>
+
+      <CardContent className="space-y-6">
+        {/* CLUB */}
+        <div className="space-y-4">
+          <Typography variant="large">Club</Typography>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Nom du club</Label>
+              <Input placeholder="Nom du club" />
+            </div>
+            <div className="space-y-2">
+              <Label>Ville</Label>
+              <Input placeholder="Ville" />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="clubName">Nom du club</Label>
-            <Input id="clubName" placeholder="Entrez le nom de votre club" />
+            <Label>Université</Label>
+            <Input placeholder="Optionnel" />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="city">Ville</Label>
-            <Input id="city" placeholder="Entrez la ville" />
-          </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="university">Université (optionnel)</Label>
-            <Input id="university" placeholder="Entrez le nom de l'université" />
-          </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="instagram">Instagram</Label>
-              <Input id="instagram" placeholder="@instagram" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="tiktok">TikTok</Label>
-              <Input id="tiktok" placeholder="@tiktok" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-            <Label htmlFor="facebook">Facebook</Label>
-            <Input id="facebook" placeholder="@Facebook" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="Autre">Autre</Label>
-              <Input id="Autre" placeholder="@Autre" />
-            </div>
+            <Label>Réseau social</Label>
+            <SocialInput value={social} onChange={setSocial} />
+            <SocialLinkInput
+              links={otherLinks}
+              onAdd={addOtherLink}
+              onRemove={removeOtherLink}
+              onChange={updateOtherLink}
+            />
           </div>
         </div>
 
-        <div className="pt-4 border-t">
-          <Typography variant="large" className="mb-1">Responsable</Typography>
+        {/* RESPONSABLE */}
+        <div className="pt-4 border-t space-y-4">
+          <Typography variant="large">Responsable</Typography>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="responsableName">Nom complet</Label>
-              <Input id="responsableName" placeholder="Entrez le nom complet" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="function">Fonction</Label>
-              <Input id="function" placeholder="Président, Trésorier, etc." />
-            </div>
+            <Input placeholder="Nom complet" />
+            <Input placeholder="Fonction" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone">Téléphone</Label>
-              <Input id="phone" type="tel" placeholder="+33 6 00 00 00 00" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              {!showOTP && !emailVerified && (
-                <div className="flex gap-2">
-                  <Input id="email" type="email" placeholder="contact@club.fr" className="flex-1" />
-                  <Button type="button" onClick={() => setShowOTP(true)}>Confirmer</Button>
-                </div>
-              )}
-              {showOTP && (
-                <div className="flex gap-2">
-                  <Input id="email" type="email" placeholder="contact@club.fr" className="flex-1" disabled />
-                </div>
-              )}
-              {emailVerified && (
-                <div className="flex gap-2">
-                  <Input id="email" type="email" placeholder="contact@club.fr" className="flex-1" disabled />
-                  <Button type="button" disabled>Vérifié</Button>
-                </div>
-              )}
-            </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input placeholder="Téléphone" />
+            
+            {!showOTP && !emailVerified && (
+              <div className="flex gap-2">
+                <Input type="email" placeholder="Email" />
+                <Button type="button" onClick={() => setShowOTP(true)}>
+                  Confirmer
+                </Button>
+              </div>
+            )}
+
+            {showOTP && (
+              <Input type="email" placeholder="Email" disabled />
+            )}
+
+            {emailVerified && (
+              <div className="flex gap-2">
+                <Input type="email" disabled />
+                <Button disabled>Vérifié</Button>
+              </div>
+            )}
           </div>
 
           {showOTP && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-start-2 flex items-end gap-2">
-                <InputOTP
-                  maxLength={6}
-                  value={otp}
-                  onChange={(value) => setOtp(value)}
-                >
-                  <InputOTPGroup>
-                    {[...Array(6)].map((_, i) => (
-                      <InputOTPSlot key={i} index={i} />
-                    ))}
-                  </InputOTPGroup>
-                </InputOTP>
-                <Button type="button" disabled={otp.length !== 6} onClick={() => { setShowOTP(false); setEmailVerified(true); }}>Vérifier</Button>
-              </div>
+            <div className="flex gap-2 justify-end">
+              <InputOTP value={otp} onChange={setOtp} maxLength={6}>
+                <InputOTPGroup>
+                  {[...Array(6)].map((_, i) => (
+                    <InputOTPSlot key={i} index={i} />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
+
+              <Button
+                disabled={otp.length !== 6}
+                onClick={() => {
+                  setShowOTP(false)
+                  setEmailVerified(true)
+                }}
+              >
+                Vérifier
+              </Button>
             </div>
           )}
         </div>

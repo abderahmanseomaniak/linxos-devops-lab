@@ -4,17 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { StatusBadge } from "./StatusBadge"
-import { Delivery, LogisticsStatus, StatusLabels } from "@/types/logistics"
+import { Delivery, LogisticsStatus, StatusLabels, DeliveryCardProps } from "@/types/logistics"
 import { MapPin, User, Package, Truck, MessageSquare, FileText, Upload, Calendar, Eye, AlertTriangle, CheckCircle } from "lucide-react"
-
-interface DeliveryCardProps {
-  delivery: Delivery
-  onStatusChange: (id: number, newStatus: LogisticsStatus, issueType?: Delivery["issueType"], issueDescription?: string) => void
-  onViewDetails: (delivery: Delivery) => void
-  onAddNote: (id: number, note: string) => void
-  onUploadReceipt: (id: number, file: File) => void
-  onContactWhatsApp: (phone: string) => void
-}
 
 export function DeliveryCard({
   delivery,
@@ -93,7 +84,7 @@ export function DeliveryCard({
       <div className="space-y-1.5 text-xs">
         <div className="flex items-center gap-2 text-muted-foreground">
           <MapPin className="size-3.5 shrink-0" />
-          <span className="truncate">{delivery.address}</span>
+          <Typography variant="p" className="truncate">{delivery.address}</Typography>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           <Calendar className="size-3.5 shrink-0" />
@@ -248,7 +239,7 @@ Proof
 
       {showIssueModal && (
         <div className="flex flex-col gap-2 p-2 bg-destructive/10 rounded-lg border border-destructive/30">
-          <p className="text-xs font-medium text-destructive">Report problem</p>
+          <Typography variant="small" className="text-destructive">Report problem</Typography>
           <select
             className="w-full text-xs p-2 border rounded-md"
             value={issueType}
@@ -280,7 +271,7 @@ Proof
 
       {showUpload && (
         <div className="flex flex-col gap-2 p-2 bg-muted/30 rounded-lg">
-          <p className="text-xs font-medium">Delivery proof</p>
+          <Typography variant="small">Delivery proof</Typography>
           <input
             type="file"
             accept="image/*,.pdf"
@@ -295,7 +286,7 @@ Proof
 
       {delivery.notes && delivery.notes.length > 0 && (
         <div className="text-xs text-muted-foreground pt-1 border-t mt-1">
-          <p className="font-medium mb-1">Notes ({delivery.notes.length})</p>
+          <Typography variant="small" className="mb-1">Notes ({delivery.notes.length})</Typography>
           {delivery.notes.slice(-2).map((note) => (
             <div key={note.id} className="text-xs text-muted-foreground bg-muted/20 p-1.5 rounded mb-1">
               {note.content}

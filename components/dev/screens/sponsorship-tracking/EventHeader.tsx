@@ -1,11 +1,5 @@
-interface EventHeaderProps {
-  eventName: string;
-  date: string;
-  city: string;
-  reference?: string;
-  progress: number;
-  activePhaseTitle?: string;
-}
+import { Typography } from "@/components/ui/typography"
+import { EventHeaderProps } from "@/types/sponsorship-tracking"
 
 export function EventHeader({
   eventName,
@@ -24,20 +18,20 @@ export function EventHeader({
   return (
     <div className="text-center space-y-4 py-6">
       {reference && (
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        <Typography variant="small" className="font-medium uppercase tracking-wider">
           {reference}
-        </p>
+        </Typography>
       )}
-      <h1 className="text-2xl font-bold text-foreground">{eventName}</h1>
+      <Typography variant="h1">{eventName}</Typography>
       <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
-        <span>{formattedDate}</span>
+        <Typography variant="p">{formattedDate}</Typography>
         <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
-        <span>{city}</span>
+        <Typography variant="p">{city}</Typography>
       </div>
       <div className="mx-auto max-w-xs space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Progress</span>
-          <span className="font-medium text-primary">{progress}%</span>
+          <Typography variant="small" className="text-muted-foreground">Progress</Typography>
+          <Typography variant="small" className="font-medium text-primary">{progress}%</Typography>
         </div>
         <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
           <div
@@ -46,9 +40,9 @@ export function EventHeader({
           />
         </div>
         {activePhaseTitle && (
-          <p className="text-xs text-primary font-medium">
+          <Typography variant="small" className="text-primary font-medium">
             Current: {activePhaseTitle}
-          </p>
+          </Typography>
         )}
       </div>
     </div>

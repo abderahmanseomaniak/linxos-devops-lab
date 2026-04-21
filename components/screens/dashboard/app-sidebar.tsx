@@ -35,10 +35,7 @@ const generalItems = uiConstants.sidebar.general.map(item => ({
   icon: iconMap[item.icon],
 }))
 
-const mainItems = uiConstants.sidebar.main.map(item => ({
-  ...item,
-  icon: iconMap[item.icon],
-}))
+
 
 const managementItems = uiConstants.sidebar.management.map(item => ({
   ...item,
@@ -56,7 +53,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/" className="flex items-center justify-center">
+              <Link href="/" >
                 {/* Light mode */}
                 <img
                   src="/assets/logos/logo-texte-noir.svg"
@@ -93,23 +90,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Principal</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+       
         <SidebarGroup>
           <SidebarGroupLabel>Gestion</SidebarGroupLabel>
           <SidebarGroupContent>

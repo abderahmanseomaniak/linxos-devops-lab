@@ -39,3 +39,22 @@ export function getActivePhase(data: SponsorshipTrackingData): Phase | undefined
     phase.steps.some((step) => step.status === "current")
   );
 }
+
+export interface EventHeaderProps {
+  eventName: string;
+  date: string;
+  city: string;
+  reference?: string;
+  progress: number;
+  activePhaseTitle?: string;
+}
+
+export interface PhaseBlockProps {
+  phase: Phase;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+export interface SponsorshipTrackingPageProps {
+  data: SponsorshipTrackingData;
+}

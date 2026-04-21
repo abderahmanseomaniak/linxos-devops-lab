@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ContentCard } from "@/components/dev/screens/content/ContentCard"
 import { ContentDetailsModal } from "@/components/dev/screens/content/ContentDetailsModal"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus } from "@/types/content"
+import { UGCEvent, ContentStatus } from "@/types/contents"
 import { Search } from "lucide-react"
 import contentData from "@/data/content.json"
 
@@ -239,7 +239,7 @@ export default function ContentDashboardPage() {
 
             {filteredEvents.length === 0 && (
               <div className="flex items-center justify-center py-20 text-muted-foreground">
-                <p>No events found</p>
+                <Typography>No events found</Typography>
               </div>
             )}
           </div>

@@ -3,14 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus } from "@/types/content"
-import { MapPin, ExternalLink, AlertTriangle, CheckCircle } from "lucide-react"
-
-interface ContentCardProps {
-  event: UGCEvent
-  onViewDetails: (event: UGCEvent) => void
-  onOpenDrive: (link?: string) => void
-}
+import { UGCEvent, ContentStatus, ContentCardProps } from "@/types/contents"
+import { MapPin,  AlertTriangle, CheckCircle } from "lucide-react"
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700 border-slate-200",
@@ -58,9 +52,9 @@ export function ContentCard({
           <span className={hasEnoughCreators ? "text-foreground font-medium" : "text-amber-600 font-medium"}>
             {event.ugcCreatorsCount}
           </span>
-          <span className="text-muted-foreground">/</span>
-          <span className="text-muted-foreground">{event.requiredCreators}</span>
-          <span className="text-muted-foreground ml-1">creators</span>
+          <Typography variant="small">/</Typography>
+          <Typography variant="small">{event.requiredCreators}</Typography>
+          <Typography variant="small" className="ml-1">creators</Typography>
         </div>
 
         <span className="text-gray-200">|</span>
@@ -69,20 +63,20 @@ export function ContentCard({
           {hasDriveLink ? (
             <>
               <CheckCircle size={14} className="text-green-600" />
-              <span className="text-green-700">Drive linked</span>
+              <Typography variant="small" className="text-green-700">Drive linked</Typography>
             </>
           ) : (
             <>
               <AlertTriangle size={14} className="text-amber-500" />
-              <span className="text-amber-600">No drive</span>
+              <Typography variant="small" className="text-amber-600">No drive</Typography>
             </>
           )}
         </div>
 
         {!hasEnoughCreators && (
-          <span className="text-amber-600 text-xs ml-auto">
+          <Typography variant="small" className="text-amber-600 ml-auto">
             Missing {missingCreators}
-          </span>
+          </Typography>
         )}
       </div>
 

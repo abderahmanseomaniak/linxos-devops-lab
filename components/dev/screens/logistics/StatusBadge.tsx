@@ -1,11 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { LogisticsStatus, StatusLabels } from "@/types/logistics"
-
-interface StatusBadgeProps {
-  status: LogisticsStatus
-}
+import { LogisticsStatus, StatusLabels, StatusBadgeProps } from "@/types/logistics"
 
 const statusVariants: Record<LogisticsStatus, "secondary" | "default" | "outline" | "destructive"> = {
   Ready: "secondary",

@@ -282,8 +282,8 @@ export default function LogisticsPage() {
               <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
                 <div className="text-center">
                   <Package className="size-12 mx-auto mb-3 opacity-30" />
-                  <p>Aucune livraison trouvée</p>
-                  <p className="text-xs mt-1">Essayez avec d'autres filtres</p>
+                  <Typography>Aucune livraison trouvée</Typography>
+                  <Typography variant="small" className="mt-1">Essayez avec d&apos;autres filtres</Typography>
                 </div>
               </div>
             )}

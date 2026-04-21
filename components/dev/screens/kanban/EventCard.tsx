@@ -3,12 +3,8 @@
 import { useDraggable } from "@dnd-kit/core"
 import { CSS } from "@dnd-kit/utilities"
 import { Badge } from "@/components/ui/badge"
-import { KanbanEvent } from "@/types/kanban"
-import { GripVertical } from "lucide-react"
-
-interface EventCardProps {
-  event: KanbanEvent
-}
+import { KanbanEvent, EventCardProps } from "@/types/kanban"
+import { Typography } from "@/components/ui/typography"
 
 export function EventCard({ event }: EventCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -31,21 +27,18 @@ export function EventCard({ event }: EventCardProps) {
       style={style}
       className={`
         group relative rounded-xl border bg-white p-3 shadow-sm transition-all duration-200
-        hover:shadow-md hover:-translate-y-0.5
+        hover:shadow-md hover:-translate-y-0.5 cursor-grab active:cursor-grabbing
+        touch-none select-none
         ${isDragging ? "opacity-50 shadow-2xl" : ""}
       `}
       {...listeners}
       {...attributes}
     >
-      <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100 cursor-grab active:cursor-grabbing">
-        <GripVertical className="size-4 text-muted-foreground" />
-      </div>
-
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-semibold text-xs leading-tight text-foreground line-clamp-2">
+          <Typography variant="small" className="font-semibold leading-tight line-clamp-2">
             {event.name}
-          </h4>
+          </Typography>
           {event.isHighPriority && (
             <Badge variant="destructive" className="text-[10px] px-1.5 py-0 shrink-0">
               Urgent
@@ -54,7 +47,7 @@ export function EventCard({ event }: EventCardProps) {
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs text-muted-foreground font-medium">{event.clubName}</p>
+          <Typography variant="small" className="font-medium">{event.clubName}</Typography>
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
             <span>{event.city}</span>
             <span className="text-border">•</span>

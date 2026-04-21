@@ -3,16 +3,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { Delivery, StatusLabels, IssueTypeLabels } from "@/types/logistics"
+import { Delivery, StatusLabels, IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
 import { StatusBadge } from "./StatusBadge"
 import { MapPin, User, Package, Truck, Calendar, Phone, Clock, FileText, MessageSquare } from "lucide-react"
-
-interface DeliveryDetailsModalProps {
-  delivery: Delivery | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onContactWhatsApp: (phone: string) => void
-}
 
 export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWhatsApp }: DeliveryDetailsModalProps) {
   if (!delivery) return null
@@ -71,31 +64,31 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
 
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Expected date</p>
+              <Typography variant="small" className="mb-1">Expected date</Typography>
               <div className="flex items-center gap-2">
                 <Calendar className="size-4 text-muted-foreground" />
-                <p className="font-medium">{formattedDate}</p>
+                <Typography>{formattedDate}</Typography>
               </div>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Quantity</p>
+              <Typography variant="small" className="mb-1">Quantity</Typography>
               <div className="flex items-center gap-2">
                 <Package className="size-4 text-muted-foreground" />
-                <p className="font-medium">{delivery.quantity} units</p>
+                <Typography>{delivery.quantity} units</Typography>
               </div>
             </div>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-lg">
-            <p className="text-xs text-muted-foreground mb-2">Contact</p>
+            <Typography variant="small" className="mb-2">Contact</Typography>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <User className="size-4 text-muted-foreground" />
-                <p className="text-sm font-medium">{delivery.contactName}</p>
+                <Typography className="font-medium">{delivery.contactName}</Typography>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="size-4 text-muted-foreground" />
-                <p className="text-sm">{delivery.phone}</p>
+                <Typography>{delivery.phone}</Typography>
               </div>
             </div>
             <Button
@@ -111,17 +104,17 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
 
           {delivery.status !== "Ready" && (
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-2">History</p>
+              <Typography variant="small" className="mb-2">History</Typography>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Truck className="size-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Shipped:</span>
+                  <Typography variant="small">Shipped:</Typography>
                   <span className="font-medium">{formatTimestamp(delivery.deliveryStartedAt)}</span>
                 </div>
                 {delivery.deliveredAt && (
                   <div className="flex items-center gap-2">
                     <Package className="size-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Delivered:</span>
+                    <Typography variant="small">Delivered:</Typography>
                     <span className="font-medium">{formatTimestamp(delivery.deliveredAt)}</span>
                   </div>
                 )}
@@ -131,17 +124,17 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
 
           {delivery.status === "Issue" && (
             <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-              <p className="text-xs text-destructive font-medium mb-2">Reported issue</p>
+              <Typography variant="small" className="text-destructive font-medium mb-2">Reported issue</Typography>
               <div className="space-y-1 text-sm">
-                <p className="text-destructive">
-                  <span className="text-muted-foreground">Type:</span>{" "}
+                <Typography className="text-destructive">
+                  <Typography variant="small">Type:</Typography>
                   {delivery.issueType ? IssueTypeLabels[delivery.issueType] : "-"}
-                </p>
+                </Typography>
                 {delivery.issueDescription && (
-                  <p className="text-muted-foreground">
-                    <span className="text-muted-foreground">Description:</span>{" "}
+                  <Typography className="text-muted-foreground">
+                    <Typography variant="small">Description:</Typography>
                     {delivery.issueDescription}
-                  </p>
+                  </Typography>
                 )}
               </div>
             </div>
@@ -149,14 +142,14 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
 
           {delivery.notes && delivery.notes.length > 0 && (
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-2">Notes ({delivery.notes.length})</p>
+              <Typography variant="small" className="mb-2">Notes ({delivery.notes.length})</Typography>
               <div className="space-y-2">
                 {delivery.notes.map((note) => (
                   <div key={note.id} className="text-sm p-2 bg-white border rounded">
-                    <p>{note.content}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <Typography>{note.content}</Typography>
+                    <Typography variant="small" className="mt-1">
                       {note.author} · {formatTimestamp(note.createdAt)}
-                    </p>
+                    </Typography>
                   </div>
                 ))}
               </div>
@@ -165,7 +158,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
 
           {delivery.receiptUrl && (
             <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-2">Delivery proof</p>
+              <Typography variant="small" className="mb-2">Delivery proof</Typography>
               <Button
                 variant="outline"
                 size="sm"

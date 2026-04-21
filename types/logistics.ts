@@ -44,3 +44,33 @@ export const StatusLabels: Record<LogisticsStatus, string> = {
   Delivered: "Delivered",
   Issue: "Issue",
 };
+
+export interface DeliveryCardProps {
+  delivery: Delivery
+  onStatusChange: (id: number, newStatus: LogisticsStatus, issueType?: Delivery["issueType"], issueDescription?: string) => void
+  onViewDetails: (delivery: Delivery) => void
+  onAddNote: (id: number, note: string) => void
+  onUploadReceipt: (id: number, file: File) => void
+  onContactWhatsApp: (phone: string) => void
+}
+
+export interface DeliveryDetailsModalProps {
+  delivery: Delivery | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onContactWhatsApp: (phone: string) => void
+}
+
+export interface StatusBadgeProps {
+  status: LogisticsStatus
+}
+
+export interface FiltersBarProps {
+  searchQuery: string
+  onSearchChange: (value: string) => void
+  statusFilter: string
+  onStatusFilterChange: (value: string) => void
+  cityFilter: string
+  onCityFilterChange: (value: string) => void
+  cities: string[]
+}

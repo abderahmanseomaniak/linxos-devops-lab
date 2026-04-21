@@ -7,11 +7,8 @@ import {
   calculateProgress,
   getActivePhase,
   type SponsorshipTrackingData,
+  type SponsorshipTrackingPageProps,
 } from "@/types/sponsorship-tracking";
-
-interface SponsorshipTrackingPageProps {
-  data: SponsorshipTrackingData;
-}
 
 export function SponsorshipTrackingPage({ data }: SponsorshipTrackingPageProps) {
   const progress = calculateProgress(data);

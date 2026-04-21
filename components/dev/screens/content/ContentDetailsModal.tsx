@@ -1,24 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus } from "@/types/content"
+import { UGCEvent, ContentStatus, ContentDetailsModalProps } from "@/types/contents"
 import { MapPin, Users, Calendar, ExternalLink, Globe, Clock, CheckCircle, AlertTriangle, Plus, MessageSquare } from "lucide-react"
-
-interface ContentDetailsModalProps {
-  event: UGCEvent | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onStatusChange: (id: number, newStatus: ContentStatus) => void
-  onAddNote: (id: number, content: string) => void
-  onOpenDrive: (link?: string) => void
-}
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700",
@@ -93,7 +84,8 @@ export function ContentDetailsModal({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[1000px] sm:w-[1100px] max-w-full p-0 overflow-y-auto">
+        <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+        <SheetTitle className="sr-only">{event?.eventName}</SheetTitle>
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-6 border-b bg-muted/20">
             <div className="flex items-center gap-4">
@@ -183,17 +175,17 @@ export function ContentDetailsModal({
                           <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm ${isActive ? "font-medium" : isPast ? "" : "text-muted-foreground"}`}>
+                          <Typography className={isActive ? "font-medium" : isPast ? "" : "text-muted-foreground"}>
                             {step.label}
-                          </p>
+                          </Typography>
                         </div>
-                        <p className="text-xs text-muted-foreground shrink-0">
+                        <Typography variant="small" className="shrink-0">
                           {formatDate(
                             step.key === "Received" ? event.contentReceivedAt :
                             step.key === "Editing" ? event.editingStartedAt :
                             step.key === "Posted" ? event.postedAt : undefined
                           ) || "-"}
-                        </p>
+                        </Typography>
                       </div>
                     )
                   })}
@@ -229,7 +221,7 @@ export function ContentDetailsModal({
                       ) : (
                         <AlertTriangle size={18} className="text-amber-500" />
                       )}
-                      <span className="text-sm">Drive</span>
+                      <Typography variant="small">Drive</Typography>
                     </div>
                     <span className={`text-sm font-medium ${event.driveLink ? "text-green-700" : "text-amber-700"}`}>
                       {event.driveLink ? "Linked" : "Missing"}
@@ -239,7 +231,7 @@ export function ContentDetailsModal({
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-2">
                       <Users size={18} className="text-muted-foreground" />
-                      <span className="text-sm">Creators</span>
+                      <Typography variant="small">Creators</Typography>
                     </div>
                     <span className={`text-sm font-medium ${event.ugcCreatorsCount >= event.requiredCreators ? "text-green-700" : "text-amber-700"}`}>
                       {event.ugcCreatorsCount >= event.requiredCreators ? "Complete" : "Incomplete"}
@@ -257,11 +249,11 @@ export function ContentDetailsModal({
                     <CardContent className="p-3">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-medium">{creator.name.charAt(0)}</span>
+                          <Typography variant="small" className="font-medium">{creator.name.charAt(0)}</Typography>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">{creator.name}</p>
-                          <p className="text-xs text-muted-foreground">{formatFollowers(creator.followers)}</p>
+                          <Typography variant="p" className="font-medium truncate">{creator.name}</Typography>
+                          <Typography variant="small">{formatFollowers(creator.followers)}</Typography>
                         </div>
                       </div>
                       <div className="flex gap-1">
@@ -315,16 +307,16 @@ export function ContentDetailsModal({
               )}
 
               {event.notes.length === 0 && !showNoteInput ? (
-                <p className="text-sm text-muted-foreground text-center py-4">No notes yet</p>
+                <Typography className="text-center py-4">No notes yet</Typography>
               ) : (
                 <div className="space-y-2">
                   {event.notes.map((note) => (
                     <Card key={note.id}>
                       <CardContent className="p-3">
-                        <p className="text-sm">{note.content}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <Typography>{note.content}</Typography>
+                        <Typography variant="small" className="mt-1">
                           {note.author} · {formatDate(note.createdAt)}
-                        </p>
+                        </Typography>
                       </CardContent>
                     </Card>
                   ))}

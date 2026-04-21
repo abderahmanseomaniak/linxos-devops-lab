@@ -62,8 +62,8 @@ export function Step2Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="eventName">Nom de l'événement</Label>
-            <Input id="eventName" placeholder="Entrez le nom de l'événement" />
+            <Label htmlFor="eventName">Nom de l&apos;événement</Label>
+            <Input id="eventName" placeholder="Entrez le nom de l&apos;événement" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="eventType">Type</Label>
@@ -122,7 +122,7 @@ export function Step2Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
                 htmlFor="ugcAccepted" 
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Je comprends et j'accepte de fournir du contenu UGC (photos, vidéos, témoignages) conforme aux règles de l'événement.
+                Je comprends et j&apos;accepte de fournir du contenu UGC (photos, vidéos, témoignages) conforme aux règles de l&apos;événement.
               </Label>
             </div>
           </div>

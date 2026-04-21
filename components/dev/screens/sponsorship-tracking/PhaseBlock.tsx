@@ -1,15 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Check, ChevronDown, Circle, Clock } from "lucide-react";
+import { Check, ChevronDown, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Phase, TrackingStep, StepStatus } from "@/types/sponsorship-tracking";
-
-interface PhaseBlockProps {
-  phase: Phase;
-  isExpanded: boolean;
-  onToggle: () => void;
-}
+import { Typography } from "@/components/ui/typography";
+import type { Phase, TrackingStep, PhaseBlockProps } from "@/types/sponsorship-tracking";
 
 function MiniStepItem({ step }: { step: TrackingStep }) {
   const isCompleted = step.status === "completed";
@@ -39,9 +33,9 @@ function MiniStepItem({ step }: { step: TrackingStep }) {
         {step.title}
       </span>
       {isCurrent && (
-        <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+        <Typography variant="small" className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary">
           In progress
-        </span>
+        </Typography>
       )}
     </div>
   );
@@ -57,7 +51,7 @@ function ExpandedContent({ phase }: { phase: Phase }) {
       ))}
       {currentStep && currentStep.message && (
         <div className="mt-3 rounded-lg bg-muted/50 p-3">
-          <p className="text-sm text-muted-foreground">{currentStep.message}</p>
+          <Typography variant="small" className="text-muted-foreground">{currentStep.message}</Typography>
         </div>
       )}
     </div>
@@ -71,7 +65,7 @@ function CollapsedState({ phase }: { phase: Phase }) {
   return (
     <div className="flex items-center gap-3 pt-3">
       <div className="flex gap-1">
-        {phase.steps.map((step, idx) => (
+        {phase.steps.map((step) => (
           <div
             key={step.id}
             className={cn(
@@ -83,9 +77,9 @@ function CollapsedState({ phase }: { phase: Phase }) {
           />
         ))}
       </div>
-      <span className="text-xs text-muted-foreground">
+      <Typography variant="small" className="text-muted-foreground">
         {completedCount}/{phase.steps.length} completed
-      </span>
+      </Typography>
       {currentStep && (
         <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
           {currentStep.title}
@@ -113,7 +107,7 @@ export function PhaseBlock({ phase, isExpanded, onToggle }: PhaseBlockProps) {
         className="flex w-full items-center justify-between text-left"
       >
         <div className="flex items-center gap-3">
-          <h3
+          <Typography variant="h3"
             className={cn(
               "font-semibold",
               hasCurrent && "text-primary",
@@ -121,7 +115,7 @@ export function PhaseBlock({ phase, isExpanded, onToggle }: PhaseBlockProps) {
             )}
           >
             {phase.title}
-          </h3>
+          </Typography>
           <span className="text-xs text-muted-foreground">
             ({phase.steps.length} steps)
           </span>

@@ -29,3 +29,31 @@ export interface DashboardData {
 export interface DashboardGlobalProps {
   data?: DashboardData
 }
+
+export interface ActivityItem {
+  id: number
+  message: string
+  timestamp: string
+  type: "event" | "ugc" | "delivery" | "status"
+}
+
+export interface PipelineStage {
+  stage: string
+  count: number
+  percentage: number
+  color: string
+}
+
+export interface UpcomingEvent {
+  id: number
+  name: string
+  date: string
+  daysUntil: number
+}
+
+export interface QuickAction {
+  id: string
+  label: string
+  icon: string
+  variant: "default" | "outline"
+}

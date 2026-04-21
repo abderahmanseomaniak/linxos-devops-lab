@@ -40,9 +40,25 @@ export const ContentStatusLabels: Record<ContentStatus, string> = {
   Posted: "Posted",
 }
 
+export interface ContentCardProps {
+  event: UGCEvent
+  onViewDetails: (event: UGCEvent) => void
+  onOpenDrive: (link?: string) => void
+}
+
+export interface ContentDetailsModalProps {
+  event: UGCEvent | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onStatusChange: (id: number, newStatus: ContentStatus) => void
+  onAddNote: (id: number, content: string) => void
+  onOpenDrive: (link?: string) => void
+}
+
 export const ContentStatusDescriptions: Record<ContentStatus, string> = {
   Waiting: "No content uploaded yet",
   Received: "Content uploaded to Drive",
   Editing: "Content in production",
   Posted: "Content published",
 }
+

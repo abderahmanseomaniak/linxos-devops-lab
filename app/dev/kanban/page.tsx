@@ -26,7 +26,7 @@ export default function KanbanPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       <KanbanHeader
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -34,7 +34,7 @@ export default function KanbanPage() {
         onCityFilterChange={setCityFilter}
         cities={cities}
       />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 min-h-0">
         <KanbanBoard
           events={events}
           onEventMove={handleEventMove}

@@ -3,16 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search as SearchIcon } from "lucide-react"
-
-interface FiltersBarProps {
-  searchQuery: string
-  onSearchChange: (value: string) => void
-  statusFilter: string
-  onStatusFilterChange: (value: string) => void
-  cityFilter: string
-  onCityFilterChange: (value: string) => void
-  cities: string[]
-}
+import { FiltersBarProps } from "@/types/logistics"
 
 export function FiltersBar({
   searchQuery,

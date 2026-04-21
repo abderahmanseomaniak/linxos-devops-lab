@@ -11,7 +11,29 @@ export interface KanbanEvent {
   ugcCount: number
   isHighPriority?: boolean
 }
+export interface EventCardProps {
+  event: KanbanEvent
+}
 
+export interface KanbanColumnProps {
+  stage: KanbanStage
+  events: KanbanEvent[]
+}
+
+export interface KanbanHeaderProps {
+  searchQuery: string
+  onSearchChange: (value: string) => void
+  cityFilter: string
+  onCityFilterChange: (value: string) => void
+  cities: string[]
+}
+
+export interface KanbanBoardProps {
+  events: KanbanEvent[]
+  onEventMove: (eventId: number, newStage: KanbanStage) => void
+  searchQuery: string
+  cityFilter: string
+}
 export const KanbanStageLabels: Record<KanbanStage, string> = {
   Validée: "Validée",
   Préparation: "Préparation",
@@ -35,3 +57,4 @@ export const KanbanStages: KanbanStage[] = [
   "Livré",
   "Terminé",
 ]
+

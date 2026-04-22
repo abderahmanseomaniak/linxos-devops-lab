@@ -30,19 +30,21 @@
   },
   "sidebar": {
     "general": [
-      { "title": "Dashboard", "href": "/dev/dashboard", "icon": "LayoutDashboard" }
+      { "title": "dashboard-global", "href": "/dashboard-global", "icon": "LayoutDashboard" }
     ],
    
     "management": [
-      { "title": "Events", "href": "/dev/events", "icon": "Calendar" },
-      { "title": "Users", "href": "/dev/users", "icon": "Users" },
-      { "title": "kanban", "href": "/dev/kanban", "icon": "LayoutGrid" },
-      { "title": "logistics", "href": "/dev/logistics", "icon": "Truck" },
-      { "title": "content", "href": "/dev/content", "icon": "FileText" }
+      { "title": "Events", "href": "/events", "icon": "Calendar" },
+      { "title": "Users", "href": "/users", "icon": "Users" },
+      { "title": "kanban", "href": "/kanban", "icon": "LayoutGrid" },
+      { "title": "logistics", "href": "/logistics", "icon": "Truck" },
+      { "title": "content", "href": "/content", "icon": "FileText" },
+      { "title": "logs", "href": "/logs", "icon": "Scroll" },
+      { "title": "config", "href": "/config", "icon": "Settings" }
     ],
     "test": [
-      { "title": "tracking", "href": "/dev/tracking", "icon": "MapPin" },
-      { "title": "forms", "href": "/dev/forms/sponsorship", "icon": "ClipboardList" }
+      { "title": "tracking", "href": "/tracking", "icon": "MapPin" },
+      { "title": "forms", "href": "/forms/sponsorship", "icon": "ClipboardList" }
     ]
   },
   "iconMap": {
@@ -55,6 +57,8 @@
     "Truck": "Truck",
     "FileText": "FileText",
     "MapPin": "MapPin",
-    "ClipboardList": "ClipboardList"
+    "ClipboardList": "ClipboardList",
+    "Scroll": "Scroll",
+    "Settings": "Settings"
   }
 }

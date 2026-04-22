@@ -1,9 +1,9 @@
 {
   "contentTypes": [
-    { "id": "affiche", "label": "Affiche de l'événement" },
-    { "id": "dossier", "label": "Dossier de sponsoring" },
-    { "id": "photos", "label": "Photos des éditions précédentes" },
-    { "id": "video", "label": "Vidéo de présentation" }
+    { "id": "affiche", "label": "Affiche de l'événement", "accept": "image/*,.pdf" },
+    { "id": "dossier", "label": "Dossier de sponsoring", "accept": ".pdf,.doc,.docx" },
+    { "id": "photos", "label": "Photos des éditions précédentes", "accept": "image/*", "multiple": true },
+    { "id": "video", "label": "Vidéo de présentation", "accept": "video/*" }
   ],
   "creatorContentTypes": [
     { "id": "reels", "label": "Reels" },

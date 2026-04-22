@@ -1,22 +1,17 @@
-"use client"
-
+import type { Metadata } from "next"
 import { SponsorshipWizard } from "@/components/screens/forms/sponsorship/SponsorshipWizard"
-import { Banner } from "@/components/screens/forms/sponsorship/Banner"
+import FormLayout from "@/components/layouts/form-layout"
+
+export const metadata: Metadata = {
+  title: "Demande de sponsoring",
+  description:
+    "Connectez votre club avec des partenaires et déposez une demande de sponsoring.",
+}
 
 export default function SponsorshipPage() {
   return (
-   <div className="min-h-screen bg-background">
-  <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto p-6">
-
-    <div className="w-full  lg:w-1/5  ">
-      <Banner />
-    </div>
-
-    <div className="w-full lg:w-2/3">
+    <FormLayout>
       <SponsorshipWizard />
-    </div>
-
-  </div>
-</div>
+    </FormLayout>
   )
 }

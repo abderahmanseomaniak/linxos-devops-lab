@@ -1,146 +1,132 @@
 "use client"
 
+import { useFormContext, useWatch } from "react-hook-form"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { type Step7FormProps } from "@/types/sponsorship-form"
+import formOptions from "@/data/form-options.json"
+import { type SponsorshipFormValues } from "@/lib/sponsorship/schema"
 
-export function Step5Form({ summaryStep, onEdit }: Step7FormProps) {
+interface Step5FormProps {
+  onEdit?: (step: number) => void
+}
+
+function labelFor(id: string, options: { id: string; label: string }[]) {
+  return options.find((o) => o.id === id)?.label ?? id
+}
+
+function formatFiles(files: SponsorshipFormValues["files"]) {
+  if (!files) return "—"
+  const entries = Object.entries(files).filter(([, v]) => !!v)
+  if (entries.length === 0) return "Aucun fichier"
+  return entries
+    .map(([key, value]) => {
+      if (Array.isArray(value)) return `${labelFor(key, formOptions.contentTypes)} (${value.length})`
+      const name = (value as File | null)?.name
+      return name ? `${labelFor(key, formOptions.contentTypes)} : ${name}` : null
+    })
+    .filter(Boolean)
+    .join(" · ")
+}
+
+export function Step5Form({ onEdit }: Step5FormProps) {
+  const { control } = useFormContext<SponsorshipFormValues>()
+  const values = useWatch({ control })
+
+  const reseaux = (values.reseaux ?? [])
+    .map((r) => r?.url?.trim())
+    .filter((url): url is string => !!url)
+
+  const eventTypeLabel = values.eventType
+    ? labelFor(values.eventType, formOptions.eventTypes)
+    : "—"
+
+  const logistiqueLabel =
+    (values.logistique ?? [])
+      .map((id) => labelFor(id, formOptions.logisticOptions))
+      .join(", ") || "—"
+
+  const contentLabel =
+    (values.selectedContentTypes ?? [])
+      .map((id) => labelFor(id, formOptions.contentTypes))
+      .join(", ") || "—"
+
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Club</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Nom du club:</span>
-              <span>Paris Sports Club</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Ville:</span>
-              <span>Paris</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Université:</span>
-              <span>Sorbonne Université</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Instagram:</span>
-              <span>@parissports</span>
-            </div>
-          </div>
-          <Button variant="link" size="sm" onClick={() => onEdit?.(1)}>
-            Modifier
-          </Button>
-        </CardContent>
-      </Card>
+      <SummaryCard title="Club" onEdit={() => onEdit?.(1)}>
+        <Row label="Nom du club" value={values.nomClub} />
+        <Row label="Ville" value={values.ville} />
+        <Row label="Université" value={values.universite || "—"} />
+        <Row
+          label="Réseaux sociaux"
+          value={reseaux.length > 0 ? reseaux.join(", ") : "—"}
+        />
+      </SummaryCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Responsable</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Nom:</span>
-              <span>Jean Dupont</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Fonction:</span>
-              <span>Président</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Téléphone:</span>
-              <span>+33 6 00 00 00 00</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Email:</span>
-              <span>contact@club.fr</span>
-            </div>
-          </div>
-          <Button variant="link" size="sm" onClick={() => onEdit?.(2)}>
-            Modifier
-          </Button>
-        </CardContent>
-      </Card>
+      <SummaryCard title="Responsable" onEdit={() => onEdit?.(1)}>
+        <Row label="Nom" value={values.nomResponsable} />
+        <Row label="Fonction" value={values.fonction} />
+        <Row label="Téléphone" value={values.telephone} />
+        <Row label="Email" value={values.email} />
+      </SummaryCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Événement</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Nom:</span>
-              <span>Tournoi de tennis</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Type:</span>
-              <span>Sport</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Dates:</span>
-              <span>15/06/2026 - 17/06/2026</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Lieu:</span>
-              <span>Stade de Paris</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Participants:</span>
-              <span>200</span>
-            </div>
-          </div>
-          <Button variant="link" size="sm" onClick={() => onEdit?.(3)}>
-            Modifier
-          </Button>
-        </CardContent>
-      </Card>
+      <SummaryCard title="Événement" onEdit={() => onEdit?.(2)}>
+        <Row label="Nom" value={values.nomEvenement} />
+        <Row label="Type" value={eventTypeLabel} />
+        <Row
+          label="Dates"
+          value={
+            values.dateDebut && values.dateFin
+              ? `${values.dateDebut} → ${values.dateFin}`
+              : "—"
+          }
+        />
+        <Row label="Lieu" value={values.lieu} />
+        <Row label="Participants" value={values.participants} />
+      </SummaryCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Visibilité et logistique</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Visibilité:</span>
-              <span>Logo sur les panneaux</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Logistique:</span>
-              <span>Stand, Électricité</span>
-            </div>
-          </div>
-          <Button variant="link" size="sm" onClick={() => onEdit?.(4)}>
-            Modifier
-          </Button>
-        </CardContent>
-      </Card>
+      <SummaryCard title="Contenus" onEdit={() => onEdit?.(3)}>
+        <Row label="Types" value={contentLabel} />
+        <Row label="Fichiers" value={formatFiles(values.files)} />
+      </SummaryCard>
 
-      {summaryStep === 5 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>UGC / Ambassadeurs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Créateurs:</span>
-                <span>2</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Types:</span>
-                <span>Reels, TikTok, Interviews</span>
-              </div>
-            </div>
-            <Button variant="link" size="sm" onClick={() => onEdit?.(5)}>
-              Modifier
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      <SummaryCard title="Visibilité et logistique" onEdit={() => onEdit?.(4)}>
+        <Row label="Visibilité" value={values.visibilite || "—"} />
+        <Row label="Logistique" value={logistiqueLabel} />
+      </SummaryCard>
+    </div>
+  )
+}
+
+function SummaryCard({
+  title,
+  children,
+  onEdit,
+}: {
+  title: string
+  children: React.ReactNode
+  onEdit: () => void
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2 text-sm">{children}</div>
+        <Button variant="link" size="sm" type="button" onClick={onEdit}>
+          Modifier
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function Row({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-muted-foreground">{label} :</span>
+      <span className="text-right break-words">{value || "—"}</span>
     </div>
   )
 }

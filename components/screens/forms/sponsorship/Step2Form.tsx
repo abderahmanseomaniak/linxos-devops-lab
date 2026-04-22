@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { Controller, useFieldArray, useFormContext } from "react-hook-form"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
 import {
   Select,
   SelectContent,
@@ -15,46 +15,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
 import formOptions from "@/data/form-options.json"
-import { type Step3FormProps } from "@/types/sponsorship-form"
+import {
+  MAX_UGC_LINKS,
+  REQUIRED_UGC_LINKS,
+  type SponsorshipFormValues,
+} from "@/lib/sponsorship/schema"
 
-const REQUIRED_UGC_LINKS = 5
-const MAX_TOTAL_LINKS = 10
+import { FieldMessage } from "./FieldMessage"
 
-export function Step2Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
-  const [ugcAccepted, setUgcAccepted] = useState(true)
-  const [ugcLinks, setUgcLinks] = useState<string[]>(Array(REQUIRED_UGC_LINKS).fill(""))
+export function Step2Form() {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<SponsorshipFormValues>()
 
-  const handleUgcAcceptedChange = (checked: boolean | string) => {
-    const isChecked = checked === true || checked === "indeterminate"
-    if (!isChecked) {
-      setUgcAccepted(false)
-    } else {
-      setUgcAccepted(true)
-    }
-  }
-
-  const addUgcLink = () => {
-    if (ugcLinks.length < MAX_TOTAL_LINKS) {
-      setUgcLinks([...ugcLinks, ""])
-    }
-  }
-
-  const updateUgcLink = (index: number, value: string) => {
-    const newLinks = [...ugcLinks]
-    newLinks[index] = value
-    setUgcLinks(newLinks)
-  }
-
-  const isRequiredValid = (index: number) => {
-    return index < REQUIRED_UGC_LINKS ? ugcLinks[index].trim() !== "" : true
-  }
-
-  const canSubmit = ugcAccepted && ugcLinks.slice(0, REQUIRED_UGC_LINKS).every((link) => link.trim() !== "")
+  const { fields, append } = useFieldArray({ control, name: "ugcLinks" })
 
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
         <CardTitle>Événement</CardTitle>
         <CardDescription>Donnez les détails principaux de votre événement</CardDescription>
@@ -63,110 +44,165 @@ export function Step2Form({ hasUGC, onHasUGCChange }: Step3FormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="eventName">Nom de l&apos;événement</Label>
-            <Input id="eventName" placeholder="Entrez le nom de l&apos;événement" />
+            <Input
+              id="eventName"
+              placeholder="Entrez le nom de l&apos;événement"
+              aria-invalid={!!errors.nomEvenement}
+              {...register("nomEvenement")}
+            />
+            <FieldMessage error={errors.nomEvenement} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="eventType">Type</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionnez le type" />
-              </SelectTrigger>
-              <SelectContent>
-                {formOptions.eventTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>{type.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="eventType"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    id="eventType"
+                    aria-invalid={!!errors.eventType}
+                  >
+                    <SelectValue placeholder="Sélectionnez le type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formOptions.eventTypes.map((type) => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            <FieldMessage error={errors.eventType} />
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="dateStart">Date de début</Label>
-            <Input id="dateStart" type="date" />
+            <Input
+              id="dateStart"
+              type="date"
+              aria-invalid={!!errors.dateDebut}
+              {...register("dateDebut")}
+            />
+            <FieldMessage error={errors.dateDebut} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="dateEnd">Date de fin</Label>
-            <Input id="dateEnd" type="date" />
+            <Input
+              id="dateEnd"
+              type="date"
+              aria-invalid={!!errors.dateFin}
+              {...register("dateFin")}
+            />
+            <FieldMessage error={errors.dateFin} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="location">Lieu</Label>
-            <Input id="location" placeholder="Adresse ou lieu" />
+            <Input
+              id="location"
+              placeholder="Adresse ou lieu"
+              aria-invalid={!!errors.lieu}
+              {...register("lieu")}
+            />
+            <FieldMessage error={errors.lieu} />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="participants">Nombre de participants</Label>
-            <Input id="participants" type="number" placeholder="Nombre de participants" />
+            <Input
+              id="participants"
+              type="number"
+              inputMode="numeric"
+              placeholder="Nombre de participants"
+              aria-invalid={!!errors.participants}
+              {...register("participants")}
+            />
+            <FieldMessage error={errors.participants} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="targetAudience">Public cible</Label>
-            <Textarea id="targetAudience" placeholder="Décrivez votre public cible" className="min-h-[100px]" />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="targetAudience">Public cible</Label>
+          <Textarea
+            id="targetAudience"
+            placeholder="Décrivez votre public cible"
+            className="min-h-[100px]"
+            aria-invalid={!!errors.targetAudience}
+            {...register("targetAudience")}
+          />
+          <FieldMessage error={errors.targetAudience} />
         </div>
 
         <div className="space-y-4 pt-4 border-t">
-          <div className="flex items-start gap-3">
-            <Checkbox
-              id="ugcAccepted"
-              checked={ugcAccepted}
-              onCheckedChange={handleUgcAcceptedChange}
-            />
-            <div className="grid gap-1.5 leading-none">
-              <Label 
-                htmlFor="ugcAccepted" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Je comprends et j&apos;accepte de fournir du contenu UGC (photos, vidéos, témoignages) conforme aux règles de l&apos;événement.
-              </Label>
-            </div>
-          </div>
-
-          {!ugcAccepted && (
-            <Alert variant="destructive">
-              <AlertTitle>Acceptation obligatoire</AlertTitle>
-              <AlertDescription>
-                L&apos;UGC (User Generated Content) désigne le contenu généré par les utilisateurs tel que les photos, vidéos et témoignages. 
-                Cette acceptation est obligatoire pour continuer.
-              </AlertDescription>
-            </Alert>
-          )}
+          <Controller
+            control={control}
+            name="ugcAccepted"
+            render={({ field }) => (
+              <>
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="ugcAccepted"
+                    checked={field.value === true}
+                    onCheckedChange={(v) => field.onChange(v === true)}
+                  />
+                  <Label htmlFor="ugcAccepted" className="text-sm font-medium leading-none">
+                    Je comprends et j&apos;accepte de fournir du contenu UGC (photos, vidéos,
+                    témoignages) conforme aux règles de l&apos;événement.
+                  </Label>
+                </div>
+                {!field.value && errors.ugcAccepted && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Acceptation obligatoire</AlertTitle>
+                    <AlertDescription>
+                      L&apos;UGC (User Generated Content) désigne le contenu généré par les
+                      utilisateurs tel que les photos, vidéos et témoignages. Cette acceptation
+                      est obligatoire pour continuer.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </>
+            )}
+          />
 
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Liens UGC (obligatoires)</Label>
+            <Label className="text-sm font-medium">
+              Liens UGC (les {REQUIRED_UGC_LINKS} premiers sont obligatoires)
+            </Label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {ugcLinks.map((link, index) => (
-                <Input
-                  key={index}
-                  id={`ugcLink-${index + 1}`}
-                  placeholder={`Lien UGC n°${index + 1}`}
-                  value={link}
-                  onChange={(e) => updateUgcLink(index, e.target.value)}
-                  type="url"
-                  required={index < REQUIRED_UGC_LINKS}
-                  className={index < REQUIRED_UGC_LINKS && !isRequiredValid(index) ? "border-destructive" : ""}
-                />
-              ))}
+              {fields.map((field, index) => {
+                const linkError = errors.ugcLinks?.[index]?.url
+                const required = index < REQUIRED_UGC_LINKS
+                return (
+                  <div key={field.id} className="space-y-1">
+                    <Input
+                      id={`ugcLink-${index + 1}`}
+                      type="url"
+                      placeholder={`Lien UGC n°${index + 1}${required ? "" : " (optionnel)"}`}
+                      aria-invalid={!!linkError}
+                      {...register(`ugcLinks.${index}.url` as const)}
+                    />
+                    <FieldMessage error={linkError} />
+                  </div>
+                )
+              })}
             </div>
-            
-            {ugcLinks.length < MAX_TOTAL_LINKS && (
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={addUgcLink}
-                className="mt-2"
+            {fields.length < MAX_UGC_LINKS && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => append({ url: "" })}
               >
                 Ajouter plus
               </Button>
             )}
           </div>
         </div>
-        
       </CardContent>
     </Card>
   )

@@ -88,10 +88,10 @@ export function ContentStep() {
                         key={type.id}
                         className="flex items-center justify-between gap-2 px-5 py-3"
                       >
-                        <Label htmlFor={type.id} className="cursor-pointer">
-                          <span className="flex items-center gap-2">
-                            {Icon && <Icon className="size-4" aria-hidden="true" />}
-                            {type.label}
+                        <Label htmlFor={type.id} className="min-w-0 flex-1 cursor-pointer">
+                          <span className="flex min-w-0 items-center gap-2">
+                            {Icon && <Icon className="size-4 shrink-0" aria-hidden="true" />}
+                            <span className="line-clamp-2">{type.label}</span>
                           </span>
                         </Label>
                         <Checkbox

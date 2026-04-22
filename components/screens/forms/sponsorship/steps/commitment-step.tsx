@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
-  FieldError,
+  FieldDescription,
   FieldLabel,
   FieldLegend,
   FieldSet,
@@ -43,7 +43,7 @@ export function CommitmentStep() {
                 cadre de l&apos;événement. Cette autorisation est valable pour une durée de
                 3 ans.
               </FieldLabel>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
             </Field>
           )}
         />

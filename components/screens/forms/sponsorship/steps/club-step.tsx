@@ -9,7 +9,6 @@ import {
   Field,
   FieldContent,
   FieldDescription,
-  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -49,7 +48,7 @@ export function ClubStep() {
                       aria-invalid={fieldState.invalid}
                       placeholder="Nom du club"
                     />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                   </Field>
                 )}
               />
@@ -65,28 +64,30 @@ export function ClubStep() {
                       aria-invalid={fieldState.invalid}
                       placeholder="Ville"
                     />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                   </Field>
                 )}
               />
             </div>
 
-            <Controller
-              name="universite"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Université</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Optionnel"
-                  />
-                  <FieldDescription>Facultatif</FieldDescription>
-                </Field>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Controller
+                name="universite"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Université</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Optionnel"
+                    />
+                    <FieldDescription>Facultatif</FieldDescription>
+                  </Field>
+                )}
+              />
+            </div>
 
             <FieldSet className="gap-4">
               <FieldLegend variant="label">Réseaux sociaux</FieldLegend>
@@ -121,7 +122,7 @@ export function ClubStep() {
                               />
                             </div>
                             {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} />
+                              <FieldDescription>{fieldState.error?.message}</FieldDescription>
                             )}
                           </FieldContent>
                           <Button
@@ -142,11 +143,12 @@ export function ClubStep() {
               </FieldGroup>
               <Button
                 type="button"
+                variant="outline"
                 size="sm"
                 onClick={() => append({ url: "" })}
-                className="w-full"
+                className="self-start"
               >
-                <IconPlus className="size-4 mr-2" />
+                <IconPlus data-icon="inline-start" />
                 Ajouter un lien
               </Button>
             </FieldSet>
@@ -173,7 +175,7 @@ export function ClubStep() {
                         placeholder="Nom complet"
                         autoComplete="name"
                       />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                      {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                     </Field>
                   )}
                 />
@@ -189,7 +191,7 @@ export function ClubStep() {
                         aria-invalid={fieldState.invalid}
                         placeholder="Fonction"
                       />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                      {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                     </Field>
                   )}
                 />
@@ -210,7 +212,7 @@ export function ClubStep() {
                         aria-invalid={fieldState.invalid}
                         placeholder="Téléphone"
                       />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                      {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                     </Field>
                   )}
                 />
@@ -228,7 +230,7 @@ export function ClubStep() {
                         aria-invalid={fieldState.invalid}
                         placeholder="Email"
                       />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                      {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                     </Field>
                   )}
                 />

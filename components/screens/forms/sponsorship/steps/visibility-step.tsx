@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
-  FieldError,
+  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -38,7 +38,7 @@ export function VisibilityStep() {
                 aria-invalid={fieldState.invalid}
                 placeholder="Décrivez la visibilité proposée"
               />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
             </Field>
           )}
         />

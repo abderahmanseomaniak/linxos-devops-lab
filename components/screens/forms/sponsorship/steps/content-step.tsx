@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
   FieldDescription,
-  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -73,7 +72,7 @@ export function ContentStep() {
                     </Field>
                   ))}
                 </FieldGroup>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
 
                 {selected.length > 0 && (
                   <FieldSet className="gap-4 pt-4">
@@ -129,7 +128,7 @@ function FileSlot({ type }: { type: ContentTypeOption }) {
                   : `Fichier sélectionné : ${value.name}`}
               </Typography>
             )}
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
           </Field>
         )
       }}

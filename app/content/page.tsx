@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ContentCard } from "@/components/screens/content/content-card"
 import { ContentDetailsModal } from "@/components/screens/content/content-details-modal"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus } from "@/types/contents"
+import { UGCEvent, ContentStatus } from "@/types/content"
 import { IconSearch } from "@tabler/icons-react"
 import contentData from "@/data/content.json"
 
@@ -127,7 +127,7 @@ export default function ContentDashboardPage() {
     )
 
     if (selectedEvent?.id === id) {
-      setSelectedEvent((prev) =>
+      setSelectedEvent((prev: UGCEvent | null) =>
         prev ? { ...prev, notes: [...prev.notes, newNote] } : null
       )
     }

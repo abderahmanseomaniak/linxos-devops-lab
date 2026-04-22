@@ -1,6 +1,6 @@
 "use client"
 
-import { Loader2Icon } from "lucide-react"
+import { IconLoader2 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -81,7 +81,7 @@ export function WizardOtpDialog({
           >
             {loading ? (
               <>
-                <Loader2Icon className="motion-safe:animate-spin" aria-hidden="true" />
+                <IconLoader2 className="motion-safe:animate-spin" data-icon="inline-start" />
                 Validation…
               </>
             ) : (

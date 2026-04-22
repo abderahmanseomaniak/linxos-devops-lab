@@ -1,6 +1,6 @@
 import type { SVGProps } from "react"
 import Link from "next/link"
-import { CalendarIcon, MailIcon } from "lucide-react"
+import { IconCalendar, IconMail } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 
@@ -21,13 +21,13 @@ export function WizardHelpFooter() {
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button asChild size="sm">
           <Link href="/contact/rendez-vous">
-            <CalendarIcon aria-hidden="true" />
+            <IconCalendar data-icon="inline-start" />
             Prendre rendez-vous
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm">
           <a href="mailto:contact@lynxos.com">
-            <MailIcon aria-hidden="true" />
+            <IconMail data-icon="inline-start" />
             Nous écrire
           </a>
         </Button>

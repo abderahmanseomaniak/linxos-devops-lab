@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Typography } from "@/components/ui/typography"
 import { UGCEvent, ContentStatus, ContentDetailsModalProps } from "@/types/content"
-import { MapPin, Users, Calendar, ExternalLink, Globe, Clock, CheckCircle, AlertTriangle, Plus, MessageSquare } from "lucide-react"
+import { IconMapPin, IconIconUsers, IconCalendar, IconExternalLink, IconWorld, IconClock, IconCircleIconCheck, IconAlertTriangle, IconPlus, IconMessageCircle } from "@tabler/icons-react"
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700",
@@ -100,7 +100,7 @@ export function ContentDetailsModal({
             <div className="flex items-center gap-2">
               {event.driveLink && (
                 <Button size="sm" onClick={() => onOpenDrive(event.driveLink)}>
-                  <ExternalLink size={14} className="mr-2" />
+                  <IconExternalLink size={14} className="mr-2" />
                   Drive
                 </Button>
               )}
@@ -115,7 +115,7 @@ export function ContentDetailsModal({
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2 text-sm">
-                    <Calendar size={16} className="text-muted-foreground" />
+                    <IconCalendar size={16} className="text-muted-foreground" />
                     <span>{formatFullDate(event.date)}</span>
                   </div>
                 </CardContent>
@@ -127,7 +127,7 @@ export function ContentDetailsModal({
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2 text-sm">
-                    <MapPin size={16} className="text-muted-foreground" />
+                    <IconMapPin size={16} className="text-muted-foreground" />
                     <span>{event.city}</span>
                   </div>
                 </CardContent>
@@ -139,12 +139,12 @@ export function ContentDetailsModal({
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2 text-sm">
-                    <Users size={16} className="text-muted-foreground" />
+                    <IconIconUsers size={16} className="text-muted-foreground" />
                     <span className={event.ugcCreatorsCount < event.requiredCreators ? "text-amber-600 font-medium" : ""}>
                       {event.ugcCreatorsCount} / {event.requiredCreators}
                     </span>
                     {event.ugcCreatorsCount < event.requiredCreators && (
-                      <AlertTriangle size={14} className="text-amber-500" />
+                      <IconAlertTriangle size={14} className="text-amber-500" />
                     )}
                   </div>
                 </CardContent>
@@ -165,11 +165,11 @@ export function ContentDetailsModal({
                       <div key={step.key} className="flex items-center gap-3">
                         {isPast ? (
                           <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                            <CheckCircle size={14} className="text-green-600" />
+                            <IconCircleIconCheck size={14} className="text-green-600" />
                           </div>
                         ) : isActive ? (
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${statusColors[step.key as ContentStatus]}`}>
-                            <Clock size={14} />
+                            <IconClock size={14} />
                           </div>
                         ) : (
                           <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0" />
@@ -182,7 +182,7 @@ export function ContentDetailsModal({
                         <Typography variant="small" className="shrink-0">
                           {formatDate(
                             step.key === "Received" ? event.contentReceivedAt :
-                            step.key === "Editing" ? event.editingStartedAt :
+                            step.key === "Editing" ? event.editingIconStartedAt :
                             step.key === "Posted" ? event.postedAt : undefined
                           ) || "-"}
                         </Typography>
@@ -217,9 +217,9 @@ export function ContentDetailsModal({
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-2">
                       {event.driveLink ? (
-                        <CheckCircle size={18} className="text-green-600" />
+                        <IconCircleIconCheck size={18} className="text-green-600" />
                       ) : (
-                        <AlertTriangle size={18} className="text-amber-500" />
+                        <IconAlertTriangle size={18} className="text-amber-500" />
                       )}
                       <Typography variant="small">Drive</Typography>
                     </div>
@@ -230,7 +230,7 @@ export function ContentDetailsModal({
 
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-2">
-                      <Users size={18} className="text-muted-foreground" />
+                      <IconIconUsers size={18} className="text-muted-foreground" />
                       <Typography variant="small">Creators</Typography>
                     </div>
                     <span className={`text-sm font-medium ${event.ugcCreatorsCount >= event.requiredCreators ? "text-green-700" : "text-amber-700"}`}>
@@ -259,7 +259,7 @@ export function ContentDetailsModal({
                       <div className="flex gap-1">
                         {creator.instagram && (
                           <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                            <Globe size={12} />
+                            <IconWorld size={12} />
                           </Button>
                         )}
                         {creator.tiktok && (
@@ -280,7 +280,7 @@ export function ContentDetailsModal({
               <div className="flex items-center justify-between mb-3">
                 <Typography variant="small" className="font-medium">Notes ({event.notes.length})</Typography>
                 <Button size="sm" variant="outline" onClick={() => setShowNoteInput(true)}>
-                  <Plus size={14} className="mr-1" />
+                  <IconPlus size={14} className="mr-1" />
                   Add
                 </Button>
               </div>
@@ -299,7 +299,7 @@ export function ContentDetailsModal({
                         Cancel
                       </Button>
                       <Button size="sm" onClick={handleAddNote}>
-                        Save
+                        IconDeviceFloppy
                       </Button>
                     </div>
                   </CardContent>

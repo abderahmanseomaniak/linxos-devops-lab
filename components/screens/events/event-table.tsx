@@ -2,12 +2,12 @@
 
 import {
   type ColumnDef,
-  type ColumnFiltersState,
-  type FilterFn,
+  type ColumnIconFiltersState,
+  type IconFilterFn,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
-  getFilteredRowModel,
+  getIconFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   type PaginationState,
@@ -17,25 +17,25 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import {
-  ChevronDownIcon,
-  ChevronFirstIcon,
-  ChevronLastIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  CircleXIcon,
-  Columns3Icon,
-  EllipsisIcon,
-  EyeIcon,
-  FilterIcon,
-  ListFilterIcon,
-  PlusIcon,
-  SearchIcon,
-  StarIcon,
-  Trash2Icon,
-  PencilIcon,
+  IconChevronDownIcon,
+  IconChevronsLeft,
+  IconChevronsRight,
+  IconChevronLeftIcon,
+  IconChevronRightIcon,
+  IconChevronUpIcon,
+  IconCircleXIcon,
+  IconColumns3Icon,
+  IconDots,
+  IconEyeIcon,
+  IconFilterIcon,
+  IconAdjustments,
+  IconPlusIcon,
+  IconSearchIcon,
+  IconStarIcon,
+  IconIconTrashIcon,
+  IconPencilIcon,
   X,
-} from "lucide-react"
+} from "@tabler/icons-react"
 import { useId, useMemo, useRef, useState, useCallback, memo } from "react"
 
 import { cn } from "@/lib/utils"
@@ -44,8 +44,8 @@ import { EventDetailSheet } from "./event-detail-sheet"
 import { Badge } from "@/components/ui/badge"
 import { Typography } from "@/components/ui/typography"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { IconCheckbox } from "@/components/ui/checkbox"
+import { DropdownMenu, DropdownMenuIconCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination"
@@ -61,13 +61,13 @@ const STATUS_VARIANTS = uiConstants.eventStatus.variants as Record<EventStatus, 
 const DELIVERY_LABELS = uiConstants.deliveryStatus.labels as Record<DeliveryStatus, string>
 const DELIVERY_VARIANTS = uiConstants.deliveryStatus.variants as Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline">
 
-const multiColumnFilterFn: FilterFn<EventApplication> = (row, _columnId, filterValue) => {
+const multiColumnIconFilterFn: IconFilterFn<EventApplication> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.eventName} ${row.original.organization}`.toLowerCase()
   const searchTerm = (filterValue ?? "").toLowerCase()
   return searchableRowContent.includes(searchTerm)
 }
 
-const statusFilterFn: FilterFn<EventApplication> = (row, columnId, filterValue: string[]) => {
+const statusIconFilterFn: IconFilterFn<EventApplication> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
   const status = row.getValue(columnId) as string
   return filterValue.includes(status)
@@ -80,17 +80,17 @@ export const columns: ColumnDef<EventApplication>[] = [
     enableHiding: false,
     enableSorting: false,
     header: ({ table }) => (
-      <Checkbox
+      <IconCheckbox
         aria-label="Select all"
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onIconCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
+      <IconCheckbox
         aria-label="Select row"
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onIconCheckedChange={(value) => row.toggleSelected(!!value)}
       />
     ),
   },
@@ -114,14 +114,14 @@ export const columns: ColumnDef<EventApplication>[] = [
     },
     size: 250,
     enableHiding: false,
-    filterFn: multiColumnFilterFn,
+    filterFn: multiColumnIconFilterFn,
   },
   {
     accessorKey: "priority",
     header: "Priorité",
     cell: ({ row }) => (
       <div className="flex items-center gap-1">
-        <StarIcon className="size-4 fill-yellow-400 text-yellow-400" />
+        <IconStarIcon className="size-4 fill-yellow-400 text-yellow-400" />
         <span>{row.getValue("priority")}</span>
       </div>
     ),
@@ -143,7 +143,7 @@ export const columns: ColumnDef<EventApplication>[] = [
       const status = row.getValue("status") as EventStatus
       return <Badge variant={STATUS_VARIANTS[status]}>{STATUS_LABELS[status]}</Badge>
     },
-    filterFn: statusFilterFn,
+    filterFn: statusIconFilterFn,
     size: 120,
   },
   {
@@ -184,7 +184,7 @@ export const columns: ColumnDef<EventApplication>[] = [
 export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, onDetail }: EventTableProps) {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnIconFilters, setColumnIconFilters] = useState<ColumnIconFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState<SortingState>([])
@@ -226,14 +226,14 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getIconFilteredRowModel: getIconFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
+    onColumnIconFiltersChange: setColumnIconFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
-    state: { columnFilters, columnVisibility, pagination, sorting },
+    state: { columnIconFilters, columnVisibility, pagination, sorting },
   })
 
   const uniqueStatusValues = useMemo(() => {
@@ -256,21 +256,21 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
 
   const handleStatusChange = useCallback((checked: boolean, value: string) => {
     setSelectedStatuses((prev: string[]) => {
-      let newFilter: string[]
+      let newIconFilter: string[]
       if (checked) {
-        newFilter = prev.includes(value) ? prev : [...prev, value]
+        newIconFilter = prev.includes(value) ? prev : [...prev, value]
       } else {
-        newFilter = prev.filter((v) => v !== value)
+        newIconFilter = prev.filter((v) => v !== value)
       }
-      table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
-      return newFilter
+      table.getColumn("status")?.setIconFilterValue(newIconFilter.length ? newIconFilter : undefined)
+      return newIconFilter
     })
   }, [table])
 
   const handleSelectAll = useCallback((checked: boolean) => {
-    const newFilter = checked ? uniqueStatusValues : []
-    setSelectedStatuses(newFilter)
-    table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
+    const newIconFilter = checked ? uniqueStatusValues : []
+    setSelectedStatuses(newIconFilter)
+    table.getColumn("status")?.setIconFilterValue(newIconFilter.length ? newIconFilter : undefined)
   }, [table, uniqueStatusValues])
 
   const handleDeleteRows = useCallback(() => {
@@ -286,32 +286,32 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
         <div className="flex items-center gap-3">
           <div className="relative">
             <Input
-              aria-label="Filter by name or organization"
-              className={cn("peer w-40 sm:w-60 ps-8", Boolean(table.getColumn("name")?.getFilterValue()) && "pe-8")}
+              aria-label="IconFilter by name or organization"
+              className={cn("peer w-40 sm:w-60 ps-8", Boolean(table.getColumn("name")?.getIconFilterValue()) && "pe-8")}
               id={`${id}-input`}
-              onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
+              onChange={(e) => table.getColumn("name")?.setIconFilterValue(e.target.value)}
               placeholder="Rechercher..."
               type="text"
-              value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
+              value={(table.getColumn("name")?.getIconFilterValue() ?? "") as string}
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/80">
-              <SearchIcon size={14} />
+              <IconSearchIcon size={14} />
             </div>
-            {Boolean(table.getColumn("name")?.getFilterValue()) && (
+            {Boolean(table.getColumn("name")?.getIconFilterValue()) && (
               <button
                 aria-label="Clear filter"
                 className="absolute inset-y-0 end-0 flex h-full w-7 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-colors hover:text-foreground"
-                onClick={() => table.getColumn("name")?.setFilterValue("")}
+                onClick={() => table.getColumn("name")?.setIconFilterValue("")}
                 type="button"
               >
-                <CircleXIcon size={14} />
+                <IconCircleXIcon size={14} />
               </button>
             )}
           </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="h-8 text-xs">
-                <FilterIcon className="-ms-1 opacity-60" size={14} />
+                <IconFilterIcon className="-ms-1 opacity-60" size={14} />
                 Statut
                 {selectedStatuses.length > 0 && (
                   <span className="-me-1 inline-flex h-4 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
@@ -325,22 +325,22 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
                 <Typography variant="small" className="font-medium">Filtres</Typography>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Checkbox
+                    <IconCheckbox
                       checked={isAllSelected}
                       id={`${id}-all`}
-                      onCheckedChange={(checked: boolean) => handleSelectAll(checked)}
+                      onIconCheckedChange={(checked: boolean) => handleSelectAll(checked)}
                     />
                     <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-all`}>
                       Tous
-                      <Typography variant="code" className="ms-2">{table.getFilteredRowModel().rows.length}</Typography>
+                      <Typography variant="code" className="ms-2">{table.getIconFilteredRowModel().rows.length}</Typography>
                     </Label>
                   </div>
                   {uniqueStatusValues.map((value, i) => (
                     <div className="flex items-center gap-2" key={value}>
-                      <Checkbox
+                      <IconCheckbox
                         checked={selectedStatuses.includes(value)}
                         id={`${id}-${i}`}
-                        onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
+                        onIconCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
                       />
                       <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-${i}`}>
                         {STATUS_LABELS[value as EventStatus] || value}
@@ -355,22 +355,22 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <Columns3Icon className="-ms-1 opacity-60" size={16} />
+                <IconColumns3Icon className="-ms-1 opacity-60" size={16} />
                 Colonnes
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Afficher/Masquer</DropdownMenuLabel>
               {table.getAllColumns().filter((column) => column.getCanHide()).map((column) => (
-                <DropdownMenuCheckboxItem
+                <DropdownMenuIconCheckboxItem
                   checked={column.getIsVisible()}
                   className="capitalize"
                   key={column.id}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onIconCheckedChange={(value) => column.toggleVisibility(!!value)}
                   onSelect={(event) => event.preventDefault()}
                 >
                   {column.id}
-                </DropdownMenuCheckboxItem>
+                </DropdownMenuIconCheckboxItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -380,7 +380,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="ml-auto" variant="outline">
-                  <Trash2Icon className="-ms-1 opacity-60" size={16} />
+                  <IconIconTrashIcon className="-ms-1 opacity-60" size={16} />
                   Supprimer
                   <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
@@ -415,7 +415,7 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
           
           {onAdd && (
             <Button className="ml-auto h-8 text-xs" onClick={onAdd}>
-              <PlusIcon className="-ms-1 opacity-60" size={14} />
+              <IconPlusIcon className="-ms-1 opacity-60" size={14} />
               Ajouter
             </Button>
           )}
@@ -437,8 +437,8 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: <ChevronUpIcon className="shrink-0 opacity-60" size={16} />,
-                          desc: <ChevronDownIcon className="shrink-0 opacity-60" size={16} />,
+                          asc: <IconChevronUpIcon className="shrink-0 opacity-60" size={16} />,
+                          desc: <IconChevronDownIcon className="shrink-0 opacity-60" size={16} />,
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     ) : (
@@ -507,22 +507,22 @@ export function EventTable({ data, onEdit, onDelete, onDeleteMultiple, onAdd, on
             <PaginationContent>
               <PaginationItem>
                 <Button aria-label="First page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanPreviousPage()} onClick={() => table.firstPage()} size="icon" variant="outline">
-                  <ChevronFirstIcon size={14} />
+                  <IconChevronsLeft size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Previous page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} size="icon" variant="outline">
-                  <ChevronLeftIcon size={14} />
+                  <IconChevronLeftIcon size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Next page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} size="icon" variant="outline">
-                  <ChevronRightIcon size={14} />
+                  <IconChevronRightIcon size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Last page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanNextPage()} onClick={() => table.lastPage()} size="icon" variant="outline">
-                  <ChevronLastIcon size={14} />
+                  <IconChevronsRight size={14} />
                 </Button>
               </PaginationItem>
             </PaginationContent>
@@ -539,24 +539,24 @@ const RowActions = memo(function RowActions({ row, onEdit, onDelete, onDetail }:
       <DropdownMenuTrigger asChild>
         <div className="flex justify-end">
           <Button aria-label="Actions" className="shadow-none h-7 w-7" size="icon" variant="ghost">
-            <EllipsisIcon size={14} />
+            <IconDots size={14} />
           </Button>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="text-xs">
         <DropdownMenuGroup>
            <DropdownMenuItem className="h-8" onClick={onDetail}>
-            <EyeIcon className="me-2 size-4" />
+            <IconEyeIcon className="me-2 size-4" />
             <span>Détails</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="h-8" onClick={onEdit}>
-            <PencilIcon className="me-2 size-4" />
+            <IconPencilIcon className="me-2 size-4" />
             <span>Modifier</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="h-8 text-destructive focus:text-destructive" onClick={onDelete}>
-          <Trash2Icon className="me-2 size-4" />
+          <IconIconTrashIcon className="me-2 size-4" />
           <span>Supprimer</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -12,23 +12,23 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Calendar, GalleryVerticalEnd, Home, LayoutDashboard, LogIn, Search, Settings, Scroll, Users, LayoutGrid, Truck, FileText, MapPin, ClipboardList } from "lucide-react"
+import { IconCalendar, IconLayoutBoardSplit, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconScroll, IconIconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList } from "@tabler/icons-react"
 import Link from "next/link"
 import uiConstants from "@/data/ui-constants.json"
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  LayoutDashboard,
-  Home,
-  Search,
-  Settings,
-  Calendar,
-  Users,
-  LayoutGrid,
-  Truck,
-  FileText,
-  MapPin,
-  ClipboardList,
-  Scroll,
+  IconLayoutDashboard,
+  IconHome,
+  IconSearch,
+  IconSettings,
+  IconCalendar,
+  IconIconUsers,
+  IconLayoutGrid,
+  IconTruck,
+  IconFileText,
+  IconMapPin,
+  IconClipboardList,
+  IconScroll,
 }
 
 const generalItems = uiConstants.sidebar.general.map(item => ({
@@ -132,7 +132,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link href="/auth">
-                <LogIn />
+                <IconLogin />
                 <span>Login</span>
               </Link>
             </SidebarMenuButton>

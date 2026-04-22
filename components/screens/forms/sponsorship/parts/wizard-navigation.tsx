@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
+import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 
 type Props = {
@@ -21,20 +21,20 @@ export function WizardNavigation({
   return (
     <div className="flex items-center justify-between">
       {canGoPrev ? (
-        <Button variant="outline" size="sm" onClick={onPrev}>
-          <ArrowLeftIcon aria-hidden="true" />
+        <Button variant="outline" onClick={onPrev}>
+          <IconArrowLeft data-icon="inline-start" />
           Retour
         </Button>
       ) : (
         <div />
       )}
       {canGoNext ? (
-        <Button size="sm" onClick={onNext}>
+        <Button onClick={onNext}>
           Suivant
-          <ArrowRightIcon aria-hidden="true" />
+          <IconArrowRight data-icon="inline-end" />
         </Button>
       ) : (
-        <Button size="sm" onClick={onSubmit}>
+        <Button onClick={onSubmit}>
           Envoyer
         </Button>
       )}

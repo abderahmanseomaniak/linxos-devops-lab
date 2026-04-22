@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { type DashboardData, type DashboardGlobalProps } from "@/types/dashboard-types"
 import dashboardData from "@/data/dashboard-data.json"
-import { Calendar, CheckCircle2, Clock, Package, TrendingUp, Plus, FileText, Truck, Image, Users } from "lucide-react"
+import { IconCalendar, IconCircleIconCheckFilled, IconClock, IconPackage, IconTrendingUp, IconPlus, IconFileText, IconTruck, IconPhoto, IconIconUsers } from "@tabler/icons-react"
 const iconComponentMap: Record<string, React.ElementType> = {
-  Package,
-  Calendar,
-  Clock,
-  CheckCircle2,
-  TrendingUp,
+  IconPackage,
+  IconCalendar,
+  IconClock,
+  IconCircleIconCheckFilled,
+  IconTrendingUp,
 }
 const data = dashboardData as DashboardData
 const KPISection = ({ kpi, stats }: { kpi: DashboardData["kpi"]; stats: DashboardData["stats"] }) => (
@@ -65,10 +65,10 @@ const RecentActivitySection = () => {
     { id: 4, message: 'Status updated for "Nice Tournament"', timestamp: '1d ago', type: 'status' as const },
   ]
   const typeIcons = {
-    event: <Calendar className="size-4 text-blue-500" />,
-    ugc: <Image className="size-4 text-purple-500" />,
-    delivery: <Truck className="size-4 text-amber-500" />,
-    status: <CheckCircle2 className="size-4 text-green-500" />,
+    event: <IconCalendar className="size-4 text-blue-500" />,
+    ugc: <IconPhoto className="size-4 text-purple-500" />,
+    delivery: <IconTruck className="size-4 text-amber-500" />,
+    status: <IconCircleIconCheckFilled className="size-4 text-green-500" />,
   }
   return (
     <Card>
@@ -152,10 +152,10 @@ const UpcomingEventsSection = () => {
 }
 const QuickActionsSection = () => {
   const actions = [
-    { id: 'new-event', label: 'New Event', icon: Plus, variant: 'default' as const },
-    { id: 'new-sponsor', label: 'New Sponsor', icon: Users, variant: 'outline' as const },
-    { id: 'new-ugc', label: 'New UGC', icon: Image, variant: 'outline' as const },
-    { id: 'reports', label: 'Reports', icon: FileText, variant: 'outline' as const },
+    { id: 'new-event', label: 'New Event', icon: IconPlus, variant: 'default' as const },
+    { id: 'new-sponsor', label: 'New Sponsor', icon: IconIconUsers, variant: 'outline' as const },
+    { id: 'new-ugc', label: 'New UGC', icon: IconPhoto, variant: 'outline' as const },
+    { id: 'reports', label: 'Reports', icon: IconFileText, variant: 'outline' as const },
   ]
   return (
     <Card>

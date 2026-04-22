@@ -1,21 +1,30 @@
 "use client"
 
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 import { Controller, useFieldArray, useFormContext } from "react-hook-form"
+import { type DateRange } from "react-day-picker"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { IconCalendar } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
   FieldDescription,
-  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { NumberInput } from "@/components/ui/number-input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -31,8 +40,20 @@ import {
   type SponsorshipFormValues,
 } from "@/components/screens/forms/sponsorship/lib/schema"
 
+/** Convert an ISO date string (yyyy-MM-dd) to a Date, or undefined. */
+function toDate(value: string | undefined): Date | undefined {
+  if (!value) return undefined
+  const d = new Date(value + "T00:00:00")
+  return Number.isNaN(d.getTime()) ? undefined : d
+}
+
+/** Convert a Date to an ISO date string (yyyy-MM-dd). */
+function toISO(date: Date): string {
+  return format(date, "yyyy-MM-dd")
+}
+
 export function EventStep() {
-  const { control } = useFormContext<SponsorshipFormValues>()
+  const { control, setValue, getValues } = useFormContext<SponsorshipFormValues>()
   const { fields, append } = useFieldArray({ control, name: "ugcLinks" })
 
   return (
@@ -56,7 +77,7 @@ export function EventStep() {
                     aria-invalid={fieldState.invalid}
                     placeholder="Entrez le nom de l&apos;événement"
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                 </Field>
               )}
             />
@@ -85,46 +106,87 @@ export function EventStep() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                 </Field>
               )}
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Controller
-              name="dateDebut"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Date de début</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    type="date"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              name="dateFin"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Date de fin</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    type="date"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          </div>
+          <Controller
+            name="dateDebut"
+            control={control}
+            render={({ fieldState: debutState }) => (
+              <Controller
+                name="dateFin"
+                control={control}
+                render={({ fieldState: finState }) => {
+                  const dateDebut = getValues("dateDebut")
+                  const dateFin = getValues("dateFin")
+                  const from = toDate(dateDebut)
+                  const to = toDate(dateFin)
+                  const range: DateRange | undefined =
+                    from || to ? { from, to } : undefined
+                  const isInvalid = debutState.invalid || finState.invalid
+
+                  const handleSelect = (selected: DateRange | undefined) => {
+                    setValue("dateDebut", selected?.from ? toISO(selected.from) : "", {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                    setValue("dateFin", selected?.to ? toISO(selected.to) : "", {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="date-range-picker">Dates de l&apos;événement</FieldLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            id="date-range-picker"
+                            aria-invalid={isInvalid}
+                            className="inline-flex h-9 w-full max-w-sm items-center gap-2 rounded-3xl border border-transparent bg-input/50 px-3 text-sm font-normal transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
+                          >
+                            <IconCalendar className="size-4 shrink-0 text-muted-foreground" />
+                            {from ? (
+                              to ? (
+                                <>
+                                  {format(from, "d MMM yyyy", { locale: fr })} –{" "}
+                                  {format(to, "d MMM yyyy", { locale: fr })}
+                                </>
+                              ) : (
+                                format(from, "d MMM yyyy", { locale: fr })
+                              )
+                            ) : (
+                              <span className="text-muted-foreground">Sélectionnez les dates</span>
+                            )}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="range"
+                            defaultMonth={from}
+                            selected={range}
+                            onSelect={handleSelect}
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {debutState.invalid && (
+                        <FieldDescription>{debutState.error?.message}</FieldDescription>
+                      )}
+                      {finState.invalid && (
+                        <FieldDescription>{finState.error?.message}</FieldDescription>
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Controller
@@ -139,7 +201,7 @@ export function EventStep() {
                     aria-invalid={fieldState.invalid}
                     placeholder="Adresse ou lieu"
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                 </Field>
               )}
             />
@@ -149,15 +211,16 @@ export function EventStep() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Nombre de participants</FieldLabel>
-                  <Input
-                    {...field}
+                  <NumberInput
                     id={field.name}
-                    type="number"
-                    inputMode="numeric"
                     aria-invalid={fieldState.invalid}
-                    placeholder="Nombre de participants"
+                    value={field.value ? Number(field.value) : 0}
+                    onValueChange={(val) => field.onChange(val)}
+                    min={1}
+                    step={10}
+                    className="w-full h-9 [&_input]:w-full [&_input]:h-full"
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                 </Field>
               )}
             />
@@ -176,7 +239,7 @@ export function EventStep() {
                   placeholder="Décrivez votre public cible"
                   className="min-h-[100px]"
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
               </Field>
             )}
           />
@@ -205,14 +268,11 @@ export function EventStep() {
                   </FieldLabel>
                 </Field>
                 {!field.value && fieldState.invalid && (
-                  <Alert variant="destructive">
-                    <AlertTitle>Acceptation obligatoire</AlertTitle>
-                    <AlertDescription>
-                      L&apos;UGC (User Generated Content) désigne le contenu généré par les
-                      utilisateurs tel que les photos, vidéos et témoignages. Cette acceptation
-                      est obligatoire pour continuer.
-                    </AlertDescription>
-                  </Alert>
+                  <FieldDescription>
+                    L&apos;UGC (User Generated Content) désigne le contenu généré par les
+                    utilisateurs tel que les photos, vidéos et témoignages. Cette acceptation
+                    est obligatoire pour continuer.
+                  </FieldDescription>
                 )}
               </>
             )}
@@ -250,7 +310,7 @@ export function EventStep() {
                               }`}
                           />
                           {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
+                            <FieldDescription>{fieldState.error?.message}</FieldDescription>
                           )}
                         </Field>
                       )}
@@ -262,7 +322,9 @@ export function EventStep() {
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   onClick={() => append({ url: "" })}
+                  className="self-start"
                 >
                   Ajouter plus
                 </Button>

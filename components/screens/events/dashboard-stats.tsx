@@ -5,11 +5,11 @@ import { Typography } from "@/components/ui/typography"
 import { cn } from "@/lib/utils"
 import type { StatsCardProps, DashboardStatsProps } from "@/types/events"
 import {
-  CalendarDaysIcon, 
-  CheckCircle2Icon,
-  ClockIcon,
-  XCircleIcon,
-} from "lucide-react"
+  IconCalendarDaysIcon, 
+  IconCircleIconCheckFilled,
+  IconClockIcon,
+  IconCircleXIcon,
+} from "@tabler/icons-react"
 
 function StatsCard({ title, value, icon, variant = "default" }: StatsCardProps) {
   const variantStyles = {
@@ -44,25 +44,25 @@ export function DashboardStats({ data }: DashboardStatsProps) {
       <StatsCard
         title="Total événements"
         value={data.total}
-        icon={<CalendarDaysIcon className="size-6" />}
+        icon={<IconCalendarDaysIcon className="size-6" />}
         variant="default"
       />
       <StatsCard
         title="Acceptés"
         value={data.accepted}
-        icon={<CheckCircle2Icon className="size-6" />}
+        icon={<IconCircleIconCheckFilled className="size-6" />}
         variant="success"
       />
       <StatsCard
         title="En attente"
         value={data.pending}
-        icon={<ClockIcon className="size-6" />}
+        icon={<IconClockIcon className="size-6" />}
         variant="warning"
       />
       <StatsCard
         title="Rejetés"
         value={data.rejected}
-        icon={<XCircleIcon className="size-6" />}
+        icon={<IconCircleXIcon className="size-6" />}
         variant="destructive"
       />
     </div>

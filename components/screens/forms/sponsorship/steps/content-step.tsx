@@ -5,7 +5,7 @@ import { Controller, useFormContext } from "react-hook-form"
 import {
   IconFileDescription,
   IconPhoto,
-  IconPhotoFilled,
+  IconStack2,
   IconVideo,
 } from "@tabler/icons-react"
 
@@ -38,7 +38,7 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 const CONTENT_TYPE_ICONS: Record<string, IconComponent> = {
   affiche: IconPhoto,
   dossier: IconFileDescription,
-  photos: IconPhotoFilled,
+  photos: IconStack2,
   video: IconVideo,
 }
 
@@ -186,25 +186,28 @@ function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProp
 
       {type.multiple ? (
         <div className="flex flex-col gap-3">
-          <div className="relative inline-block self-start">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={openFileDialog}
-              aria-haspopup="dialog"
-            >
-              {hasFiles ? "Ajouter des fichiers" : "Téléverser des fichiers"}
-            </Button>
-            <input
-              {...getInputProps({ id: `file-${type.id}` })}
-              className="sr-only"
-              aria-label={`Téléverser ${type.label}`}
-              tabIndex={-1}
-            />
+          <div className="inline-flex items-center gap-2">
+            {!hasFiles && <PreviewTile entry={undefined} icon={Icon} />}
+            <div className="relative inline-block self-start">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openFileDialog}
+                aria-haspopup="dialog"
+              >
+                {hasFiles ? "Ajouter des fichiers" : "Téléverser des fichiers"}
+              </Button>
+              <input
+                {...getInputProps({ id: `file-${type.id}` })}
+                className="sr-only"
+                aria-label={`Téléverser ${type.label}`}
+                tabIndex={-1}
+              />
+            </div>
           </div>
 
-          {hasFiles ? (
+          {hasFiles && (
             <ul className="flex flex-col gap-2">
               {files.map((entry) => (
                 <li
@@ -229,10 +232,6 @@ function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProp
                 </li>
               ))}
             </ul>
-          ) : (
-            <Typography variant="small" className="text-muted-foreground">
-              Aucun fichier
-            </Typography>
           )}
         </div>
       ) : (
@@ -258,7 +257,7 @@ function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProp
             </div>
           </div>
 
-          {hasFiles ? (
+          {hasFiles && (
             <div className="inline-flex gap-2 text-xs">
               <Typography
                 variant="small"
@@ -276,10 +275,6 @@ function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProp
                 Retirer
               </button>
             </div>
-          ) : (
-            <Typography variant="small" className="text-muted-foreground">
-              Aucun fichier
-            </Typography>
           )}
         </div>
       )}

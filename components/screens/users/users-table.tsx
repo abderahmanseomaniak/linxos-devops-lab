@@ -3,12 +3,12 @@
 import { useId, useMemo, useRef, useState } from "react"
 import {
   type ColumnDef,
-  type ColumnIconFiltersState,
-  type IconFilterFn,
+  type ColumnFiltersState,
+  type FilterFn,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
-  getIconFilteredRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   type PaginationState,
@@ -18,19 +18,19 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import {
-  IconChevronDownIcon,
+  IconChevronDown,
   IconChevronsLeft,
   IconChevronsRight,
-  IconChevronLeftIcon,
-  IconChevronRightIcon,
-  IconChevronUpIcon,
-  IconCircleXIcon,
-  IconColumns3Icon,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronUp,
+  IconCircleX,
+  IconColumns3,
   IconDots,
-  IconFilterIcon,
+  IconFilter,
   IconAdjustments,
-  IconPlusIcon,
-  IconTrashIcon,
+  IconPlus,
+  IconTrash,
   IconAlertCircle,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
@@ -47,10 +47,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { IconCheckbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
-  DropdownMenuIconCheckboxItem,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -88,39 +88,39 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Typography } from "@/components/ui/typography"
-import { IconUser, IconUserRole, type IconIconUsersTableProps, type IconUserItem } from "@/types/users"
+import { type UserRole, type UsersTableProps, type UserItem } from "@/types/users"
 import uiConstants from "@/data/ui-constants.json"
 
-const ROLE_LABELS = uiConstants.userRole.labels as Record<IconUserRole, string>
+const ROLE_LABELS = uiConstants.userRole.labels as Record<UserRole, string>
 
-const multiColumnIconFilterFn: IconFilterFn<IconUserItem> = (row, _columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<UserItem> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.name} ${row.original.email}`.toLowerCase()
   const searchTerm = (filterValue ?? "").toLowerCase()
   return searchableRowContent.includes(searchTerm)
 }
 
-const statusIconFilterFn: IconFilterFn<IconUserItem> = (row, columnId, filterValue: string[]) => {
+const statusFilterFn: FilterFn<UserItem> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
   const status = row.getValue(columnId) as string
   return filterValue.includes(status)
 }
 
-const columns: ColumnDef<IconUserItem>[] = [
+const columns: ColumnDef<UserItem>[] = [
   {
     cell: ({ row }) => (
-      <IconCheckbox
+      <Checkbox
         aria-label="Select row"
         checked={row.getIsSelected()}
-        onIconCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
       />
     ),
     enableHiding: false,
     enableSorting: false,
     header: ({ table }) => (
-      <IconCheckbox
+      <Checkbox
         aria-label="Select all"
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onIconCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       />
     ),
     id: "select",
@@ -140,7 +140,7 @@ const columns: ColumnDef<IconUserItem>[] = [
        )
     },
     enableHiding: false,
-    filterFn: multiColumnIconFilterFn,
+    filterFn: multiColumnFilterFn,
     header: "Name",
     size: 200,
   },
@@ -162,7 +162,7 @@ const columns: ColumnDef<IconUserItem>[] = [
   {
     accessorKey: "role",
     cell: ({ row }) => {
-      const role = row.getValue("role") as IconUserRole
+      const role = row.getValue("role") as UserRole
       return (
         <Select defaultValue={role}>
           <SelectTrigger className="h-8 w-24">
@@ -190,7 +190,7 @@ const columns: ColumnDef<IconUserItem>[] = [
         {row.getValue("statusDisplay")}
       </Badge>
     ),
-    filterFn: statusIconFilterFn,
+    filterFn: statusFilterFn,
     header: "Status",
     size: 100,
   },
@@ -203,7 +203,7 @@ const columns: ColumnDef<IconUserItem>[] = [
   },
 ]
 
-function RowActions({ row }: { row: Row<IconUserItem> }) {
+function RowActions({ row }: { row: Row<UserItem> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -241,9 +241,9 @@ function RowActions({ row }: { row: Row<IconUserItem> }) {
   )
 }
 
-export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd }: IconIconUsersTableProps) {
+export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: UsersTableProps) {
   const id = useId()
-  const [columnIconFilters, setColumnIconFilters] = useState<ColumnIconFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const inputRef = useRef<HTMLInputElement>(null)
@@ -252,7 +252,7 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
     { desc: false, id: "name" },
   ])
 
-  const [data, setData] = useState<IconUserItem[]>(() => 
+  const [data, setData] = useState<UserItem[]>(() => 
     initialData.map((u) => ({
       ...u,
       statusDisplay: u.status ? "Active" : "Inactive",
@@ -274,14 +274,14 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getIconFilteredRowModel: getIconFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnIconFiltersChange: setColumnIconFilters,
+    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
-    state: { columnIconFilters, columnVisibility, pagination, sorting },
+    state: { columnFilters, columnVisibility, pagination, sorting },
   })
 
   const uniqueStatusValues = useMemo(() => {
@@ -297,12 +297,12 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
   }, [table])
 
   const selectedStatuses = useMemo(() => {
-    const filterValue = table.getColumn("statusDisplay")?.getIconFilterValue() as string[]
+    const filterValue = table.getColumn("statusDisplay")?.getFilterValue() as string[]
     return filterValue ?? []
   }, [table])
 
   const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn("statusDisplay")?.getIconFilterValue() as string[] ?? []
+    const filterValue = table.getColumn("statusDisplay")?.getFilterValue() as string[] ?? []
     const newIconFilterValue = [...filterValue]
 
     if (checked) {
@@ -312,7 +312,7 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
       if (index > -1) newIconFilterValue.splice(index, 1)
     }
 
-    table.getColumn("statusDisplay")?.setIconFilterValue(newIconFilterValue.length ? newIconFilterValue : undefined)
+    table.getColumn("statusDisplay")?.setFilterValue(newIconFilterValue.length ? newIconFilterValue : undefined)
   }
 
   if (loading) {
@@ -330,35 +330,35 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
           <div className="relative">
             <Input
               aria-label="IconFilter by name or email"
-              className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("name")?.getIconFilterValue()) && "pe-9")}
+              className={cn("peer min-w-60 ps-9", Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9")}
               id={`${id}-input`}
-              onChange={(e) => table.getColumn("name")?.setIconFilterValue(e.target.value)}
+              onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
               placeholder="IconFilter by name or email..."
               ref={inputRef}
               type="text"
-              value={(table.getColumn("name")?.getIconFilterValue() ?? "") as string}
+              value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80">
               <IconAdjustments aria-hidden="true" size={16} />
             </div>
-            {Boolean(table.getColumn("name")?.getIconFilterValue()) && (
+            {Boolean(table.getColumn("name")?.getFilterValue()) && (
               <button
                 aria-label="Clear filter"
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-colors hover:text-foreground"
                 onClick={() => {
-                  table.getColumn("name")?.setIconFilterValue("")
+                  table.getColumn("name")?.setFilterValue("")
                   inputRef.current?.focus()
                 }}
                 type="button"
               >
-                <IconCircleXIcon aria-hidden="true" size={16} />
+                <IconCircleX aria-hidden="true" size={16} />
               </button>
             )}
           </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
-                <IconFilterIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
+                <IconFilter aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                 Status
                 {selectedStatuses.length > 0 && (
                   <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
@@ -373,10 +373,10 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
                 <div className="space-y-3">
                   {uniqueStatusValues.map((value, i) => (
                     <div className="flex items-center gap-2" key={value}>
-                      <IconCheckbox
+                      <Checkbox
                         checked={selectedStatuses.includes(value)}
                         id={`${id}-${i}`}
-                        onIconCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
+                        onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
                       />
                       <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-${i}`}>
                         {value}
@@ -391,22 +391,22 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <IconColumns3Icon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
+                <IconColumns3 aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                 View
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
               {table.getAllColumns().filter((column) => column.getCanHide()).map((column) => (
-                <DropdownMenuIconCheckboxItem
+                <DropdownMenuCheckboxItem
                   checked={column.getIsVisible()}
                   className="capitalize"
                   key={column.id}
-                  onIconCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   onSelect={(event) => event.preventDefault()}
                 >
                   {column.id}
-                </DropdownMenuIconCheckboxItem>
+                </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -416,7 +416,7 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="ml-auto" variant="outline">
-                  <IconTrashIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
+                  <IconTrash aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                   Delete
                   <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
@@ -444,7 +444,7 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
           )}
           {onAdd && (
             <Button className="ml-auto" onClick={onAdd} variant="outline">
-              <IconPlusIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
+              <IconPlus aria-hidden="true" className="-ms-1 opacity-60" size={16} />
               Add user
             </Button>
           )}
@@ -466,8 +466,8 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: <IconChevronUpIcon aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-                          desc: <IconChevronDownIcon aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
+                          asc: <IconChevronUp aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
+                          desc: <IconChevronDown aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     ) : (
@@ -541,12 +541,12 @@ export function IconIconUsersTable({ data: initialData, onEdit, onDelete, onAdd 
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Previous page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} size="icon" variant="outline">
-                  <IconChevronLeftIcon size={14} />
+                  <IconChevronLeft size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Next page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} size="icon" variant="outline">
-                  <IconChevronRightIcon size={14} />
+                  <IconChevronRight size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>

@@ -1,6 +1,9 @@
 "use client"
 
+import { Fragment } from "react"
+
 import { IconLoader2, IconRefresh } from "@tabler/icons-react"
+import { useFormContext } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +21,8 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { Typography } from "@/components/ui/typography"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 
 type Props = {
   open: boolean
@@ -45,38 +50,54 @@ export function OtpDialog({
   onClose,
   onResend,
 }: Props) {
+  const { watch } = useFormContext<SponsorshipFormValues>()
+  const email = watch("email")
+
   const handleOpenChange = (next: boolean) => {
     if (!next) onClose()
   }
 
-  const splitInHalf = length === 6
-  const half = length / 2
+  const PAIR_SIZE = 2
+  const pairs = Array.from(
+    { length: Math.ceil(length / PAIR_SIZE) },
+    (_, groupIndex) =>
+      Array.from(
+        { length: Math.min(PAIR_SIZE, length - groupIndex * PAIR_SIZE) },
+        (_, i) => groupIndex * PAIR_SIZE + i
+      )
+  )
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Vérification de sécurité</DialogTitle>
+          <DialogTitle>Confirmez votre adresse email</DialogTitle>
           <DialogDescription>
-            Saisissez le code OTP reçu pour valider et envoyer votre demande.
+            Saisissez le code de vérification envoyé à votre adresse email
+            {email ? (
+              <>
+                {" : "}
+                <span className="font-medium text-foreground">{email}</span>
+              </>
+            ) : (
+              "."
+            )}
           </DialogDescription>
         </DialogHeader>
 
         <Field>
           <div className="flex items-center justify-between">
             <FieldLabel htmlFor="otp-verification">Code de vérification</FieldLabel>
-            {onResend && (
-              <Button
-                type="button"
-                variant="outline"
-                size="xs"
-                onClick={onResend}
-                disabled={loading}
-              >
-                <IconRefresh />
-                Renvoyer
-              </Button>
-            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              onClick={onResend}
+              disabled={loading || !onResend}
+            >
+              <IconRefresh />
+              Renvoyer le code
+            </Button>
           </div>
 
           <InputOTP
@@ -86,51 +107,25 @@ export function OtpDialog({
             maxLength={length}
             aria-label={`Code de vérification à ${length} chiffres`}
             autoFocus
+            containerClassName="justify-center"
           >
-            {splitInHalf ? (
-              <>
+            {pairs.map((pair, groupIndex) => (
+              <Fragment key={groupIndex}>
+                {groupIndex > 0 && <InputOTPSeparator className="mx-2" />}
                 <InputOTPGroup className={SLOT_CLASSES}>
-                  {Array.from({ length: half }).map((_, index) => (
+                  {pair.map((index) => (
                     <InputOTPSlot key={index} index={index} />
                   ))}
                 </InputOTPGroup>
-                <InputOTPSeparator className="mx-2" />
-                <InputOTPGroup className={SLOT_CLASSES}>
-                  {Array.from({ length: half }).map((_, index) => (
-                    <InputOTPSlot key={index + half} index={index + half} />
-                  ))}
-                </InputOTPGroup>
-              </>
-            ) : (
-              <InputOTPGroup className={SLOT_CLASSES}>
-                {Array.from({ length }).map((_, index) => (
-                  <InputOTPSlot key={index} index={index} />
-                ))}
-              </InputOTPGroup>
-            )}
+              </Fragment>
+            ))}
           </InputOTP>
-
-          <FieldDescription
-            role={error ? "alert" : "status"}
-            aria-live="polite"
-            className={error ? "text-destructive" : "sr-only"}
-          >
-            {error ? "Code OTP invalide." : ""}
-          </FieldDescription>
         </Field>
 
-        <DialogFooter className="flex gap-2">
+        <DialogFooter className="flex-col gap-3 sm:flex-col sm:space-x-0">
           <Button
             type="button"
-            variant="secondary"
-            className="flex-1"
-            onClick={onClose}
-          >
-            Annuler
-          </Button>
-          <Button
-            type="button"
-            className="flex-1"
+            className="w-full"
             onClick={onVerify}
             disabled={value.length !== length || loading}
           >

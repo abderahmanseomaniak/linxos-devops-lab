@@ -11,8 +11,8 @@ import {
   type SponsorshipFormValues,
 } from "@/components/screens/forms/sponsorship/lib/schema"
 
-const OTP_CODE = "1234"
-const OTP_LENGTH = 4
+const OTP_CODE = "123456"
+const OTP_LENGTH = 6
 const OTP_VERIFY_DELAY_MS = 500
 
 type StepApi = {

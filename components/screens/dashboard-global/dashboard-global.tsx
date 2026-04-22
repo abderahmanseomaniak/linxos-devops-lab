@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { type DashboardData, type DashboardGlobalProps } from "@/types/dashboard-types"
 import dashboardData from "@/data/dashboard-data.json"
-import { IconCalendar, IconCircleIconCheckFilled, IconClock, IconPackage, IconTrendingUp, IconPlus, IconFileText, IconTruck, IconPhoto, IconIconUsers } from "@tabler/icons-react"
+import { IconCalendar, IconCircleCheckFilled, IconClock, IconPackage, IconTrendingUp, IconPlus, IconFileText, IconTruck, IconPhoto, IconUsers } from "@tabler/icons-react"
 const iconComponentMap: Record<string, React.ElementType> = {
   IconPackage,
   IconCalendar,
   IconClock,
-  IconCircleIconCheckFilled,
+  IconCircleCheckFilled,
   IconTrendingUp,
 }
 const data = dashboardData as DashboardData
@@ -68,7 +68,7 @@ const RecentActivitySection = () => {
     event: <IconCalendar className="size-4 text-blue-500" />,
     ugc: <IconPhoto className="size-4 text-purple-500" />,
     delivery: <IconTruck className="size-4 text-amber-500" />,
-    status: <IconCircleIconCheckFilled className="size-4 text-green-500" />,
+    status: <IconCircleCheckFilled className="size-4 text-green-500" />,
   }
   return (
     <Card>
@@ -153,7 +153,7 @@ const UpcomingEventsSection = () => {
 const QuickActionsSection = () => {
   const actions = [
     { id: 'new-event', label: 'New Event', icon: IconPlus, variant: 'default' as const },
-    { id: 'new-sponsor', label: 'New Sponsor', icon: IconIconUsers, variant: 'outline' as const },
+    { id: 'new-sponsor', label: 'New Sponsor', icon: IconUsers, variant: 'outline' as const },
     { id: 'new-ugc', label: 'New UGC', icon: IconPhoto, variant: 'outline' as const },
     { id: 'reports', label: 'Reports', icon: IconFileText, variant: 'outline' as const },
   ]

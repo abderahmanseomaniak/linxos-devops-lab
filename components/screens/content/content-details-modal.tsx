@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Typography } from "@/components/ui/typography"
 import { UGCEvent, ContentStatus, ContentDetailsModalProps } from "@/types/content"
-import { IconMapPin, IconIconUsers, IconCalendar, IconExternalLink, IconWorld, IconClock, IconCircleIconCheck, IconAlertTriangle, IconPlus, IconMessageCircle } from "@tabler/icons-react"
+import { IconMapPin, IconUsers, IconCalendar, IconExternalLink, IconWorld, IconClock, IconCircleCheck, IconAlertTriangle, IconPlus, IconMessageCircle } from "@tabler/icons-react"
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700",
@@ -139,7 +139,7 @@ export function ContentDetailsModal({
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2 text-sm">
-                    <IconIconUsers size={16} className="text-muted-foreground" />
+                    <IconUsers size={16} className="text-muted-foreground" />
                     <span className={event.ugcCreatorsCount < event.requiredCreators ? "text-amber-600 font-medium" : ""}>
                       {event.ugcCreatorsCount} / {event.requiredCreators}
                     </span>
@@ -165,7 +165,7 @@ export function ContentDetailsModal({
                       <div key={step.key} className="flex items-center gap-3">
                         {isPast ? (
                           <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                            <IconCircleIconCheck size={14} className="text-green-600" />
+                            <IconCircleCheck size={14} className="text-green-600" />
                           </div>
                         ) : isActive ? (
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${statusColors[step.key as ContentStatus]}`}>
@@ -182,7 +182,7 @@ export function ContentDetailsModal({
                         <Typography variant="small" className="shrink-0">
                           {formatDate(
                             step.key === "Received" ? event.contentReceivedAt :
-                            step.key === "Editing" ? event.editingIconStartedAt :
+                            step.key === "Editing" ? event.editingStartedAt :
                             step.key === "Posted" ? event.postedAt : undefined
                           ) || "-"}
                         </Typography>
@@ -217,7 +217,7 @@ export function ContentDetailsModal({
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-2">
                       {event.driveLink ? (
-                        <IconCircleIconCheck size={18} className="text-green-600" />
+                        <IconCircleCheck size={18} className="text-green-600" />
                       ) : (
                         <IconAlertTriangle size={18} className="text-amber-500" />
                       )}
@@ -230,7 +230,7 @@ export function ContentDetailsModal({
 
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div className="flex items-center gap-2">
-                      <IconIconUsers size={18} className="text-muted-foreground" />
+                      <IconUsers size={18} className="text-muted-foreground" />
                       <Typography variant="small">Creators</Typography>
                     </div>
                     <span className={`text-sm font-medium ${event.ugcCreatorsCount >= event.requiredCreators ? "text-green-700" : "text-amber-700"}`}>

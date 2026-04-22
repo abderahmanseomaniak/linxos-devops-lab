@@ -5,10 +5,10 @@ import { Typography } from "@/components/ui/typography"
 import { cn } from "@/lib/utils"
 import type { StatsCardProps, DashboardStatsProps } from "@/types/events"
 import {
-  IconCalendarDaysIcon, 
-  IconCircleIconCheckFilled,
-  IconClockIcon,
-  IconCircleXIcon,
+  IconCalendar,
+  IconCircleCheckFilled,
+  IconClock,
+  IconCircleX,
 } from "@tabler/icons-react"
 
 function StatsCard({ title, value, icon, variant = "default" }: StatsCardProps) {
@@ -44,25 +44,25 @@ export function DashboardStats({ data }: DashboardStatsProps) {
       <StatsCard
         title="Total événements"
         value={data.total}
-        icon={<IconCalendarDaysIcon className="size-6" />}
+        icon={<IconCalendar className="size-6" />}
         variant="default"
       />
       <StatsCard
         title="Acceptés"
         value={data.accepted}
-        icon={<IconCircleIconCheckFilled className="size-6" />}
+        icon={<IconCircleCheckFilled className="size-6" />}
         variant="success"
       />
       <StatsCard
         title="En attente"
         value={data.pending}
-        icon={<IconClockIcon className="size-6" />}
+        icon={<IconClock className="size-6" />}
         variant="warning"
       />
       <StatsCard
         title="Rejetés"
         value={data.rejected}
-        icon={<IconCircleXIcon className="size-6" />}
+        icon={<IconCircleX className="size-6" />}
         variant="destructive"
       />
     </div>

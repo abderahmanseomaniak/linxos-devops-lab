@@ -3,12 +3,12 @@
 import { useId, useMemo, useRef, useState } from "react"
 import {
   type ColumnDef,
-  type ColumnIconFiltersState,
-  type IconFilterFn,
+  type ColumnFiltersState,
+  type FilterFn,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
-  getIconFilteredRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   type PaginationState,
@@ -18,26 +18,26 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import {
-  IconChevronDownIcon,
+  IconChevronDown,
   IconChevronsLeft,
   IconChevronsRight,
-  IconChevronLeftIcon,
-  IconChevronRightIcon,
-  IconChevronUpIcon,
-  IconCircleXIcon,
-  IconColumns3Icon,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronUp,
+  IconCircleX,
+  IconColumns3,
   IconDots,
-  IconFilterIcon,
+  IconFilter,
   IconAdjustments,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { IconCheckbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
-  DropdownMenuIconCheckboxItem,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -108,13 +108,13 @@ function formatDate(dateString: string): string {
   })
 }
 
-const multiColumnIconFilterFn: IconFilterFn<ActivityLog> = (row, _columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<ActivityLog> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.userName} ${row.original.entityName} ${row.original.description}`.toLowerCase()
   const searchTerm = (filterValue ?? "").toLowerCase()
   return searchableRowContent.includes(searchTerm)
 }
 
-const actionIconFilterFn: IconFilterFn<ActivityLog> = (row, columnId, filterValue: string[]) => {
+const actionFilterFn: FilterFn<ActivityLog> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
   const action = row.getValue(columnId) as string
   return filterValue.includes(action)
@@ -124,7 +124,7 @@ const columns: ColumnDef<ActivityLog>[] = [
   {
     accessorKey: "userName",
     cell: ({ row }) => <span className="font-medium">{row.getValue("userName")}</span>,
-    filterFn: multiColumnIconFilterFn,
+    filterFn: multiColumnFilterFn,
     header: "IconUser",
     size: 150,
   },
@@ -135,7 +135,7 @@ const columns: ColumnDef<ActivityLog>[] = [
         {row.getValue("action")}
       </Badge>
     ),
-    filterFn: actionIconFilterFn,
+    filterFn: actionFilterFn,
     header: "Action",
     size: 100,
   },
@@ -249,7 +249,7 @@ function RowActions({ row }: { row: Row<ActivityLog> }) {
 
 export function ActivityLogs() {
   const id = useId()
-  const [columnIconFilters, setColumnIconFilters] = useState<ColumnIconFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const inputRef = useRef<HTMLInputElement>(null)
@@ -266,14 +266,14 @@ export function ActivityLogs() {
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getIconFilteredRowModel: getIconFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnIconFiltersChange: setColumnIconFilters,
+    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
-    state: { columnIconFilters, columnVisibility, pagination, sorting },
+    state: { columnFilters, columnVisibility, pagination, sorting },
   })
 
   const uniqueActionValues = useMemo(() => {
@@ -283,12 +283,12 @@ export function ActivityLogs() {
   }, [table.getColumn])
 
   const selectedActions = useMemo(() => {
-    const filterValue = table.getColumn("action")?.getIconFilterValue() as string[]
+    const filterValue = table.getColumn("action")?.getFilterValue() as string[]
     return filterValue ?? []
   }, [table])
 
   const handleActionChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn("action")?.getIconFilterValue() as string[]
+    const filterValue = table.getColumn("action")?.getFilterValue() as string[]
     const newIconFilterValue = filterValue ? [...filterValue] : []
     if (checked) {
       newIconFilterValue.push(value)
@@ -296,7 +296,7 @@ export function ActivityLogs() {
       const index = newIconFilterValue.indexOf(value)
       if (index > -1) newIconFilterValue.splice(index, 1)
     }
-    table.getColumn("action")?.setIconFilterValue(newIconFilterValue.length ? newIconFilterValue : undefined)
+    table.getColumn("action")?.setFilterValue(newIconFilterValue.length ? newIconFilterValue : undefined)
   }
 
   return (
@@ -313,26 +313,26 @@ export function ActivityLogs() {
               aria-label="IconSearch logs"
               className={cn("peer min-w-60 ps-9")}
               id={`${id}-input`}
-              onChange={(e) => table.getColumn("userName")?.setIconFilterValue(e.target.value)}
+              onChange={(e) => table.getColumn("userName")?.setFilterValue(e.target.value)}
               placeholder="IconSearch logs..."
               ref={inputRef}
               type="text"
-              value={(table.getColumn("userName")?.getIconFilterValue() ?? "") as string}
+              value={(table.getColumn("userName")?.getFilterValue() ?? "") as string}
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80">
               <IconAdjustments aria-hidden="true" size={16} />
             </div>
-            {Boolean(table.getColumn("userName")?.getIconFilterValue()) && (
+            {Boolean(table.getColumn("userName")?.getFilterValue()) && (
               <button
                 aria-label="Clear filter"
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none hover:text-foreground"
                 onClick={() => {
-                  table.getColumn("userName")?.setIconFilterValue("")
+                  table.getColumn("userName")?.setFilterValue("")
                   if (inputRef.current) inputRef.current.focus()
                 }}
                 type="button"
               >
-                <IconCircleXIcon aria-hidden="true" size={16} />
+                <IconCircleX aria-hidden="true" size={16} />
               </button>
             )}
           </div>
@@ -340,7 +340,7 @@ export function ActivityLogs() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
-                <IconFilterIcon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
+                <IconFilter aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                 Action
                 {selectedActions.length > 0 && (
                   <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
@@ -355,10 +355,10 @@ export function ActivityLogs() {
                 <div className="space-y-3">
                   {actions.map((value, i) => (
                     <div className="flex items-center gap-2" key={value}>
-                      <IconCheckbox
+                      <Checkbox
                         checked={selectedActions.includes(value)}
                         id={`${id}-action-${i}`}
-                        onIconCheckedChange={(checked: boolean) => handleActionChange(checked, value)}
+                        onCheckedChange={(checked: boolean) => handleActionChange(checked, value)}
                       />
                       <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-action-${i}`}>
                         {value}
@@ -373,22 +373,22 @@ export function ActivityLogs() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <IconColumns3Icon aria-hidden="true" className="-ms-1 opacity-60" size={16} />
+                <IconColumns3 aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                 View
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
               {table.getAllColumns().filter((column) => column.getCanHide()).map((column) => (
-                <DropdownMenuIconCheckboxItem
+                <DropdownMenuCheckboxItem
                   checked={column.getIsVisible()}
                   className="capitalize"
                   key={column.id}
-                  onIconCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   onSelect={(event) => event.preventDefault()}
                 >
                   {column.id}
-                </DropdownMenuIconCheckboxItem>
+                </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -411,8 +411,8 @@ export function ActivityLogs() {
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: <IconChevronUpIcon aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-                          desc: <IconChevronDownIcon aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
+                          asc: <IconChevronUp aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
+                          desc: <IconChevronDown aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     ) : (
@@ -486,12 +486,12 @@ export function ActivityLogs() {
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Previous page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} size="icon" variant="outline">
-                  <IconChevronLeftIcon size={14} />
+                  <IconChevronLeft size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>
                 <Button aria-label="Next page" className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} size="icon" variant="outline">
-                  <IconChevronRightIcon size={14} />
+                  <IconChevronRight size={14} />
                 </Button>
               </PaginationItem>
               <PaginationItem>

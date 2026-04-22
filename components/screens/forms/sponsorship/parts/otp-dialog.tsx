@@ -5,6 +5,7 @@ import { Fragment } from "react"
 import { IconLoader2, IconRefresh } from "@tabler/icons-react"
 import { useFormContext } from "react-hook-form"
 
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,15 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+import { Field, FieldLabel } from "@/components/ui/field"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
-import { Typography } from "@/components/ui/typography"
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 
 type Props = {
   open: boolean
@@ -42,7 +41,6 @@ const SLOT_CLASSES =
 export function OtpDialog({
   open,
   value,
-  error,
   loading,
   length,
   onValueChange,

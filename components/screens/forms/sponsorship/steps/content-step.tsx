@@ -1,8 +1,21 @@
 "use client"
 
+import type { ComponentType, SVGProps } from "react"
 import { Controller, useFormContext } from "react-hook-form"
+import {
+  IconFileDescription,
+  IconFiles,
+  IconPhoto,
+  IconVideo,
+} from "@tabler/icons-react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
@@ -13,10 +26,20 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import formOptions from "@/data/form-options.json"
 import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 import { type ContentTypeOption } from "@/types/sponsorship-form"
+
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
+
+const CONTENT_TYPE_ICONS: Record<string, IconComponent> = {
+  affiche: IconPhoto,
+  dossier: IconFileDescription,
+  photos: IconFiles,
+  video: IconVideo,
+}
 
 const contentTypes = formOptions.contentTypes as ContentTypeOption[]
 
@@ -46,33 +69,49 @@ export function ContentStep() {
                 setValue(`files.${typeId}`, null, { shouldDirty: true })
               }
             }
+
             return (
               <FieldSet>
                 <FieldLegend variant="label">Types de contenus</FieldLegend>
                 <FieldDescription>
                   Sélectionnez au moins un type de contenu.
                 </FieldDescription>
-                <FieldGroup data-slot="checkbox-group" className="grid grid-cols-1 md:grid-cols-2">
-                  {contentTypes.map((type) => (
-                    <Field
-                      key={type.id}
-                      orientation="horizontal"
-                      data-invalid={fieldState.invalid}
-                    >
-                      <Checkbox
-                        id={type.id}
-                        name={field.name}
-                        checked={selected.includes(type.id)}
-                        onCheckedChange={(v) => toggle(type.id, v === true)}
-                        aria-invalid={fieldState.invalid}
-                      />
-                      <FieldLabel htmlFor={type.id} className="font-normal">
-                        {type.label}
-                      </FieldLabel>
-                    </Field>
-                  ))}
-                </FieldGroup>
-                {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
+
+                <ul
+                  data-invalid={fieldState.invalid}
+                  className="flex w-full flex-col divide-y rounded-md border data-[invalid=true]:border-destructive"
+                >
+                  {contentTypes.map((type) => {
+                    const Icon = CONTENT_TYPE_ICONS[type.id]
+                    return (
+                      <li
+                        key={type.id}
+                        className="flex items-center justify-between gap-2 px-5 py-3"
+                      >
+                        <Label htmlFor={type.id} className="cursor-pointer">
+                          <span className="flex items-center gap-2">
+                            {Icon && <Icon className="size-4" aria-hidden="true" />}
+                            {type.label}
+                          </span>
+                        </Label>
+                        <Checkbox
+                          id={type.id}
+                          name={field.name}
+                          checked={selected.includes(type.id)}
+                          onCheckedChange={(v) => toggle(type.id, v === true)}
+                          aria-invalid={fieldState.invalid}
+                          className="mt-0.5 border-primary border-dashed cursor-pointer"
+                        />
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {fieldState.invalid && (
+                  <FieldDescription className="text-destructive">
+                    {fieldState.error?.message}
+                  </FieldDescription>
+                )}
 
                 {selected.length > 0 && (
                   <FieldSet className="gap-4 pt-4">
@@ -128,7 +167,9 @@ function FileSlot({ type }: { type: ContentTypeOption }) {
                   : `Fichier sélectionné : ${value.name}`}
               </Typography>
             )}
-            {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
+            {fieldState.invalid && (
+              <FieldDescription>{fieldState.error?.message}</FieldDescription>
+            )}
           </Field>
         )
       }}

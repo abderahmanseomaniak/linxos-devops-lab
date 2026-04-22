@@ -29,15 +29,20 @@ export function CommitmentStep() {
           name="imageConsent"
           control={control}
           render={({ field, fieldState }) => (
-            <Field orientation="horizontal" data-invalid={fieldState.invalid}>
+            <Field
+              orientation="horizontal"
+              data-invalid={fieldState.invalid}
+              className="items-start"
+            >
               <Checkbox
                 id={field.name}
                 name={field.name}
                 checked={field.value === true}
                 onCheckedChange={(v) => field.onChange(v === true)}
                 aria-invalid={fieldState.invalid}
+                className="mt-0.5 border-primary border-dashed cursor-pointer"
               />
-              <FieldLabel htmlFor={field.name} className="font-normal leading-relaxed">
+              <FieldLabel htmlFor={field.name} className="leading-snug">
                 J&apos;autorise l&apos;organisation à utiliser, à des fins de promotion et de
                 communication, les photos et vidéos me représentant ainsi que ma voix, dans le
                 cadre de l&apos;événement. Cette autorisation est valable pour une durée de

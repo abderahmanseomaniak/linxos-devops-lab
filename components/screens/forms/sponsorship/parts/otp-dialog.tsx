@@ -24,7 +24,7 @@ type Props = {
   onClose: () => void
 }
 
-export function WizardOtpDialog({
+export function OtpDialog({
   open,
   value,
   error,

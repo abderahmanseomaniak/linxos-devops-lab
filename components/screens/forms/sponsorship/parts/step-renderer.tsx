@@ -10,7 +10,7 @@ type Props = {
   onEdit: (step: number) => void
 }
 
-export function WizardStepRenderer({ step, onEdit }: Props) {
+export function StepRenderer({ step, onEdit }: Props) {
   switch (step) {
     case 1:
       return <ClubStep />

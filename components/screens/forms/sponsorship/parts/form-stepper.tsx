@@ -11,7 +11,7 @@ type Props = {
   onStepClick: (step: number) => void
 }
 
-export function WizardStepper({ steps, current, onStepClick }: Props) {
+export function FormStepper({ steps, current, onStepClick }: Props) {
   const total = steps.length
   const activeStep = steps.find((s) => s.id === current)
   const progress = ((current - 1) / (total - 1)) * 100

@@ -2,7 +2,7 @@ import type { SVGProps } from "react"
 import Link from "next/link"
 import { Typography } from "@/components/ui/typography"
 
-export function WizardHelpFooter() {
+export function ContactFooter() {
   return (
     <footer className="mt-16 flex flex-col md:flex-row justify-between gap-12 border-t border-border pt-12 pb-8">
       {/* Left Column: Contact */}

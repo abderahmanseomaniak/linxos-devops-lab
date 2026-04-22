@@ -11,7 +11,7 @@ type Props = {
   onSubmit: () => void
 }
 
-export function WizardNavigation({
+export function FormNavigation({
   canGoPrev,
   canGoNext,
   onPrev,

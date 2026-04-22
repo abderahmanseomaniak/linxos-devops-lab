@@ -4,11 +4,11 @@ import { FormProvider } from "react-hook-form"
 
 import { type Step } from "@/types/sponsorship-form"
 import { useSponsorshipForm } from "./hooks/use-sponsorship-form"
-import { WizardHelpFooter } from "./parts/wizard-help-footer"
-import { WizardNavigation } from "./parts/wizard-navigation"
-import { WizardOtpDialog } from "./parts/wizard-otp-dialog"
-import { WizardStepRenderer } from "./parts/wizard-step-renderer"
-import { WizardStepper } from "./parts/wizard-stepper"
+import { ContactFooter } from "./parts/contact-footer"
+import { FormNavigation } from "./parts/form-navigation"
+import { FormStepper } from "./parts/form-stepper"
+import { OtpDialog } from "./parts/otp-dialog"
+import { StepRenderer } from "./parts/step-renderer"
 
 const STEPS: readonly Step[] = [
   { id: 1, title: "Club" },
@@ -19,7 +19,7 @@ const STEPS: readonly Step[] = [
   { id: 6, title: "Engagement" },
 ]
 
-export function SponsorshipWizard() {
+export function SponsorshipForm() {
   const { form, step, otp, submit } = useSponsorshipForm(STEPS.length)
 
   const handleStepPillClick = (stepId: number) => {
@@ -29,13 +29,13 @@ export function SponsorshipWizard() {
   return (
     <FormProvider {...form}>
       <div className="mx-auto w-full max-w-4xl space-y-6">
-        <WizardStepper
+        <FormStepper
           steps={STEPS}
           current={step.current}
           onStepClick={handleStepPillClick}
         />
 
-        <WizardOtpDialog
+        <OtpDialog
           open={otp.open}
           value={otp.value}
           error={otp.error}
@@ -50,10 +50,10 @@ export function SponsorshipWizard() {
           key={step.current}
           className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
         >
-          <WizardStepRenderer step={step.current} onEdit={step.goTo} />
+          <StepRenderer step={step.current} onEdit={step.goTo} />
         </div>
 
-        <WizardNavigation
+        <FormNavigation
           canGoPrev={step.canGoPrev}
           canGoNext={step.canGoNext}
           onPrev={step.goPrev}
@@ -61,7 +61,7 @@ export function SponsorshipWizard() {
           onSubmit={submit}
         />
 
-        <WizardHelpFooter />
+        <ContactFooter />
       </div>
     </FormProvider>
   )

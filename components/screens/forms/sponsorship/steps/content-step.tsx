@@ -4,11 +4,12 @@ import type { ComponentType, SVGProps } from "react"
 import { Controller, useFormContext } from "react-hook-form"
 import {
   IconFileDescription,
-  IconFiles,
   IconPhoto,
+  IconPhotoFilled,
   IconVideo,
 } from "@tabler/icons-react"
 
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -25,10 +26,10 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import formOptions from "@/data/form-options.json"
+import { useFileUpload, type FileWithPreview } from "@/hooks/use-file-upload"
 import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 import { type ContentTypeOption } from "@/types/sponsorship-form"
 
@@ -37,7 +38,7 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 const CONTENT_TYPE_ICONS: Record<string, IconComponent> = {
   affiche: IconPhoto,
   dossier: IconFileDescription,
-  photos: IconFiles,
+  photos: IconPhotoFilled,
   video: IconVideo,
 }
 
@@ -140,39 +141,181 @@ function FileSlot({ type }: { type: ContentTypeOption }) {
     <Controller
       control={control}
       name={`files.${type.id}` as const}
-      render={({ field, fieldState }) => {
-        const value = field.value as File | File[] | null | undefined
-        return (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={`file-${type.id}`}>{type.label}</FieldLabel>
-            <Input
-              id={`file-${type.id}`}
-              type="file"
-              accept={type.accept}
-              multiple={type.multiple}
-              aria-invalid={fieldState.invalid}
-              onChange={(e) => {
-                const list = e.target.files
-                if (!list || list.length === 0) {
-                  field.onChange(null)
-                  return
-                }
-                field.onChange(type.multiple ? Array.from(list) : list[0])
-              }}
-            />
-            {value && (
-              <Typography variant="small">
-                {Array.isArray(value)
-                  ? `${value.length} fichier(s) sélectionné(s)`
-                  : `Fichier sélectionné : ${value.name}`}
-              </Typography>
-            )}
-            {fieldState.invalid && (
-              <FieldDescription>{fieldState.error?.message}</FieldDescription>
-            )}
-          </Field>
-        )
-      }}
+      render={({ field, fieldState }) => (
+        <FileUploadField
+          type={type}
+          onChange={field.onChange}
+          invalid={fieldState.invalid}
+          error={fieldState.error?.message}
+        />
+      )}
     />
+  )
+}
+
+type FileUploadFieldProps = {
+  type: ContentTypeOption
+  onChange: (value: File | File[] | null) => void
+  invalid: boolean
+  error?: string
+}
+
+function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProps) {
+  const Icon = CONTENT_TYPE_ICONS[type.id]
+
+  const [{ files }, { removeFile, openFileDialog, getInputProps }] = useFileUpload({
+    accept: type.accept,
+    multiple: type.multiple,
+    onFilesChange: (next) => {
+      const realFiles = next
+        .map((f) => f.file)
+        .filter((f): f is File => f instanceof File)
+      if (type.multiple) {
+        onChange(realFiles.length > 0 ? realFiles : null)
+      } else {
+        onChange(realFiles[0] ?? null)
+      }
+    },
+  })
+
+  const hasFiles = files.length > 0
+
+  return (
+    <Field data-invalid={invalid}>
+      <FieldLabel htmlFor={`file-${type.id}`}>{type.label}</FieldLabel>
+
+      {type.multiple ? (
+        <div className="flex flex-col gap-3">
+          <div className="relative inline-block self-start">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={openFileDialog}
+              aria-haspopup="dialog"
+            >
+              {hasFiles ? "Ajouter des fichiers" : "Téléverser des fichiers"}
+            </Button>
+            <input
+              {...getInputProps({ id: `file-${type.id}` })}
+              className="sr-only"
+              aria-label={`Téléverser ${type.label}`}
+              tabIndex={-1}
+            />
+          </div>
+
+          {hasFiles ? (
+            <ul className="flex flex-col gap-2">
+              {files.map((entry) => (
+                <li
+                  key={entry.id}
+                  className="inline-flex items-center gap-2"
+                >
+                  <PreviewTile entry={entry} icon={Icon} />
+                  <Typography
+                    variant="small"
+                    className="min-w-0 flex-1 truncate text-xs"
+                  >
+                    {entry.file.name}
+                  </Typography>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(entry.id)}
+                    className="cursor-pointer text-xs font-medium text-destructive hover:underline"
+                    aria-label={`Retirer ${entry.file.name}`}
+                  >
+                    Retirer
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Typography variant="small" className="text-muted-foreground">
+              Aucun fichier
+            </Typography>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <div className="inline-flex items-center gap-2">
+            <PreviewTile entry={files[0]} icon={Icon} />
+            <div className="relative inline-block">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openFileDialog}
+                aria-haspopup="dialog"
+              >
+                {hasFiles ? "Changer" : "Téléverser"}
+              </Button>
+              <input
+                {...getInputProps({ id: `file-${type.id}` })}
+                className="sr-only"
+                aria-label={`Téléverser ${type.label}`}
+                tabIndex={-1}
+              />
+            </div>
+          </div>
+
+          {hasFiles ? (
+            <div className="inline-flex gap-2 text-xs">
+              <Typography
+                variant="small"
+                aria-live="polite"
+                className="truncate"
+              >
+                {files[0].file.name}
+              </Typography>
+              <button
+                type="button"
+                onClick={() => removeFile(files[0].id)}
+                className="cursor-pointer font-medium text-destructive hover:underline"
+                aria-label={`Retirer ${files[0].file.name}`}
+              >
+                Retirer
+              </button>
+            </div>
+          ) : (
+            <Typography variant="small" className="text-muted-foreground">
+              Aucun fichier
+            </Typography>
+          )}
+        </div>
+      )}
+
+      {invalid && error && <FieldDescription>{error}</FieldDescription>}
+    </Field>
+  )
+}
+
+function PreviewTile({
+  entry,
+  icon: Icon,
+}: {
+  entry: FileWithPreview | undefined
+  icon?: IconComponent
+}) {
+  const isImage =
+    entry?.preview &&
+    entry.file instanceof File &&
+    entry.file.type.startsWith("image/")
+
+  return (
+    <div
+      className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md border border-input bg-muted/30"
+      aria-hidden="true"
+    >
+      {isImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={entry.preview}
+          alt=""
+          className="size-full object-cover"
+        />
+      ) : (
+        Icon && <Icon className="size-4 opacity-60" />
+      )}
+    </div>
   )
 }

@@ -1,65 +1,83 @@
 import type { SVGProps } from "react"
 import Link from "next/link"
-import { IconCalendar, IconMail } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 
 export function WizardHelpFooter() {
   return (
-    <section
-      aria-labelledby="wizard-help-heading"
-      className="mt-4 flex flex-col items-center gap-4 border-t border-border pt-6"
-    >
-      <Typography
-        id="wizard-help-heading"
-        variant="small"
-        className="block text-center text-muted-foreground"
-      >
-        Besoin d&apos;aide pour finaliser votre demande&nbsp;?
-      </Typography>
-
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <Button asChild size="sm">
-          <Link href="/contact/rendez-vous">
-            <IconCalendar data-icon="inline-start" />
-            Prendre rendez-vous
-          </Link>
-        </Button>
-        <Button asChild variant="outline" size="sm">
-          <a href="mailto:contact@lynxos.com">
-            <IconMail data-icon="inline-start" />
-            Nous écrire
-          </a>
-        </Button>
+    <footer className="mt-16 flex flex-col md:flex-row justify-between gap-12 border-t border-border pt-12 pb-8">
+      {/* Left Column: Contact */}
+      <div className="flex flex-col gap-4">
+        <Typography variant="large" className="font-semibold text-foreground">
+          +1 (120) 233-01231
+        </Typography>
+        <Typography variant="h2" className="text-4xl lg:text-5xl font-bold tracking-tight">
+          yo@shadcnblocks.com
+        </Typography>
       </div>
 
-      <nav aria-label="Réseaux sociaux">
-        <ul className="flex items-center gap-1">
-          {SOCIAL_LINKS.map(({ label, href, Icon }) => (
-            <li key={label}>
-              <Button asChild variant="ghost" size="icon">
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                >
-                  <Icon aria-hidden="true" />
-                </a>
-              </Button>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </section>
+      {/* Right Columns Container */}
+      <div className="flex flex-col sm:flex-row gap-16 md:gap-24">
+        {/* Navigate Column */}
+        <div className="flex flex-col gap-4">
+          <Typography variant="muted" className="mb-2 text-muted-foreground">
+            Navigate
+          </Typography>
+          <Link href="#" className="font-medium text-foreground hover:underline">
+            Home
+          </Link>
+          <Link href="#" className="font-medium text-foreground hover:underline">
+            Collection
+          </Link>
+          <Link href="#" className="font-medium text-foreground hover:underline">
+            Projects
+          </Link>
+          <Link href="#" className="font-medium text-foreground hover:underline">
+            Pricing
+          </Link>
+          <Link href="#" className="font-medium text-foreground hover:underline">
+            Login
+          </Link>
+        </div>
+
+        {/* Social Column */}
+        <div className="flex flex-col gap-4">
+          <Typography variant="muted" className="mb-2 text-muted-foreground">
+            Social
+          </Typography>
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group font-medium text-foreground hover:underline inline-flex items-center gap-1.5"
+          >
+            LinkedIn <ExternalLinkIcon className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </a>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group font-medium text-foreground hover:underline inline-flex items-center gap-1.5"
+          >
+            Twitter <ExternalLinkIcon className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </a>
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group font-medium text-foreground hover:underline inline-flex items-center gap-1.5"
+          >
+            Facebook <ExternalLinkIcon className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </a>
+        </div>
+      </div>
+    </footer>
   )
 }
 
-type SocialIconProps = SVGProps<SVGSVGElement>
-
-function InstagramIcon(props: SocialIconProps) {
+function ExternalLinkIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -68,67 +86,8 @@ function InstagramIcon(props: SocialIconProps) {
       strokeLinejoin="round"
       {...props}
     >
-      <rect x="2" y="2" width="20" height="20" rx="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+      <path d="M7 7h10v10" />
+      <path d="M7 17 17 7" />
     </svg>
   )
 }
-
-function FacebookIcon(props: SocialIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  )
-}
-
-function LinkedinIcon(props: SocialIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  )
-}
-
-function YoutubeIcon(props: SocialIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-    </svg>
-  )
-}
-
-const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://instagram.com/lynxos", Icon: InstagramIcon },
-  { label: "Facebook", href: "https://facebook.com/lynxos", Icon: FacebookIcon },
-  { label: "LinkedIn", href: "https://linkedin.com/company/lynxos", Icon: LinkedinIcon },
-  { label: "YouTube", href: "https://youtube.com/@lynxos", Icon: YoutubeIcon },
-] as const

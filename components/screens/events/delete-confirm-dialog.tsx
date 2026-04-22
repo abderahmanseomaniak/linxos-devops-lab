@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
+import { IconTrash } from "@tabler/icons-react"
 import type { DeleteConfirmDialogProps, DeleteButtonProps } from "@/types/events"
 
 export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, eventName }: DeleteConfirmDialogProps) {
@@ -25,7 +25,7 @@ export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, eventName }
         <AlertDialogFooter>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-            <Trash2 className="mr-2 size-4" />
+            <IconTrash className="mr-2 size-4" />
             Supprimer
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -37,7 +37,7 @@ export function DeleteConfirmDialog({ open, onOpenChange, onConfirm, eventName }
 export function DeleteButton({ onClick }: DeleteButtonProps) {
   return (
     <Button variant="ghost" size="icon" onClick={onClick}>
-      <Trash2 className="size-4 text-destructive" />
+      <IconTrash className="size-4 text-destructive" />
       <span className="sr-only">Supprimer</span>
     </Button>
   )

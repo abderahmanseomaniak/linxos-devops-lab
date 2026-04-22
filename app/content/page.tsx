@@ -8,7 +8,7 @@ import { ContentCard } from "@/components/screens/content/content-card"
 import { ContentDetailsModal } from "@/components/screens/content/content-details-modal"
 import { Typography } from "@/components/ui/typography"
 import { UGCEvent, ContentStatus } from "@/types/contents"
-import { Search } from "lucide-react"
+import { IconSearch } from "@tabler/icons-react"
 import contentData from "@/data/content.json"
 
 const initialEvents: UGCEvent[] = contentData as UGCEvent[]
@@ -171,7 +171,7 @@ export default function ContentDashboardPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <div className="absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-muted-foreground pointer-events-none">
-            <Search size={18} />
+            <IconSearch size={18} />
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { Delivery, StatusLabels, IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
 import { StatusBadge } from "./status-badge"
-import { MapPin, User, Package, Truck, Calendar, Phone, Clock, FileText, MessageSquare } from "lucide-react"
+import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconPhone, IconClock, IconFileText, IconMessageCircle } from "@tabler/icons-react"
 
 export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWhatsApp }: DeliveryDetailsModalProps) {
   if (!delivery) return null
@@ -57,7 +57,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
           <div className="p-3 bg-muted/30 rounded-lg">
             <Typography variant="small" className="mb-1 block">Delivery address</Typography>
             <div className="flex items-start gap-2">
-              <MapPin className="size-4 mt-0.5 text-muted-foreground shrink-0" />
+              <IconMapPin className="size-4 mt-0.5 text-muted-foreground shrink-0" />
               <Typography variant="small">{delivery.address}</Typography>
             </div>
           </div>
@@ -66,14 +66,14 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
             <div className="p-3 bg-muted/30 rounded-lg">
               <Typography variant="small" className="mb-1">Expected date</Typography>
               <div className="flex items-center gap-2">
-                <Calendar className="size-4 text-muted-foreground" />
+                <IconCalendar className="size-4 text-muted-foreground" />
                 <Typography>{formattedDate}</Typography>
               </div>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
               <Typography variant="small" className="mb-1">Quantity</Typography>
               <div className="flex items-center gap-2">
-                <Package className="size-4 text-muted-foreground" />
+                <IconPackage className="size-4 text-muted-foreground" />
                 <Typography>{delivery.quantity} units</Typography>
               </div>
             </div>
@@ -83,11 +83,11 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
             <Typography variant="small" className="mb-2">Contact</Typography>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <User className="size-4 text-muted-foreground" />
+                <IconUser className="size-4 text-muted-foreground" />
                 <Typography className="font-medium">{delivery.contactName}</Typography>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="size-4 text-muted-foreground" />
+                <IconPhone className="size-4 text-muted-foreground" />
                 <Typography>{delivery.phone}</Typography>
               </div>
             </div>
@@ -97,7 +97,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
               className="w-full mt-3 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
               onClick={handleWhatsApp}
             >
-              <MessageSquare className="size-4 mr-2" />
+              <IconMessageCircle className="size-4 mr-2" />
               Contact via WhatsApp
             </Button>
           </div>
@@ -107,13 +107,13 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
               <Typography variant="small" className="mb-2">History</Typography>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Truck className="size-4 text-muted-foreground" />
+                  <IconTruck className="size-4 text-muted-foreground" />
                   <Typography variant="small">Shipped:</Typography>
                   <span className="font-medium">{formatTimestamp(delivery.deliveryStartedAt)}</span>
                 </div>
                 {delivery.deliveredAt && (
                   <div className="flex items-center gap-2">
-                    <Package className="size-4 text-muted-foreground" />
+                    <IconPackage className="size-4 text-muted-foreground" />
                     <Typography variant="small">Delivered:</Typography>
                     <span className="font-medium">{formatTimestamp(delivery.deliveredAt)}</span>
                   </div>
@@ -165,7 +165,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
                 className="w-full"
                 onClick={() => window.open(delivery.receiptUrl, "_blank")}
               >
-                <FileText className="size-4 mr-2" />
+                <IconFileText className="size-4 mr-2" />
                 View receipt
               </Button>
             </div>
@@ -173,7 +173,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
 
           <div className="flex gap-2 pt-2">
             <Button className="flex-1" onClick={handleWhatsApp}>
-              <MessageSquare className="size-4 mr-2" />
+              <IconMessageCircle className="size-4 mr-2" />
               Contact client
             </Button>
           </div>

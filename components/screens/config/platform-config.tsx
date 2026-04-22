@@ -7,7 +7,7 @@ import { Typography } from "@/components/ui/typography"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
-import { Plus, X, GripVertical, RotateCcw, Save } from "lucide-react"
+import { IconPlus, IconX, IconGripVertical, IconArrowBackUp, IconDeviceFloppy } from "@tabler/icons-react"
 
 import type { PlatformConfigData } from "@/types/config"
 import configData from "@/data/config.json"
@@ -53,7 +53,7 @@ function StageManager({ stages, onChange }: StageManagerProps) {
           onKeyDown={(e) => e.key === "Enter" && addStage()}
         />
         <Button type="button" onClick={addStage} disabled={!newStage.trim()}>
-          <Plus className="size-4" />
+          <IconPlus className="size-4" />
         </Button>
       </div>
       <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -62,7 +62,7 @@ function StageManager({ stages, onChange }: StageManagerProps) {
             key={index}
             className="flex items-center gap-2 p-2 bg-muted/50 rounded-md"
           >
-            <GripVertical className="size-4 text-muted-foreground cursor-grab" />
+            <IconGripVertical className="size-4 text-muted-foreground cursor-grab" />
             <Typography variant="small" className="flex-1">{stage}</Typography>
             <Button
               type="button"
@@ -70,7 +70,7 @@ function StageManager({ stages, onChange }: StageManagerProps) {
               size="icon"
               onClick={() => removeStage(index)}
             >
-              <X className="size-4" />
+              <IconX className="size-4" />
             </Button>
           </div>
         ))}
@@ -366,11 +366,11 @@ export function PlatformConfig() {
 
       <div className="flex gap-4">
         <Button onClick={handleSave}>
-          <Save className="size-4 mr-2" />
+          <IconDeviceFloppy className="size-4 mr-2" />
           {saved ? "Saved!" : "Save Changes"}
         </Button>
         <Button variant="outline" onClick={handleReset}>
-          <RotateCcw className="size-4 mr-2" />
+          <IconArrowBackUp className="size-4 mr-2" />
           Reset to Default
         </Button>
       </div>

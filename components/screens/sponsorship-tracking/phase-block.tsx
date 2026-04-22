@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, Clock } from "lucide-react";
+import { IconCheck, IconChevronDown, IconClock } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import type { Phase, TrackingStep, PhaseBlockProps } from "@/types/sponsorship-tracking";
@@ -19,8 +19,8 @@ function MiniStepItem({ step }: { step: TrackingStep }) {
           !isCompleted && !isCurrent && "border-muted-foreground/30"
         )}
       >
-        {isCompleted && <Check className="h-3 w-3 text-primary-foreground" />}
-        {isCurrent && <Clock className="h-3 w-3 text-primary animate-pulse" />}
+        {isCompleted && <IconCheck className="h-3 w-3 text-primary-foreground" />}
+        {isCurrent && <IconClock className="h-3 w-3 text-primary animate-pulse" />}
       </div>
       <span
         className={cn(
@@ -120,7 +120,7 @@ export function PhaseBlock({ phase, isExpanded, onToggle }: PhaseBlockProps) {
             ({phase.steps.length} steps)
           </span>
         </div>
-        <ChevronDown
+        <IconChevronDown
           className={cn(
             "h-4 w-4 text-muted-foreground transition-transform",
             isExpanded && "rotate-180"

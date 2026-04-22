@@ -10,7 +10,7 @@ import { FiltersBar } from "@/components/screens/logistics/filters-bar"
 import { DeliveryDetailsModal } from "@/components/screens/logistics/delivery-details-modal"
 import { Typography } from "@/components/ui/typography"
 import { Delivery, LogisticsStatus, Note } from "@/types/logistics"
-import { Search, Package, Truck, CheckCircle, AlertTriangle } from "lucide-react"
+import { IconSearch, IconPackage, IconTruck, IconCircleCheck, IconAlertTriangle } from "@tabler/icons-react"
 import logisticsData from "@/data/logistics.json"
 
 const initialDeliveries: Delivery[] = logisticsData as Delivery[]
@@ -190,7 +190,7 @@ export default function LogisticsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <div className="absolute inset-y-0 left-0 flex items-center justify-center ps-3 text-muted-foreground/60 pointer-events-none">
-            <Search size={16} />
+            <IconSearch size={16} />
           </div>
         </div>
 
@@ -236,28 +236,28 @@ export default function LogisticsPage() {
             value="ready"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
           >
-            <Package className="size-4 mr-1.5" />
+            <IconPackage className="size-4 mr-1.5" />
             Ready ({statusCounts.ready})
           </TabsTrigger>
           <TabsTrigger
             value="transit"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
           >
-            <Truck className="size-4 mr-1.5" />
+            <IconTruck className="size-4 mr-1.5" />
             En transit ({statusCounts.transit})
           </TabsTrigger>
           <TabsTrigger
             value="delivered"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
           >
-            <CheckCircle className="size-4 mr-1.5" />
+            <IconCircleCheck className="size-4 mr-1.5" />
             Livré ({statusCounts.delivered})
           </TabsTrigger>
           <TabsTrigger
             value="issues"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
           >
-            <AlertTriangle className="size-4 mr-1.5" />
+            <IconAlertTriangle className="size-4 mr-1.5" />
             Problèmes ({statusCounts.issues})
           </TabsTrigger>
         </TabsList>
@@ -281,7 +281,7 @@ export default function LogisticsPage() {
             {filteredDeliveries.length === 0 && (
               <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
                 <div className="text-center">
-                  <Package className="size-12 mx-auto mb-3 opacity-30" />
+                  <IconPackage className="size-12 mx-auto mb-3 opacity-30" />
                   <Typography>Aucune livraison trouvée</Typography>
                   <Typography variant="small" className="mt-1">Essayez avec d&apos;autres filtres</Typography>
                 </div>

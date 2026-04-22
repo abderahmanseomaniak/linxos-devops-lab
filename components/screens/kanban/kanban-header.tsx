@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Typography } from "@/components/ui/typography"
-import { SearchIcon } from "lucide-react"
+import { IconSearch } from "@tabler/icons-react"
 import { KanbanHeaderProps } from "@/types/kanban"
 
 export function KanbanHeader({
@@ -31,7 +31,7 @@ export function KanbanHeader({
             onChange={(e) => onSearchChange(e.target.value)}
           />
           <div className="absolute inset-y-0 left-0 flex items-center justify-center ps-2.5 text-muted-foreground/80 pointer-events-none">
-            <SearchIcon size={14} />
+            <IconSearch size={14} />
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { StatusBadge } from "./status-badge"
 import { Delivery, LogisticsStatus, StatusLabels, DeliveryCardProps } from "@/types/logistics"
-import { MapPin, User, Package, Truck, MessageSquare, FileText, Upload, Calendar, Eye, AlertTriangle, CheckCircle } from "lucide-react"
+import { IconMapPin, IconUser, IconPackage, IconTruck, IconMessageCircle, IconFileText, IconUpload, IconCalendar, IconEye, IconAlertTriangle, IconCircleCheck } from "@tabler/icons-react"
 
 export function DeliveryCard({
   delivery,
@@ -83,19 +83,19 @@ export function DeliveryCard({
 
       <div className="space-y-1.5 text-xs">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <MapPin className="size-3.5 shrink-0" />
+          <IconMapPin className="size-3.5 shrink-0" />
           <Typography variant="p" className="truncate">{delivery.address}</Typography>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Calendar className="size-3.5 shrink-0" />
+          <IconCalendar className="size-3.5 shrink-0" />
           <span>{delivery.city} · {formattedDate}</span>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Package className="size-3.5 shrink-0" />
+          <IconPackage className="size-3.5 shrink-0" />
           <span>{delivery.quantity} cans</span>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
-          <User className="size-3.5 shrink-0" />
+          <IconUser className="size-3.5 shrink-0" />
           <span>{delivery.contactName}</span>
           <button
             onClick={handleWhatsApp}
@@ -117,7 +117,7 @@ export function DeliveryCard({
             className="flex-1 h-8 text-xs"
             onClick={handleStartShipment}
           >
-            <Truck className="size-3 mr-1" />
+            <IconTruck className="size-3 mr-1" />
             Ship
           </Button>
         </div>
@@ -131,7 +131,7 @@ export function DeliveryCard({
             className="flex-1 h-8 text-xs"
             onClick={handleMarkDelivered}
           >
-            <CheckCircle className="size-3 mr-1" />
+            <IconCircleCheck className="size-3 mr-1" />
             Delivered
           </Button>
           <Button
@@ -140,7 +140,7 @@ export function DeliveryCard({
             className="flex-1 h-8 text-xs border-destructive text-destructive hover:bg-destructive/10"
             onClick={() => setShowIssueModal(true)}
           >
-            <AlertTriangle className="size-3 mr-1" />
+            <IconAlertTriangle className="size-3 mr-1" />
             Report
           </Button>
         </div>
@@ -154,7 +154,7 @@ export function DeliveryCard({
             className="flex-1 h-8 text-xs"
             onClick={() => setShowUpload(true)}
           >
-            <FileText className="size-3 mr-1" />
+            <IconFileText className="size-3 mr-1" />
 Proof
           </Button>
           {receiptFile && (
@@ -181,7 +181,7 @@ Proof
             className="flex-1 h-8 text-xs"
             onClick={handleResolveIssue}
           >
-            <CheckCircle className="size-3 mr-1" />
+            <IconCircleCheck className="size-3 mr-1" />
             Resolve
           </Button>
         </div>
@@ -194,7 +194,7 @@ Proof
           className="h-7 text-xs px-2"
           onClick={() => onViewDetails(delivery)}
         >
-          <Eye className="size-3 mr-1" />
+          <IconEye className="size-3 mr-1" />
           Details
         </Button>
         <Button
@@ -203,7 +203,7 @@ Proof
           className="h-7 text-xs px-2"
           onClick={handleWhatsApp}
         >
-          <MessageSquare className="size-3 mr-1" />
+          <IconMessageCircle className="size-3 mr-1" />
           WhatsApp
         </Button>
         <Button
@@ -212,7 +212,7 @@ Proof
           className="h-7 text-xs px-2"
           onClick={() => setShowNoteInput(!showNoteInput)}
         >
-          <Upload className="size-3 mr-1" />
+          <IconUpload className="size-3 mr-1" />
           Note
         </Button>
       </div>

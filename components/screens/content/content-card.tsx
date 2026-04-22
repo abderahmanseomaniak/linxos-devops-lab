@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { ContentCardProps, ContentStatus } from "@/types/content"
-import { AlertTriangle, CheckCircle, MapPin } from "lucide-react"
+import { IconAlertTriangle, IconCircleCheck, IconMapPin } from "@tabler/icons-react"
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700 border-slate-200",
@@ -40,7 +40,7 @@ export function ContentCard({
       </div>
 
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-        <MapPin size={14} />
+        <IconMapPin size={14} />
         <Typography variant="muted">{event.city}</Typography>
         <span className="text-gray-300">•</span>
         <Typography variant="muted">{formattedDate}</Typography>
@@ -61,12 +61,12 @@ export function ContentCard({
         <div className="flex items-center gap-1.5">
           {hasDriveLink ? (
             <>
-              <CheckCircle size={14} className="text-green-600" />
+              <IconCircleCheck size={14} className="text-green-600" />
               <Typography variant="small" className="text-green-700">Drive linked</Typography>
             </>
           ) : (
             <>
-              <AlertTriangle size={14} className="text-amber-500" />
+              <IconAlertTriangle size={14} className="text-amber-500" />
               <Typography variant="small" className="text-amber-600">No drive</Typography>
             </>
           )}

@@ -1,6 +1,6 @@
 "use client"
 
-import { Plus, X } from "lucide-react"
+import { IconPlus, IconX } from "@tabler/icons-react"
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
@@ -132,7 +132,7 @@ export function ClubStep() {
                             aria-label={`Supprimer le lien ${index + 1}`}
                             disabled={fields.length <= 1}
                           >
-                            <X className="size-4" />
+                            <IconX className="size-4" />
                           </Button>
                         </Field>
                       )}
@@ -146,7 +146,7 @@ export function ClubStep() {
                 onClick={() => append({ url: "" })}
                 className="w-full"
               >
-                <Plus className="size-4 mr-2" />
+                <IconPlus className="size-4 mr-2" />
                 Ajouter un lien
               </Button>
             </FieldSet>

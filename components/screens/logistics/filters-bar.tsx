@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search as SearchIcon } from "lucide-react"
+import { IconSearch } from "@tabler/icons-react"
 import { FiltersBarProps } from "@/types/logistics"
 
 export function FiltersBar({
@@ -24,7 +24,7 @@ export function FiltersBar({
           onChange={(e) => onSearchChange(e.target.value)}
         />
         <div className="absolute inset-y-0 left-0 flex items-center justify-center ps-3 text-muted-foreground/60 pointer-events-none">
-          <SearchIcon size={16} />
+          <IconSearch size={16} />
         </div>
       </div>
 

@@ -155,7 +155,7 @@ export function ClubStep() {
           </FieldGroup>
         </FieldSet>
 
-        <div className="pt-4 border-t">
+        <div className="">
           <FieldSet>
             <FieldLegend variant="label">
               <Typography variant="large">Responsable</Typography>

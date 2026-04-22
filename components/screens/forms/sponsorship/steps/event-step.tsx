@@ -307,7 +307,7 @@ export function EventStep() {
         </FieldSet>
       </CardContent>
 
-      <CardFooter className="flex-col items-stretch gap-2 border-t bg-muted/30 pt-6">
+      <CardFooter className="flex-col items-stretch gap-2 border-t bg-muted/30 pt-6 pb-6 -mb-6">
         <Controller
           name="ugcAccepted"
           control={control}

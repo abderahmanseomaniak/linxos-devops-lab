@@ -1,0 +1,68 @@
+{
+  "kpi": [
+    {
+      "title": "Total des demandes",
+      "key": "total",
+      "icon": "Package",
+      "trend": "+12%",
+      "trendUp": true
+    },
+    {
+      "title": "Événements actifs",
+      "key": "activeEvents",
+      "icon": "Calendar",
+      "trend": "+5%",
+      "trendUp": true
+    },
+    {
+      "title": "Livraisons en cours",
+      "key": "pendingDelivery",
+      "icon": "Clock",
+      "trend": "+2",
+      "trendUp": true
+    },
+    {
+      "title": "Taux de complétion",
+      "key": "completionRate",
+      "icon": "CheckCircle2",
+      "trend": "+3%",
+      "trendUp": true
+    },
+    {
+      "title": "Score global",
+      "key": "score",
+      "icon": "TrendingUp",
+      "trend": "+0.5",
+      "trendUp": true
+    }
+  ],
+  "stats": {
+    "total": 156,
+    "activeEvents": 24,
+    "pendingDelivery": 8,
+    "completionRate": "94%",
+    "score": "8.7"
+  },
+  "overview": [
+    {
+      "label": "Utilisateurs actifs",
+      "value": "1,247",
+      "description": "Utilisateurs uniques ce mois"
+    },
+    {
+      "label": "Contenus publiés",
+      "value": "342",
+      "description": "Nouveaux contenus créative"
+    },
+    {
+      "label": "Partenaires",
+      "value": "89",
+      "description": "Partenaires actifs"
+    },
+    {
+      "label": "Revenus mensuels",
+      "value": "45.2K",
+      "description": "Revenus du mois en cours"
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+[
+  {
+    "id": 1,
+    "eventName": "Championnat Régional de Basketball",
+    "clubName": "Saint-Cloud Basket",
+    "city": "Paris",
+    "date": "2026-05-15",
+    "requiredCreators": 3,
+    "ugcCreatorsCount": 3,
+    "driveLink": "https://drive.google.com/drive/folders/abc123",
+    "contentStatus": "Received",
+    "creators": [
+      { "id": 1, "name": "Marie D.", "instagram": "marie_d_basket", "tiktok": "mariehoops", "followers": 15000 },
+      { "id": 2, "name": "Thomas S.", "instagram": "thomas_sports", "tiktok": "thomasball", "followers": 8500 },
+      { "id": 3, "name": "Julie M.", "instagram": "julie_bball", "tiktok": "juliehoops", "followers": 22000 }
+    ],
+    "notes": [],
+    "contentReceivedAt": "2026-05-10T14:00:00Z",
+    "createdAt": "2026-05-01T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "eventName": "Tournoi de Football U18",
+    "clubName": "FC Versailles",
+    "city": "Versailles",
+    "date": "2026-05-20",
+    "requiredCreators": 4,
+    "ugcCreatorsCount": 2,
+    "driveLink": null,
+    "contentStatus": "Waiting",
+    "creators": [
+      { "id": 4, "name": "Pierre M.", "instagram": "pierre_foot", "tiktok": "pierregoals", "followers": 12000 },
+      { "id": 5, "name": "Lucas B.", "instagram": "lucasfoot", "tiktok": "lucassport", "followers": 5000 }
+    ],
+    "notes": [],
+    "createdAt": "2026-05-01T10:00:00Z"
+  },
+  {
+    "id": 3,
+    "eventName": "Open de Tennis Jean-Bouin",
+    "clubName": "Tennis Club Paris",
+    "city": "Paris",
+    "date": "2026-06-01",
+    "requiredCreators": 3,
+    "ugcCreatorsCount": 3,
+    "driveLink": "https://drive.google.com/drive/folders/def456",
+    "contentStatus": "Editing",
+    "creators": [
+      { "id": 6, "name": "Sophie B.", "instagram": "sophietennis", "tiktok": "sophierackets", "followers": 18000 },
+      { "id": 7, "name": "Antoine R.", "instagram": "antoine_tennis", "tiktok": "antoineballs", "followers": 9500 },
+      { "id": 8, "name": "Emma L.", "instagram": "emmacourt", "tiktok": "emmasmash", "followers": 25000 }
+    ],
+    "notes": [],
+    "contentReceivedAt": "2026-05-25T10:00:00Z",
+    "editingStartedAt": "2026-05-26T09:00:00Z",
+    "createdAt": "2026-05-01T10:00:00Z"
+  },
+  {
+    "id": 4,
+    "eventName": "Cross du Marathon",
+    "clubName": "AS Fontenay",
+    "city": "Fontenay-aux-Roses",
+    "date": "2026-04-25",
+    "requiredCreators": 2,
+    "ugcCreatorsCount": 2,
+    "driveLink": "https://drive.google.com/drive/folders/ghi789",
+    "contentStatus": "Posted",
+    "creators": [
+      { "id": 9, "name": "Jean-Luc P.", "instagram": "jeanluc_run", "tiktok": "jeanlucmarathon", "followers": 30000 },
+      { "id": 10, "name": "Claire T.", "instagram": "claire_run", "tiktok": "clairemarathon", "followers": 15000 }
+    ],
+    "notes": [
+      { "id": 1, "content": "All content posted successfully!", "createdAt": "2026-04-26T15:00:00Z", "author": "Content Manager" }
+    ],
+    "contentReceivedAt": "2026-04-22T10:00:00Z",
+    "editingStartedAt": "2026-04-23T09:00:00Z",
+    "postedAt": "2026-04-25T16:00:00Z",
+    "createdAt": "2026-04-15T10:00:00Z"
+  },
+  {
+    "id": 5,
+    "eventName": "Finale Coupe de France Handball",
+    "clubName": "Paris Handball",
+    "city": "Paris",
+    "date": "2026-05-30",
+    "requiredCreators": 5,
+    "ugcCreatorsCount": 4,
+    "driveLink": "https://drive.google.com/drive/folders/jkl012",
+    "contentStatus": "Received",
+    "creators": [
+      { "id": 11, "name": "Marc A.", "instagram": "marc_handball", "tiktok": "marchand", "followers": 20000 },
+      { "id": 12, "name": "Sarah K.", "instagram": "sarah_hb", "tiktok": "sarahball", "followers": 11000 },
+      { "id": 13, "name": "Nicolas J.", "instagram": "nicolas_hand", "tiktok": "nicolasshot", "followers": 8000 },
+      { "id": 14, "name": "Laura F.", "instagram": "laura_hand", "tiktok": "lauraball", "followers": 16000 }
+    ],
+    "notes": [],
+    "contentReceivedAt": "2026-05-28T14:00:00Z",
+    "createdAt": "2026-05-20T10:00:00Z"
+  },
+  {
+    "id": 6,
+    "eventName": "Journées Sportives Étudiantes",
+    "clubName": "UNSS Lyon",
+    "city": "Lyon",
+    "date": "2026-06-10",
+    "requiredCreators": 3,
+    "ugcCreatorsCount": 1,
+    "driveLink": null,
+    "contentStatus": "Waiting",
+    "creators": [
+      { "id": 15, "name": "Thomas R.", "instagram": "thomas_lyon", "tiktok": "thomasunss", "followers": 4500 }
+    ],
+    "notes": [],
+    "createdAt": "2026-05-25T10:00:00Z"
+  },
+  {
+    "id": 7,
+    "eventName": "Fête du Sport Municipal",
+    "clubName": "Mairie de Boulogne",
+    "city": "Boulogne-Billancourt",
+    "date": "2026-06-15",
+    "requiredCreators": 4,
+    "ugcCreatorsCount": 4,
+    "driveLink": "https://drive.google.com/drive/folders/mno345",
+    "contentStatus": "Editing",
+    "creators": [
+      { "id": 16, "name": "Nathalie L.", "instagram": "nathalie_sport", "tiktok": "nathalievideos", "followers": 28000 },
+      { "id": 17, "name": "Bruno M.", "instagram": "bruno_boul", "tiktok": "brunosport", "followers": 12000 },
+      { "id": 18, "name": "Camille P.", "instagram": "camille_media", "tiktok": "camillecreative", "followers": 19000 },
+      { "id": 19, "name": "Kevin S.", "instagram": "kevin_content", "tiktok": "kevincreate", "followers": 22000 }
+    ],
+    "notes": [],
+    "contentReceivedAt": "2026-06-08T10:00:00Z",
+    "editingStartedAt": "2026-06-09T09:00:00Z",
+    "createdAt": "2026-06-01T10:00:00Z"
+  },
+  {
+    "id": 8,
+    "eventName": "Aquathlon Inter-Écoles",
+    "clubName": "Stade Français",
+    "city": "Paris",
+    "date": "2026-05-05",
+    "requiredCreators": 2,
+    "ugcCreatorsCount": 2,
+    "driveLink": "https://drive.google.com/drive/folders/pqr678",
+    "contentStatus": "Posted",
+    "creators": [
+      { "id": 20, "name": "Marc-Antoine", "instagram": "marc_aqua", "tiktok": "marcaquathlon", "followers": 35000 },
+      { "id": 21, "name": "Isabelle D.", "instagram": "isabelle_swim", "tiktok": "isabelleswim", "followers": 18000 }
+    ],
+    "notes": [],
+    "contentReceivedAt": "2026-05-02T10:00:00Z",
+    "editingStartedAt": "2026-05-03T09:00:00Z",
+    "postedAt": "2026-05-05T12:00:00Z",
+    "createdAt": "2026-04-25T10:00:00Z"
+  },
+  {
+    "id": 9,
+    "eventName": "Randonnée Nature",
+    "clubName": "AS Rambouillet",
+    "city": "Rambouillet",
+    "date": "2026-05-12",
+    "requiredCreators": 2,
+    "ugcCreatorsCount": 2,
+    "driveLink": "https://drive.google.com/drive/folders/stu901",
+    "contentStatus": "Posted",
+    "creators": [
+      { "id": 22, "name": "Isabelle D.", "instagram": "isabelle_nature", "tiktok": "isabellerando", "followers": 25000 },
+      { "id": 23, "name": "Olivier B.", "instagram": "olivier_rando", "tiktok": "oliviertrek", "followers": 14000 }
+    ],
+    "notes": [
+      { "id": 2, "content": "Great engagement on TikTok!", "createdAt": "2026-05-13T10:00:00Z", "author": "UGC Manager" }
+    ],
+    "contentReceivedAt": "2026-05-10T10:00:00Z",
+    "editingStartedAt": "2026-05-11T09:00:00Z",
+    "postedAt": "2026-05-12T18:00:00Z",
+    "createdAt": "2026-05-05T10:00:00Z"
+  },
+  {
+    "id": 10,
+    "eventName": "Match de Rugby Élite",
+    "clubName": "RC Fontenay",
+    "city": "Fontenay-aux-Roses",
+    "date": "2026-06-05",
+    "requiredCreators": 4,
+    "ugcCreatorsCount": 3,
+    "driveLink": "https://drive.google.com/drive/folders/vwx234",
+    "contentStatus": "Waiting",
+    "creators": [
+      { "id": 24, "name": "François G.", "instagram": "francois_rugby", "tiktok": "francoisrug", "followers": 40000 },
+      { "id": 25, "name": "Romain L.", "instagram": "romain_rcf", "tiktok": "romainfootball", "followers": 15000 },
+      { "id": 26, "name": "Axel M.", "instagram": "axel_rugby", "tiktok": "axelrug", "followers": 9000 }
+    ],
+    "notes": [],
+    "createdAt": "2026-05-28T10:00:00Z"
+  }
+]

@@ -1,0 +1,124 @@
+{
+  "logs": [
+    {
+      "id": "log-001",
+      "userId": "user-001",
+      "userName": "John Admin",
+      "action": "CREATE",
+      "entityType": "Event",
+      "entityId": "evt-123",
+      "entityName": "Marathon Paris 2026",
+      "description": "Created new event Marathon Paris 2026",
+      "timestamp": "2026-04-22T10:30:00Z",
+      "details": {
+        "location": "Paris, France",
+        "date": "2026-06-15",
+        "sport": "Running"
+      }
+    },
+    {
+      "id": "log-002",
+      "userId": "user-002",
+      "userName": "Sarah Manager",
+      "action": "UPDATE",
+      "entityType": "Sponsor",
+      "entityId": "spon-456",
+      "entityName": "Nike France",
+      "description": "Updated sponsor tier to Gold",
+      "timestamp": "2026-04-22T09:15:00Z",
+      "details": {
+        "previousTier": "Silver",
+        "newTier": "Gold"
+      }
+    },
+    {
+      "id": "log-003",
+      "userId": "user-001",
+      "userName": "John Admin",
+      "action": "APPROVE",
+      "entityType": "Content",
+      "entityId": "cnt-789",
+      "entityName": "Event Promo Reel",
+      "description": "Approved content for publication",
+      "timestamp": "2026-04-21T16:45:00Z",
+      "details": {
+        "platform": "Instagram",
+        "duration": "30s"
+      }
+    },
+    {
+      "id": "log-004",
+      "userId": "user-003",
+      "userName": "Mike Operations",
+      "action": "DELIVER",
+      "entityType": "Package",
+      "entityId": "pkg-001",
+      "entityName": "Stand Package A",
+      "description": "Marked delivery as completed",
+      "timestamp": "2026-04-21T14:20:00Z",
+      "details": {
+        "recipient": "Stade de France",
+        "status": "delivered"
+      }
+    },
+    {
+      "id": "log-005",
+      "userId": "user-002",
+      "userName": "Sarah Manager",
+      "action": "INVITE",
+      "entityType": "Creator",
+      "entityId": "cr-888",
+      "entityName": "@influencer_pro",
+      "description": "Invited creator to campaign",
+      "timestamp": "2026-04-21T11:00:00Z",
+      "details": {
+        "campaign": "Summer 2026",
+        "fee": "1500"
+      }
+    },
+    {
+      "id": "log-006",
+      "userId": "user-001",
+      "userName": "John Admin",
+      "action": "DELETE",
+      "entityType": "User",
+      "entityId": "user-099",
+      "entityName": "Former User",
+      "description": "Removed inactive user account",
+      "timestamp": "2026-04-20T15:30:00Z",
+      "details": {
+        "reason": "Inactive for 12 months"
+      }
+    },
+    {
+      "id": "log-007",
+      "userId": "user-003",
+      "userName": "Mike Operations",
+      "action": "UPDATE",
+      "entityType": "Delivery",
+      "entityId": "del-444",
+      "entityName": "Equipment Shipment",
+      "description": "Updated delivery status to in-transit",
+      "timestamp": "2026-04-20T10:15:00Z",
+      "details": {
+        "carrier": "DHL",
+        "trackingNumber": "DHL123456"
+      }
+    },
+    {
+      "id": "log-008",
+      "userId": "user-002",
+      "userName": "Sarah Manager",
+      "action": "CREATE",
+      "entityType": "Campaign",
+      "entityId": "camp-777",
+      "entityName": "Spring Campaign",
+      "description": "Created new sponsorship campaign",
+      "timestamp": "2026-04-19T09:00:00Z",
+      "details": {
+        "budget": "50000",
+        "duration": "3 months"
+      }
+    }
+  ]
+}

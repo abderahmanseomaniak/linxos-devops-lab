@@ -8,7 +8,14 @@ import { type DateRange } from "react-day-picker"
 import { IconCalendar } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
@@ -147,8 +154,8 @@ export function EventStep() {
                           <button
                             type="button"
                             id="date-range-picker"
-                            aria-invalid={isInvalid}
-                            className="inline-flex h-9 w-full max-w-sm items-center gap-2 rounded-3xl border border-transparent bg-input/50 px-3 text-sm font-normal transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
+                            data-invalid={isInvalid || undefined}
+                            className="inline-flex h-8 w-full max-w-sm items-center gap-2 rounded-3xl border border-transparent bg-input/50 px-3 text-sm font-normal transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 data-[invalid=true]:border-destructive data-[invalid=true]:ring-3 data-[invalid=true]:ring-destructive/20 dark:data-[invalid=true]:border-destructive/50 dark:data-[invalid=true]:ring-destructive/40"
                           >
                             <IconCalendar className="size-4 shrink-0 text-muted-foreground" />
                             {from ? (
@@ -245,94 +252,96 @@ export function EventStep() {
           />
         </FieldGroup>
 
-        <div className="pt-4 border-t space-y-4">
-          <Controller
-            name="ugcAccepted"
-            control={control}
-            render={({ field, fieldState }) => (
-              <>
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
-                >
-                  <Checkbox
-                    id={field.name}
-                    name={field.name}
-                    checked={field.value === true}
-                    onCheckedChange={(v) => field.onChange(v === true)}
-                    aria-invalid={fieldState.invalid}
+        <FieldSet className="gap-4">
+          <FieldLegend variant="label">Liens UGC</FieldLegend>
+          <FieldDescription>
+            Les {REQUIRED_UGC_LINKS} premiers liens sont obligatoires. Vous pouvez en
+            ajouter jusqu&apos;à {MAX_UGC_LINKS}.
+          </FieldDescription>
+          <FieldGroup className="gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {fields.map((field, index) => {
+                const required = index < REQUIRED_UGC_LINKS
+                return (
+                  <Controller
+                    key={field.id}
+                    name={`ugcLinks.${index}.url` as const}
+                    control={control}
+                    render={({ field: controllerField, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel
+                          htmlFor={`ugcLink-${index + 1}`}
+                          className="sr-only"
+                        >
+                          Lien UGC n°{index + 1}
+                        </FieldLabel>
+                        <Input
+                          {...controllerField}
+                          id={`ugcLink-${index + 1}`}
+                          type="url"
+                          aria-invalid={fieldState.invalid}
+                          placeholder={`Lien UGC n°${index + 1}${required ? "" : " (optionnel)"
+                            }`}
+                        />
+                        {fieldState.invalid && (
+                          <FieldDescription>{fieldState.error?.message}</FieldDescription>
+                        )}
+                      </Field>
+                    )}
                   />
-                  <FieldLabel htmlFor={field.name} className="font-normal leading-snug">
-                    Je comprends et j&apos;accepte de fournir du contenu UGC (photos, vidéos,
-                    témoignages) conforme aux règles de l&apos;événement.
-                  </FieldLabel>
-                </Field>
-                {!field.value && fieldState.invalid && (
-                  <FieldDescription>
-                    L&apos;UGC (User Generated Content) désigne le contenu généré par les
-                    utilisateurs tel que les photos, vidéos et témoignages. Cette acceptation
-                    est obligatoire pour continuer.
-                  </FieldDescription>
-                )}
-              </>
+                )
+              })}
+            </div>
+            {fields.length < MAX_UGC_LINKS && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append({ url: "" })}
+                className="self-start"
+              >
+                Ajouter plus
+              </Button>
             )}
-          />
-
-          <FieldSet className="gap-4">
-            <FieldLegend variant="label">Liens UGC</FieldLegend>
-            <FieldDescription>
-              Les {REQUIRED_UGC_LINKS} premiers liens sont obligatoires. Vous pouvez en
-              ajouter jusqu&apos;à {MAX_UGC_LINKS}.
-            </FieldDescription>
-            <FieldGroup className="gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {fields.map((field, index) => {
-                  const required = index < REQUIRED_UGC_LINKS
-                  return (
-                    <Controller
-                      key={field.id}
-                      name={`ugcLinks.${index}.url` as const}
-                      control={control}
-                      render={({ field: controllerField, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel
-                            htmlFor={`ugcLink-${index + 1}`}
-                            className="sr-only"
-                          >
-                            Lien UGC n°{index + 1}
-                          </FieldLabel>
-                          <Input
-                            {...controllerField}
-                            id={`ugcLink-${index + 1}`}
-                            type="url"
-                            aria-invalid={fieldState.invalid}
-                            placeholder={`Lien UGC n°${index + 1}${required ? "" : " (optionnel)"
-                              }`}
-                          />
-                          {fieldState.invalid && (
-                            <FieldDescription>{fieldState.error?.message}</FieldDescription>
-                          )}
-                        </Field>
-                      )}
-                    />
-                  )
-                })}
-              </div>
-              {fields.length < MAX_UGC_LINKS && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => append({ url: "" })}
-                  className="self-start"
-                >
-                  Ajouter plus
-                </Button>
-              )}
-            </FieldGroup>
-          </FieldSet>
-        </div>
+          </FieldGroup>
+        </FieldSet>
       </CardContent>
+
+      <CardFooter className="flex-col items-stretch gap-2 border-t bg-muted/30 pt-6">
+        <Controller
+          name="ugcAccepted"
+          control={control}
+          render={({ field, fieldState }) => (
+            <>
+              <Field
+                orientation="horizontal"
+                data-invalid={fieldState.invalid}
+                className="items-start"
+              >
+                <Checkbox
+                  id={field.name}
+                  name={field.name}
+                  checked={field.value === true}
+                  onCheckedChange={(v) => field.onChange(v === true)}
+                  aria-invalid={fieldState.invalid}
+                  className="mt-0.5 border-primary border-dashed cursor-pointer"
+                />
+                <FieldLabel htmlFor={field.name} className="leading-snug">
+                  Je comprends et j&apos;accepte de fournir du contenu UGC (photos, vidéos,
+                  témoignages) conforme aux règles de l&apos;événement.
+                </FieldLabel>
+              </Field>
+              {!field.value && fieldState.invalid && (
+                <FieldDescription>
+                  L&apos;UGC (User Generated Content) désigne le contenu généré par les
+                  utilisateurs tel que les photos, vidéos et témoignages. Cette acceptation
+                  est obligatoire pour continuer.
+                </FieldDescription>
+              )}
+            </>
+          )}
+        />
+      </CardFooter>
     </Card>
   )
 }

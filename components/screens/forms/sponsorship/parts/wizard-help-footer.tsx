@@ -6,12 +6,12 @@ export function WizardHelpFooter() {
   return (
     <footer className="mt-16 flex flex-col md:flex-row justify-between gap-12 border-t border-border pt-12 pb-8">
       {/* Left Column: Contact */}
-      <div className="flex flex-col gap-4">
-        <Typography variant="large" className="font-semibold text-foreground">
-          +1 (120) 233-01231
+      <div className="flex flex-col gap-2">
+        <Typography variant="large">
+          +212 (537) 040-923
         </Typography>
-        <Typography variant="h2" className="text-4xl lg:text-5xl font-bold tracking-tight">
-          yo@shadcnblocks.com
+        <Typography variant="h3">
+          contact@linxos.ma
         </Typography>
       </div>
 
@@ -19,7 +19,7 @@ export function WizardHelpFooter() {
       <div className="flex flex-col sm:flex-row gap-16 md:gap-24">
         {/* Navigate Column */}
         <div className="flex flex-col gap-4">
-          <Typography variant="muted" className="mb-2 text-muted-foreground">
+          <Typography variant="muted">
             Navigate
           </Typography>
           <Link href="#" className="font-medium text-foreground hover:underline">
@@ -31,24 +31,18 @@ export function WizardHelpFooter() {
           <Link href="#" className="font-medium text-foreground hover:underline">
             Projects
           </Link>
-          <Link href="#" className="font-medium text-foreground hover:underline">
-            Pricing
-          </Link>
-          <Link href="#" className="font-medium text-foreground hover:underline">
-            Login
-          </Link>
         </div>
 
         {/* Social Column */}
         <div className="flex flex-col gap-4">
-          <Typography variant="muted" className="mb-2 text-muted-foreground">
+          <Typography variant="muted">
             Social
           </Typography>
           <a
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group font-medium text-foreground hover:underline inline-flex items-center gap-1.5"
+            className="group font-medium hover:underline inline-flex items-center gap-1.5"
           >
             LinkedIn <ExternalLinkIcon className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </a>
@@ -56,7 +50,7 @@ export function WizardHelpFooter() {
             href="https://twitter.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group font-medium text-foreground hover:underline inline-flex items-center gap-1.5"
+            className="group font-medium hover:underline inline-flex items-center gap-1.5"
           >
             Twitter <ExternalLinkIcon className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </a>
@@ -64,7 +58,7 @@ export function WizardHelpFooter() {
             href="https://facebook.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group font-medium text-foreground hover:underline inline-flex items-center gap-1.5"
+            className="group font-medium hover:underline inline-flex items-center gap-1.5"
           >
             Facebook <ExternalLinkIcon className="size-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </a>

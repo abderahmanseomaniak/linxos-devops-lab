@@ -4,23 +4,25 @@ import { Controller, useFormContext } from "react-hook-form"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import formOptions from "@/data/form-options.json"
-import { type SponsorshipFormValues } from "@/lib/sponsorship/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 import { type ContentTypeOption } from "@/types/sponsorship-form"
-
-import { FieldMessage } from "./FieldMessage"
 
 const contentTypes = formOptions.contentTypes as ContentTypeOption[]
 
-export function Step3Form() {
-  const {
-    control,
-    setValue,
-    formState: { errors },
-  } = useFormContext<SponsorshipFormValues>()
+export function ContentStep() {
+  const { control, setValue } = useFormContext<SponsorshipFormValues>()
 
   return (
     <Card>
@@ -30,11 +32,11 @@ export function Step3Form() {
           Sélectionnez les types de contenus et téléversez les fichiers correspondants
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <Controller
-          control={control}
           name="selectedContentTypes"
-          render={({ field }) => {
+          control={control}
+          render={({ field, fieldState }) => {
             const selected = field.value ?? []
             const toggle = (typeId: string, checked: boolean) => {
               const next = checked
@@ -46,32 +48,46 @@ export function Step3Form() {
               }
             }
             return (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FieldSet>
+                <FieldLegend variant="label">Types de contenus</FieldLegend>
+                <FieldDescription>
+                  Sélectionnez au moins un type de contenu.
+                </FieldDescription>
+                <FieldGroup data-slot="checkbox-group" className="grid grid-cols-1 md:grid-cols-2">
                   {contentTypes.map((type) => (
-                    <div key={type.id} className="flex items-center gap-2">
+                    <Field
+                      key={type.id}
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
                       <Checkbox
                         id={type.id}
+                        name={field.name}
                         checked={selected.includes(type.id)}
                         onCheckedChange={(v) => toggle(type.id, v === true)}
+                        aria-invalid={fieldState.invalid}
                       />
-                      <Label htmlFor={type.id}>{type.label}</Label>
-                    </div>
+                      <FieldLabel htmlFor={type.id} className="font-normal">
+                        {type.label}
+                      </FieldLabel>
+                    </Field>
                   ))}
-                </div>
-                <FieldMessage error={errors.selectedContentTypes} />
+                </FieldGroup>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
 
                 {selected.length > 0 && (
-                  <div className="space-y-4">
-                    <Label>Fichiers à téléverser</Label>
-                    {contentTypes
-                      .filter((type) => selected.includes(type.id))
-                      .map((type) => (
-                        <FileSlot key={type.id} type={type} />
-                      ))}
-                  </div>
+                  <FieldSet className="gap-4 pt-4">
+                    <FieldLegend variant="label">Fichiers à téléverser</FieldLegend>
+                    <FieldGroup className="gap-4">
+                      {contentTypes
+                        .filter((type) => selected.includes(type.id))
+                        .map((type) => (
+                          <FileSlot key={type.id} type={type} />
+                        ))}
+                    </FieldGroup>
+                  </FieldSet>
                 )}
-              </>
+              </FieldSet>
             )
           }}
         />
@@ -86,16 +102,17 @@ function FileSlot({ type }: { type: ContentTypeOption }) {
     <Controller
       control={control}
       name={`files.${type.id}` as const}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         const value = field.value as File | File[] | null | undefined
         return (
-          <div className="space-y-2">
-            <Label htmlFor={`file-${type.id}`}>{type.label}</Label>
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor={`file-${type.id}`}>{type.label}</FieldLabel>
             <Input
               id={`file-${type.id}`}
               type="file"
               accept={type.accept}
               multiple={type.multiple}
+              aria-invalid={fieldState.invalid}
               onChange={(e) => {
                 const list = e.target.files
                 if (!list || list.length === 0) {
@@ -106,13 +123,14 @@ function FileSlot({ type }: { type: ContentTypeOption }) {
               }}
             />
             {value && (
-              <Typography variant="p" className="text-sm">
+              <Typography variant="small">
                 {Array.isArray(value)
                   ? `${value.length} fichier(s) sélectionné(s)`
                   : `Fichier sélectionné : ${value.name}`}
               </Typography>
             )}
-          </div>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         )
       }}
     />

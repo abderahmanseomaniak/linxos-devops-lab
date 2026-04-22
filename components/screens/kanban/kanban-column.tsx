@@ -2,7 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core"
 import { KanbanEvent, KanbanStage, KanbanStageLabels, KanbanStageColors, KanbanColumnProps } from "@/types/kanban"
-import { EventCard } from "./EventCard"
+import { EventCard } from "./event-card"
 import { Typography } from "@/components/ui/typography"
 
 export function KanbanColumn({ stage, events }: KanbanColumnProps) {

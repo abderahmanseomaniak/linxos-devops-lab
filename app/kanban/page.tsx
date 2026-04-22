@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { KanbanBoard } from "@/components/screens/kanban/KanbanBoard"
-import { KanbanHeader } from "@/components/screens/kanban/KanbanHeader"
+import { KanbanBoard } from "@/components/screens/kanban/kanban-board"
+import { KanbanHeader } from "@/components/screens/kanban/kanban-header"
 import { KanbanEvent, KanbanStage } from "@/types/kanban"
 import kanbanData from "@/data/kanban.json"
 

@@ -5,9 +5,9 @@ import { useFormContext, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import formOptions from "@/data/form-options.json"
-import { type SponsorshipFormValues } from "@/lib/sponsorship/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
 
-interface Step5FormProps {
+interface SummaryStepProps {
   onEdit?: (step: number) => void
 }
 
@@ -29,7 +29,7 @@ function formatFiles(files: SponsorshipFormValues["files"]) {
     .join(" · ")
 }
 
-export function Step5Form({ onEdit }: Step5FormProps) {
+export function SummaryStep({ onEdit }: SummaryStepProps) {
   const { control } = useFormContext<SponsorshipFormValues>()
   const values = useWatch({ control })
 

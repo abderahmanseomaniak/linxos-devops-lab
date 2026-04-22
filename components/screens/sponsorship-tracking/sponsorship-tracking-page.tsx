@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { EventHeader } from "./EventHeader";
-import { PhaseBlock } from "./PhaseBlock";
+import { EventHeader } from "./event-header";
+import { PhaseBlock } from "./phase-block";
 import {
   calculateProgress,
   getActivePhase,

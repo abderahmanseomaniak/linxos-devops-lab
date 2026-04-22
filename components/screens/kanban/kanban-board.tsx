@@ -16,8 +16,8 @@ import {
 } from "@dnd-kit/core"
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable"
 import { KanbanEvent, KanbanStage, KanbanStages, KanbanBoardProps } from "@/types/kanban"
-import { KanbanColumn } from "./KanbanColumn"
-import { EventCard } from "./EventCard"
+import { KanbanColumn } from "./kanban-column"
+import { EventCard } from "./event-card"
 
 const STAGES = KanbanStages
 

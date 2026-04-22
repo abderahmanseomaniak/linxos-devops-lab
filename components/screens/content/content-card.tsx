@@ -1,10 +1,10 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus, ContentCardProps } from "@/types/content"
-import { MapPin,  AlertTriangle, CheckCircle } from "lucide-react"
+import { ContentCardProps, ContentStatus } from "@/types/content"
+import { AlertTriangle, CheckCircle, MapPin } from "lucide-react"
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700 border-slate-200",
@@ -16,7 +16,6 @@ const statusColors: Record<ContentStatus, string> = {
 export function ContentCard({
   event,
   onViewDetails,
-  onOpenDrive,
 }: ContentCardProps) {
   const hasDriveLink = !!event.driveLink
   const hasEnoughCreators = event.ugcCreatorsCount >= event.requiredCreators

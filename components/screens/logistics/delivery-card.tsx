@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { StatusBadge } from "./StatusBadge"
+import { StatusBadge } from "./status-badge"
 import { Delivery, LogisticsStatus, StatusLabels, DeliveryCardProps } from "@/types/logistics"
 import { MapPin, User, Package, Truck, MessageSquare, FileText, Upload, Calendar, Eye, AlertTriangle, CheckCircle } from "lucide-react"
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { SponsorshipWizard } from "@/components/screens/forms/sponsorship/SponsorshipWizard"
+import { SponsorshipWizard } from "@/components/screens/forms/sponsorship/sponsorship-wizard"
 import FormLayout from "@/components/layouts/form-layout"
 
 export const metadata: Metadata = {

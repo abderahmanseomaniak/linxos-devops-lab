@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { Delivery, StatusLabels, IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
-import { StatusBadge } from "./StatusBadge"
+import { StatusBadge } from "./status-badge"
 import { MapPin, User, Package, Truck, Calendar, Phone, Clock, FileText, MessageSquare } from "lucide-react"
 
 export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWhatsApp }: DeliveryDetailsModalProps) {

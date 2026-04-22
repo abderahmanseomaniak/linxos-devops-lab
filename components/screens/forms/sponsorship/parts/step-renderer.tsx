@@ -1,3 +1,4 @@
+import { Switch } from "@/components/helpers"
 import { ClubStep } from "../steps/club-step"
 import { CommitmentStep } from "../steps/commitment-step"
 import { ContentStep } from "../steps/content-step"
@@ -11,20 +12,18 @@ type Props = {
 }
 
 export function StepRenderer({ step, onEdit }: Props) {
-  switch (step) {
-    case 1:
-      return <ClubStep />
-    case 2:
-      return <EventStep />
-    case 3:
-      return <ContentStep />
-    case 4:
-      return <VisibilityStep />
-    case 5:
-      return <SummaryStep onEdit={onEdit} />
-    case 6:
-      return <CommitmentStep />
-    default:
-      return null
-  }
+  return (
+    <Switch
+      value={step}
+      cases={{
+        1: <ClubStep />,
+        2: <EventStep />,
+        3: <ContentStep />,
+        4: <VisibilityStep />,
+        5: <SummaryStep onEdit={onEdit} />,
+        6: <CommitmentStep />,
+      }}
+      defaultCase={null}
+    />
+  )
 }

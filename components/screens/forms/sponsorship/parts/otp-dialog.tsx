@@ -1,6 +1,7 @@
 "use client"
 
-import { IconLoader2 } from "@tabler/icons-react"
+import { IconLoader2, IconRefresh } from "@tabler/icons-react"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,8 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import { Typography } from "@/components/ui/typography"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 
 type Props = {
   open: boolean
@@ -22,7 +28,11 @@ type Props = {
   onValueChange: (value: string) => void
   onVerify: () => void
   onClose: () => void
+  onResend?: () => void
 }
+
+const SLOT_CLASSES =
+  "*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl"
 
 export function OtpDialog({
   open,
@@ -33,10 +43,14 @@ export function OtpDialog({
   onValueChange,
   onVerify,
   onClose,
+  onResend,
 }: Props) {
   const handleOpenChange = (next: boolean) => {
     if (!next) onClose()
   }
+
+  const splitInHalf = length === 6
+  const half = length / 2
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -44,38 +58,79 @@ export function OtpDialog({
         <DialogHeader>
           <DialogTitle>Vérification de sécurité</DialogTitle>
           <DialogDescription>
-            Veuillez saisir le code OTP pour valider et envoyer votre demande.
+            Saisissez le code OTP reçu pour valider et envoyer votre demande.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-4 py-2">
+
+        <Field>
+          <div className="flex items-center justify-between">
+            <FieldLabel htmlFor="otp-verification">Code de vérification</FieldLabel>
+            {onResend && (
+              <Button
+                type="button"
+                variant="outline"
+                size="xs"
+                onClick={onResend}
+                disabled={loading}
+              >
+                <IconRefresh />
+                Renvoyer
+              </Button>
+            )}
+          </div>
+
           <InputOTP
+            id="otp-verification"
             value={value}
             onChange={onValueChange}
             maxLength={length}
             aria-label={`Code de vérification à ${length} chiffres`}
             autoFocus
           >
-            <InputOTPGroup>
-              {Array.from({ length }).map((_, index) => (
-                <InputOTPSlot key={index} index={index} />
-              ))}
-            </InputOTPGroup>
+            {splitInHalf ? (
+              <>
+                <InputOTPGroup className={SLOT_CLASSES}>
+                  {Array.from({ length: half }).map((_, index) => (
+                    <InputOTPSlot key={index} index={index} />
+                  ))}
+                </InputOTPGroup>
+                <InputOTPSeparator className="mx-2" />
+                <InputOTPGroup className={SLOT_CLASSES}>
+                  {Array.from({ length: half }).map((_, index) => (
+                    <InputOTPSlot key={index + half} index={index + half} />
+                  ))}
+                </InputOTPGroup>
+              </>
+            ) : (
+              <InputOTPGroup className={SLOT_CLASSES}>
+                {Array.from({ length }).map((_, index) => (
+                  <InputOTPSlot key={index} index={index} />
+                ))}
+              </InputOTPGroup>
+            )}
           </InputOTP>
-          <Typography
-            variant="small"
-            role="status"
+
+          <FieldDescription
+            role={error ? "alert" : "status"}
             aria-live="polite"
-            className={`min-h-5 text-destructive ${error ? "" : "sr-only"}`}
+            className={error ? "text-destructive" : "sr-only"}
           >
             {error ? "Code OTP invalide." : ""}
-          </Typography>
-        </div>
-        <DialogFooter className="sm:justify-between">
-          <Button variant="link" size="sm" onClick={onClose}>
+          </FieldDescription>
+        </Field>
+
+        <DialogFooter className="flex gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            className="flex-1"
+            onClick={onClose}
+          >
             Annuler
           </Button>
           <Button
-            size="sm"
+            type="button"
+            className="flex-1"
             onClick={onVerify}
             disabled={value.length !== length || loading}
           >

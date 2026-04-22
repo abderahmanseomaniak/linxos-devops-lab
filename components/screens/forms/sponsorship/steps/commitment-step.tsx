@@ -53,6 +53,10 @@ export function CommitmentStep() {
           )}
         />
 
+        <div className="bg-muted border rounded-2xl border-dashed flex items-center justify-center aspect-4/3 cursor-crosshair">
+          <Typography variant="small">Le contrat d&apos;engagement</Typography>
+        </div>
+
         <FieldSet>
           <FieldLegend variant="label">Signature électronique</FieldLegend>
           <div className="border border-input rounded-lg overflow-hidden">

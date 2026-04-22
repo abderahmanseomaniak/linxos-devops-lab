@@ -46,12 +46,7 @@ export function SponsorshipForm() {
           onClose={otp.close}
         />
 
-        <div
-          key={step.current}
-          className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
-        >
-          <StepRenderer step={step.current} onEdit={step.goTo} />
-        </div>
+        <StepRenderer step={step.current} onEdit={step.goTo} />
 
         <FormNavigation
           canGoPrev={step.canGoPrev}

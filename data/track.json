@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "reference": "SPO-2026-001",
+    "status": "confirmed",
+    "name": "Tournoi International de Marseille",
+    "event_date": "2026-06-15",
+    "location": "Marseille",
+    "notes": "Demande approuvée",
+    "created_at": "2026-01-15",
+    "clubName": "Olympique de Marseille",
+    "city": "Marseille",
+    "institution": "Olympique de Marseille",
+    "responsibleName": "Jean Dupont",
+    "responsibleEmail": "jean.dupont@om.fr",
+    "eventName": "Tournoi International de Marseille",
+    "eventStartDate": "2026-06-15",
+    "eventEndDate": "2026-06-20",
+    "eventLocation": "Stade Vélodrome",
+    "logisticsStatus": "En attente"
+  },
+  {
+    "id": "2",
+    "reference": "SPO-2026-002",
+    "status": "pending",
+    "name": "Finale Coupe de France",
+    "event_date": "2026-05-20",
+    "location": "Paris",
+    "notes": "En cours de traitement",
+    "created_at": "2026-02-01",
+    "clubName": "Paris Saint-Germain",
+    "city": "Paris",
+    "institution": "PSG",
+    "responsibleName": "Marie Martin",
+    "responsibleEmail": "marie.martin@psg.fr",
+    "eventName": "Finale Coupe de France",
+    "eventStartDate": "2026-05-20",
+    "eventEndDate": "2026-05-20",
+    "eventLocation": "Stade de France",
+    "logisticsStatus": "En attente"
+  }
+]

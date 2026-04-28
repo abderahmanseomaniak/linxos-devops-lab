@@ -1,12 +1,12 @@
 "use client"
 
 import { useMemo } from "react"
-import { FileText, Search, Package, Truck, CheckCircle2, Clock } from "lucide-react"
+import { FileText, Search, Package, Truck, CheckCircle2, Circle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-type TrackStatus = "confirmed" | "pending" | "cancelled"
+type TrackStatus = "confirmed" | "pending" | "cancelled" | "approved"
 
 interface TrackTimelineProps {
   status: TrackStatus
@@ -22,23 +22,47 @@ const steps = [
 ] as const
 
 const getProgress = (status: TrackStatus) => {
-  if (status === "confirmed") return 5
+  if (status === "confirmed") return 6
   if (status === "cancelled") return -1
+  if (status === "approved") return 6
+  if (status === "pending") return 2
   return 2
 }
 
 interface StepState {
   isCompleted: boolean
   isCurrent: boolean
-  isCancelled: boolean
+  isRejected: boolean
+  isApproved: boolean
+  isPendingCurrent: boolean
+  isPendingCompleted: boolean
+  isEmpty: boolean
 }
 
-const getStepState = (progress: number, index: number): StepState => {
+const getStepState = (progress: number, index: number, status: TrackStatus): StepState => {
+  const isCurrentStep = progress === index + 1
+  const isCompletedStep = progress > index + 1
   return {
-    isCompleted: progress > index + 1,
-    isCurrent: progress === index + 1,
-    isCancelled: progress === -1,
+    isCompleted: isCompletedStep,
+    isCurrent: isCurrentStep,
+    isRejected: progress === -1 && status === "cancelled",
+    isApproved: status === "approved",
+    isPendingCurrent: isCurrentStep && status === "pending",
+    isPendingCompleted: isCompletedStep && status === "pending",
+    isEmpty: progress < index + 1 && progress !== -1,
   }
+}
+
+function Empty({ size = "default" }: { size?: "default" | "small" }) {
+  const isSmall = size === "small"
+  return (
+    <Circle
+      className={cn(
+        "text-muted-foreground",
+        isSmall ? "h-4 w-4" : "h-5 w-5"
+      )}
+    />
+  )
 }
 
 function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; status: TrackStatus }) {
@@ -48,35 +72,44 @@ function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; stat
     <div className="relative">
       <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted" />
       <div
-        className="absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500"
+        className={cn(
+          "absolute top-5 left-0 h-0.5",
+          status === "approved" || status === "pending" ? "bg-green-500" : "bg-primary"
+        )}
         style={{ width: `${progress > 0 ? `calc(${Math.min(progress - 1, 4) * 25}% - 16px)` : "0%" }` }}
       />
       <div className="relative flex justify-between">
         {steps.map((step, index) => {
-          const { isCompleted, isCurrent, isCancelled } = stepStates[index]
+          const { isCompleted, isCurrent, isRejected, isApproved, isPendingCurrent, isPendingCompleted, isEmpty } = stepStates[index]
           const Icon = step.icon
 
           return (
             <div key={step.key} className="flex flex-col items-center">
               <div
                 className={cn(
-                  "relative z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
-                  isCancelled
-                    ? "bg-red-100 dark:bg-red-950 text-red-500"
-                    : isCompleted
-                    ? "bg-primary text-white shadow-lg shadow-primary/25"
-                    : isCurrent
-                    ? "bg-primary/10 text-primary ring-4 ring-primary/20 animate-pulse"
-                    : "bg-muted text-muted-foreground"
+                  "relative z-10 w-10 h-10 rounded-full flex items-center justify-center bg-muted",
+                  isCurrent && "ring-4 ring-primary/20"
                 )}
               >
-                {isCancelled ? <Clock className="h-5 w-5" /> : <Icon className={cn("h-5 w-5", isCurrent && "animate-bounce")} />}
+                {isApproved ? (
+                  <Icon className="h-5 w-5 text-green-500" />
+                ) : isPendingCompleted ? (
+                  <Icon className="h-5 w-5 text-green-500" />
+                ) : isRejected ? (
+                  <Icon className="h-5 w-5 text-red-500" />
+                ) : isPendingCurrent ? (
+                  <Icon className="h-5 w-5 text-orange-500" />
+                ) : isEmpty ? (
+                  <Empty />
+                ) : (
+                  <Icon className="h-5 w-5" />
+                )}
               </div>
               <Typography
                 variant="small"
                 className={cn(
                   "mt-2 text-xs font-medium text-center",
-                  isCancelled ? "text-red-500" : isCompleted ? "text-foreground" : isCurrent ? "text-primary" : "text-muted-foreground"
+                  isApproved ? "text-green-500" : isRejected ? "text-red-500" : isPendingCurrent ? "text-orange-500" : isPendingCompleted ? "text-green-500" : isCompleted ? "text-foreground" : isCurrent ? "text-primary" : "text-muted-foreground"
                 )}
               >
                 {step.label}
@@ -95,7 +128,7 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
   return (
     <div className="space-y-0">
       {steps.map((step, index) => {
-        const { isCompleted, isCurrent, isCancelled } = stepStates[index]
+        const { isCompleted, isCurrent, isRejected, isApproved, isPendingCurrent, isPendingCompleted, isEmpty } = stepStates[index]
         const Icon = step.icon
 
         return (
@@ -103,20 +136,26 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
             <div className="flex flex-col items-center">
               <div
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
-                  isCancelled
-                    ? "bg-red-100 dark:bg-red-950 text-red-500"
-                    : isCompleted
-                    ? "bg-primary text-white"
-                    : isCurrent
-                    ? "bg-primary/10 text-primary ring-2 ring-primary/30"
-                    : "bg-muted text-muted-foreground"
+                  "w-8 h-8 rounded-full flex items-center justify-center bg-muted",
+                  isCurrent && "ring-2 ring-primary/30"
                 )}
               >
-                {isCancelled ? <Clock className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                {isApproved ? (
+                  <Icon className="h-4 w-4 text-green-500" />
+                ) : isPendingCompleted ? (
+                  <Icon className="h-4 w-4 text-green-500" />
+                ) : isRejected ? (
+                  <Icon className="h-4 w-4 text-red-500" />
+                ) : isPendingCurrent ? (
+                  <Icon className="h-4 w-4 text-orange-500" />
+                ) : isEmpty ? (
+                  <Empty size="small" />
+                ) : (
+                  <Icon className="h-4 w-4" />
+                )}
               </div>
               {index < steps.length - 1 && (
-                <div className={cn("w-0.5 h-6", isCompleted ? "bg-primary" : "bg-muted")} />
+                <div className={cn("w-0.5 h-6", (isCompleted && status === "approved") || (isPendingCompleted && status === "pending") ? "bg-green-500" : isCompleted ? "bg-primary" : "bg-muted")} />
               )}
             </div>
             <div className="flex-1 pb-4">
@@ -124,12 +163,12 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
                 variant="small"
                 className={cn(
                   "font-medium",
-                  isCancelled ? "text-red-500" : isCompleted ? "text-foreground" : isCurrent ? "text-primary" : "text-muted-foreground"
+                  isApproved ? "text-green-500" : isRejected ? "text-red-500" : isPendingCurrent ? "text-orange-500" : isPendingCompleted ? "text-green-500" : isCompleted ? "text-foreground" : isCurrent ? "text-primary" : "text-muted-foreground"
                 )}
               >
                 {step.label}
               </Typography>
-              {isCurrent && !isCancelled && (
+              {isCurrent && !isRejected && !isApproved && !isPendingCurrent && (
                 <Typography variant="small" className="text-muted-foreground text-xs">Current step</Typography>
               )}
             </div>
@@ -146,8 +185,8 @@ export function TrackTimeline({ status, className }: TrackTimelineProps) {
   const progress = useMemo(() => getProgress(status), [status])
 
   const stepStates = useMemo(() =>
-    steps.map((_, index) => getStepState(progress, index)),
-    [progress]
+    steps.map((_, index) => getStepState(progress, index, status)),
+    [progress, status]
   )
 
   return (

@@ -17,6 +17,7 @@ const statusConfig = {
   confirmed: { icon: CheckCircle2, label: "Approved", bg: "bg-emerald-500" },
   pending: { icon: Clock, label: "Pending", bg: "bg-amber-500" },
   cancelled: { icon: XCircle, label: "Rejected", bg: "bg-red-500" },
+  approved: { icon: CheckCircle2, label: "Approved", bg: "bg-green-500" },
 }
 
 export function TrackCard({ result, className }: TrackCardProps) {

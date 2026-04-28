@@ -9,19 +9,16 @@ import { TrackEmpty } from "@/components/track/track-empty"
 import { Typography } from "@/components/ui/typography"
 import { useTrackSearch } from "@/components/track/use-track-search"
 import trackData from "@/data/track.json"
+import type { TrackResult } from "@/components/track/track.types"
 
-function isValidStatus(status: string): status is "confirmed" | "pending" | "cancelled" {
-  return status === "confirmed" || status === "pending" || status === "cancelled"
-}
+const validStatuses = new Set(["confirmed", "pending", "cancelled", "approved"])
 
-const normalizedData = trackData
-  .filter((item): item is typeof item & { status: "confirmed" | "pending" | "cancelled" } =>
-    isValidStatus(item.status)
-  )
+const normalizedData: TrackResult[] = trackData
+  .filter((item) => validStatuses.has(item.status))
   .map((item) => ({
     id: item.id,
     reference: item.reference,
-    status: item.status,
+    status: item.status as "confirmed" | "pending" | "cancelled" | "approved",
     name: item.name,
     clubName: item.clubName,
     city: item.city,

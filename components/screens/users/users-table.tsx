@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useMemo, useRef, useState } from "react"
+import React, { useId, useMemo, useRef, useState } from "react"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -92,6 +92,17 @@ import { Typography } from "@/components/ui/typography"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { type UserRole, type UsersTableProps, type UserItem } from "@/types/users"
 import uiConstants from "@/data/ui-constants.json"
+
+function InfoRow({ label, value, isBadge }: { label: string; value: string | React.ReactNode; isBadge?: boolean }) {
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      <Label className="text-muted-foreground text-xs">{label}</Label>
+      <div className="col-span-2">
+        {isBadge ? value : <Typography>{value || "-"}</Typography>}
+      </div>
+    </div>
+  )
+}
 
 const ROLE_LABELS = uiConstants.userRole.labels as Record<UserRole, string>
 
@@ -257,120 +268,116 @@ function RowActions({ row }: { row: Row<UserItem> }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet open={showDetails} onOpenChange={setShowDetails}>
-            <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
-          <SheetHeader className="mb-4">
-            <SheetTitle>User Details</SheetTitle>
-            <SheetDescription>Full information about this user</SheetDescription>
-          </SheetHeader>
-          <Card className="m-2">
-            <CardHeader className="flex flex-col items-center text-center pb-2">
-              <Avatar className="size-24">
-                <AvatarFallback className="text-3xl">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <CardTitle className="mt-3">{user.name}</CardTitle>
-              <CardDescription>{user.email}</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 pt-4">
-              <div className="flex justify-between rounded-md bg-muted/50 p-3">
-                <Typography variant="small" className="text-muted-foreground">Phone</Typography>
-                <Typography variant="small" className="font-medium">{user.phone || "—"}</Typography>
-              </div>
-              <div className="flex justify-between rounded-md bg-muted/50 p-3">
-                <Typography variant="small" className="text-muted-foreground">CIN</Typography>
-                <Typography variant="small" className="font-medium">{user.cin || "—"}</Typography>
-              </div>
-              <div className="flex justify-between rounded-md bg-muted/50 p-3">
-                <Typography variant="small" className="text-muted-foreground">Role</Typography>
-                <Typography variant="small" className="font-medium">{ROLE_LABELS[user.role as UserRole]}</Typography>
-              </div>
-              <div className="flex justify-between rounded-md bg-muted/50 p-3">
-                <Typography variant="small" className="text-muted-foreground">Status</Typography>
-                <Badge
-                  className={cn(
-                    user.status === false && "bg-muted-foreground/60 text-primary-foreground",
-                  )}
-                >
-                  {user.status ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </SheetContent>
-      </Sheet>
+   <Sheet open={showDetails} onOpenChange={setShowDetails}>
+  <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
+    <SheetHeader className="mb-6">
+      <SheetTitle>User Details</SheetTitle>
+      <SheetDescription>Full information about this user</SheetDescription>
+    </SheetHeader>
 
-      <Sheet open={showEdit} onOpenChange={setShowEdit}>
-          <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
-          <SheetHeader className="mb-4">
-            <SheetTitle>Edit User</SheetTitle>
-            <SheetDescription>Update user information</SheetDescription>
-          </SheetHeader>
-          <Card className="m-2">
-            <CardContent className="grid gap-4 pt-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-name">Name</Label>
-                <Input
-                  id="edit-name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-email">Email</Label>
-                <Input
-                  id="edit-email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-phone">Phone</Label>
-                <Input
-                  id="edit-phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-cin">CIN</Label>
-                <Input
-                  id="edit-cin"
-                  value={formData.cin}
-                  onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-role">Role</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
-                >
-                  <SelectTrigger id="edit-role">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="edit-status"
-                  checked={formData.status}
-                  onCheckedChange={(checked) => setFormData({ ...formData, status: !!checked })}
-                />
-                <Label htmlFor="edit-status">Active</Label>
-              </div>
-              <Button className="mt-2 w-full" onClick={() => setShowEdit(false)}>
-                Save Changes
-              </Button>
-            </CardContent>
-          </Card>
-        </SheetContent>
-      </Sheet>
+    <div className="flex flex-col gap-6 px-8">
+      {/* Avatar & basic info section */}
+      <section className="flex flex-col items-center text-center">
+        <Avatar className="size-24">
+          <AvatarFallback className="text-3xl">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <Typography variant="h4" className="mt-3 font-semibold">{user.name}</Typography>
+        <Typography variant="small" className="text-muted-foreground">{user.email}</Typography>
+      </section>
+
+      {/* User information section (matching event sheet layout) */}
+      <section>
+        <Typography variant="h4" className="mb-3 text-sm font-semibold">User Information</Typography>
+        <div className="grid gap-2">
+          <InfoRow label="Phone" value={user.phone || "—"} />
+          <InfoRow label="CIN" value={user.cin || "—"} />
+          <InfoRow label="Role" value={ROLE_LABELS[user.role as UserRole]} />
+          <InfoRow 
+            label="Status" 
+            value={
+              <Badge className={cn(user.status === false && "bg-muted-foreground/60 text-primary-foreground")}>
+                {user.status ? "Active" : "Inactive"}
+              </Badge>
+            } 
+            isBadge 
+          />
+        </div>
+      </section>
+    </div>
+  </SheetContent>
+</Sheet>
+
+     <Sheet open={showEdit} onOpenChange={setShowEdit}>
+  <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
+    <SheetHeader className="mb-6">
+      <SheetTitle>Edit User</SheetTitle>
+      <SheetDescription>Update user information</SheetDescription>
+    </SheetHeader>
+
+    <div className="flex flex-col gap-4 px-8">
+      <div className="grid gap-2">
+        <Label htmlFor="edit-name">Name</Label>
+        <Input
+          id="edit-name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="edit-email">Email</Label>
+        <Input
+          id="edit-email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="edit-phone">Phone</Label>
+        <Input
+          id="edit-phone"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="edit-cin">CIN</Label>
+        <Input
+          id="edit-cin"
+          value={formData.cin}
+          onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="edit-role">Role</Label>
+        <Select
+          value={formData.role}
+          onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+        >
+          <SelectTrigger id="edit-role">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(ROLE_LABELS).map(([value, label]) => (
+              <SelectItem key={value} value={value}>{label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="edit-status"
+          checked={formData.status}
+          onCheckedChange={(checked) => setFormData({ ...formData, status: !!checked })}
+        />
+        <Label htmlFor="edit-status">Active</Label>
+      </div>
+      <Button className="mt-2 w-full" onClick={() => setShowEdit(false)}>
+        Save Changes
+      </Button>
+    </div>
+  </SheetContent>
+</Sheet>
     </>
   )
 }
@@ -625,83 +632,81 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
             </Button>
           )}
 
-          <Sheet open={showAddSheet} onOpenChange={setShowAddSheet}>
-                    <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+       <Sheet open={showAddSheet} onOpenChange={setShowAddSheet}>
+        <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
+          <SheetHeader className="mb-6 ">
+            <SheetTitle>Add New User</SheetTitle>
+            <SheetDescription>Enter user information</SheetDescription>
+          </SheetHeader>
 
-              <SheetHeader className="mb-4">
-                <SheetTitle>Add New User</SheetTitle>
-                <SheetDescription>Enter user information</SheetDescription>
-              </SheetHeader>
-              <Card className="m-2">
-                <CardContent className="grid gap-4 pt-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="add-name">Name *</Label>
-                    <Input
-                      id="add-name"
-                      value={addFormData.name}
-                      onChange={(e) => setAddFormData({ ...addFormData, name: e.target.value })}
-                      placeholder="Enter name"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="add-email">Email *</Label>
-                    <Input
-                      id="add-email"
-                      type="email"
-                      value={addFormData.email}
-                      onChange={(e) => setAddFormData({ ...addFormData, email: e.target.value })}
-                      placeholder="Enter email"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="add-phone">Phone</Label>
-                    <Input
-                      id="add-phone"
-                      value={addFormData.phone}
-                      onChange={(e) => setAddFormData({ ...addFormData, phone: e.target.value })}
-                      placeholder="Enter phone"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="add-cin">CIN</Label>
-                    <Input
-                      id="add-cin"
-                      value={addFormData.cin}
-                      onChange={(e) => setAddFormData({ ...addFormData, cin: e.target.value })}
-                      placeholder="Enter CIN"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="add-role">Role</Label>
-                    <Select
-                      value={addFormData.role}
-                      onValueChange={(value) => setAddFormData({ ...addFormData, role: value as UserRole })}
-                    >
-                      <SelectTrigger id="add-role">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="add-status"
-                      checked={addFormData.status}
-                      onCheckedChange={(checked) => setAddFormData({ ...addFormData, status: !!checked })}
-                    />
-                    <Label htmlFor="add-status">Active</Label>
-                  </div>
-                  <Button className="mt-2 w-full" onClick={() => setShowAddSheet(false)}>
-                    Add User
-                  </Button>
-                </CardContent>
-              </Card>
-            </SheetContent>
-          </Sheet>
+          <div className="flex flex-col gap-4 px-8">
+            <div className="grid gap-2">
+              <Label htmlFor="add-name">Name *</Label>
+              <Input
+                id="add-name"
+                value={addFormData.name}
+                onChange={(e) => setAddFormData({ ...addFormData, name: e.target.value })}
+                placeholder="Enter name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="add-email">Email *</Label>
+              <Input
+                id="add-email"
+                type="email"
+                value={addFormData.email}
+                onChange={(e) => setAddFormData({ ...addFormData, email: e.target.value })}
+                placeholder="Enter email"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="add-phone">Phone</Label>
+              <Input
+                id="add-phone"
+                value={addFormData.phone}
+                onChange={(e) => setAddFormData({ ...addFormData, phone: e.target.value })}
+                placeholder="Enter phone"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="add-cin">CIN</Label>
+              <Input
+                id="add-cin"
+                value={addFormData.cin}
+                onChange={(e) => setAddFormData({ ...addFormData, cin: e.target.value })}
+                placeholder="Enter CIN"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="add-role">Role</Label>
+              <Select
+                value={addFormData.role}
+                onValueChange={(value) => setAddFormData({ ...addFormData, role: value as UserRole })}
+              >
+                <SelectTrigger id="add-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="add-status"
+                checked={addFormData.status}
+                onCheckedChange={(checked) => setAddFormData({ ...addFormData, status: !!checked })}
+              />
+              <Label htmlFor="add-status">Active</Label>
+            </div>
+            <Button className="mt-2 w-full" onClick={() => setShowAddSheet(false)}>
+              Add User
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
         </div>
       </div>
 

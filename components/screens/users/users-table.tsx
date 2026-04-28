@@ -87,7 +87,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Typography } from "@/components/ui/typography"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { type UserRole, type UsersTableProps, type UserItem } from "@/types/users"
 import uiConstants from "@/data/ui-constants.json"
 
@@ -204,40 +206,172 @@ const columns: ColumnDef<UserItem>[] = [
 ]
 
 function RowActions({ row }: { row: Row<UserItem> }) {
+  const user = row.original
+  const [showDetails, setShowDetails] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [formData, setFormData] = useState({
+    name: user.name,
+    email: user.email,
+    phone: user.phone || "",
+    cin: user.cin || "",
+    role: user.role,
+    status: user.status,
+  })
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex justify-end">
-          <Button aria-label="Edit item" className="shadow-none" size="icon" variant="ghost">
-            <IconDots aria-hidden="true" size={16} />
-          </Button>
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Edit</span>
-            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <div className="flex justify-end">
+            <Button aria-label="Edit item" className="shadow-none" size="icon" variant="ghost">
+              <IconDots aria-hidden="true" size={16} />
+            </Button>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => setShowDetails(true)}>
+              <span>View Details</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowEdit(true)}>
+              <span>Edit</span>
+              <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span>Duplicate</span>
+              <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <span>Archive</span>
+              <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <span>Delete</span>
+            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Duplicate</span>
-            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Archive</span>
-            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <span>Delete</span>
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Sheet open={showDetails} onOpenChange={setShowDetails}>
+            <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+          <SheetHeader className="mb-4">
+            <SheetTitle>User Details</SheetTitle>
+            <SheetDescription>Full information about this user</SheetDescription>
+          </SheetHeader>
+          <Card className="m-2">
+            <CardHeader className="flex flex-col items-center text-center pb-2">
+              <Avatar className="size-24">
+                <AvatarFallback className="text-3xl">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <CardTitle className="mt-3">{user.name}</CardTitle>
+              <CardDescription>{user.email}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 pt-4">
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
+                <Typography variant="small" className="text-muted-foreground">Phone</Typography>
+                <Typography variant="small" className="font-medium">{user.phone || "—"}</Typography>
+              </div>
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
+                <Typography variant="small" className="text-muted-foreground">CIN</Typography>
+                <Typography variant="small" className="font-medium">{user.cin || "—"}</Typography>
+              </div>
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
+                <Typography variant="small" className="text-muted-foreground">Role</Typography>
+                <Typography variant="small" className="font-medium">{ROLE_LABELS[user.role as UserRole]}</Typography>
+              </div>
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
+                <Typography variant="small" className="text-muted-foreground">Status</Typography>
+                <Badge
+                  className={cn(
+                    user.status === false && "bg-muted-foreground/60 text-primary-foreground",
+                  )}
+                >
+                  {user.status ? "Active" : "Inactive"}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={showEdit} onOpenChange={setShowEdit}>
+          <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+          <SheetHeader className="mb-4">
+            <SheetTitle>Edit User</SheetTitle>
+            <SheetDescription>Update user information</SheetDescription>
+          </SheetHeader>
+          <Card className="m-2">
+            <CardContent className="grid gap-4 pt-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-name">Name</Label>
+                <Input
+                  id="edit-name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-phone">Phone</Label>
+                <Input
+                  id="edit-phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-cin">CIN</Label>
+                <Input
+                  id="edit-cin"
+                  value={formData.cin}
+                  onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-role">Role</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+                >
+                  <SelectTrigger id="edit-role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="edit-status"
+                  checked={formData.status}
+                  onCheckedChange={(checked) => setFormData({ ...formData, status: !!checked })}
+                />
+                <Label htmlFor="edit-status">Active</Label>
+              </div>
+              <Button className="mt-2 w-full" onClick={() => setShowEdit(false)}>
+                Save Changes
+              </Button>
+            </CardContent>
+          </Card>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }
 
@@ -247,6 +381,15 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const inputRef = useRef<HTMLInputElement>(null)
+  const [showAddSheet, setShowAddSheet] = useState(false)
+  const [addFormData, setAddFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    cin: "",
+    role: "user" as UserRole,
+    status: true,
+  })
 
   const [sorting, setSorting] = useState<SortingState>([
     { desc: false, id: "name" },
@@ -303,16 +446,11 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
 
   const handleStatusChange = (checked: boolean, value: string) => {
     const filterValue = table.getColumn("statusDisplay")?.getFilterValue() as string[] ?? []
-    const newIconFilterValue = [...filterValue]
+    const newStatuses = checked
+      ? [...filterValue, value]
+      : filterValue.filter(s => s !== value)
 
-    if (checked) {
-      newIconFilterValue.push(value)
-    } else {
-      const index = newIconFilterValue.indexOf(value)
-      if (index > -1) newIconFilterValue.splice(index, 1)
-    }
-
-    table.getColumn("statusDisplay")?.setFilterValue(newIconFilterValue.length ? newIconFilterValue : undefined)
+    table.getColumn("statusDisplay")?.setFilterValue(newStatuses.length ? newStatuses : undefined)
   }
 
   if (loading) {
@@ -360,30 +498,68 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
               <Button variant="outline">
                 <IconFilter aria-hidden="true" className="-ms-1 opacity-60" size={16} />
                 Status
-                {selectedStatuses.length > 0 && (
+                {(table.getColumn("statusDisplay")?.getFilterValue() as string[] || []).length > 0 && (
                   <span className="-me-1 inline-flex h-5 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">
-                    {selectedStatuses.length}
+                    {(table.getColumn("statusDisplay")?.getFilterValue() as string[] || []).length}
                   </span>
                 )}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto min-w-36 p-3">
               <div className="space-y-3">
-                <Typography variant="small" className="font-medium">IconFilters</Typography>
-                <div className="space-y-3">
-                  {uniqueStatusValues.map((value, i) => (
-                    <div className="flex items-center gap-2" key={value}>
-                      <Checkbox
-                        checked={selectedStatuses.includes(value)}
-                        id={`${id}-${i}`}
-                        onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
-                      />
-                      <Label className="flex grow justify-between gap-2 font-normal" htmlFor={`${id}-${i}`}>
-                        {value}
-                        <Typography className="ms-2">{statusCounts.get(value)}</Typography>
-                      </Label>
-                    </div>
-                  ))}
+                <Typography variant="small" className="font-medium">Filters</Typography>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={!table.getColumn("statusDisplay")?.getFilterValue()}
+                      id={`${id}-all`}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          table.getColumn("statusDisplay")?.setFilterValue(undefined)
+                        }
+                      }}
+                    />
+                    <Label className="flex grow justify-between gap-2 font-normal cursor-pointer" htmlFor={`${id}-all`}>
+                      All
+                      <Typography className="ms-2">{table.getRowCount()}</Typography>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={(table.getColumn("statusDisplay")?.getFilterValue() as string[] || []).includes("Active")}
+                      id={`${id}-active`}
+                      onCheckedChange={(checked) => {
+                        const currentFilter = (table.getColumn("statusDisplay")?.getFilterValue() as string[]) || []
+                        let newFilter: string[] = currentFilter.filter(s => s !== "Active" && s !== "Inactive")
+                        if (checked) {
+                          newFilter = [...newFilter, "Active"]
+                        }
+                        table.getColumn("statusDisplay")?.setFilterValue(newFilter.length ? newFilter : undefined)
+                      }}
+                    />
+                    <Label className="flex grow justify-between gap-2 font-normal cursor-pointer" htmlFor={`${id}-active`}>
+                      Active
+                      <Typography className="ms-2">{statusCounts.get("Active") || 0}</Typography>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={(table.getColumn("statusDisplay")?.getFilterValue() as string[] || []).includes("Inactive")}
+                      id={`${id}-inactive`}
+                      onCheckedChange={(checked) => {
+                        const currentFilter = (table.getColumn("statusDisplay")?.getFilterValue() as string[]) || []
+                        let newFilter: string[] = currentFilter.filter(s => s !== "Active" && s !== "Inactive")
+                        if (checked) {
+                          newFilter = [...newFilter, "Inactive"]
+                        }
+                        table.getColumn("statusDisplay")?.setFilterValue(newFilter.length ? newFilter : undefined)
+                      }}
+                    />
+                    <Label className="flex grow justify-between gap-2 font-normal cursor-pointer" htmlFor={`${id}-inactive`}>
+                      Inactive
+                      <Typography className="ms-2">{statusCounts.get("Inactive") || 0}</Typography>
+                    </Label>
+                  </div>
                 </div>
               </div>
             </PopoverContent>
@@ -443,11 +619,89 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
             </AlertDialog>
           )}
           {onAdd && (
-            <Button className="ml-auto" onClick={onAdd} variant="outline">
+            <Button className="ml-auto" onClick={() => setShowAddSheet(true)} variant="outline">
               <IconPlus aria-hidden="true" className="-ms-1 opacity-60" size={16} />
               Add user
             </Button>
           )}
+
+          <Sheet open={showAddSheet} onOpenChange={setShowAddSheet}>
+                    <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+
+              <SheetHeader className="mb-4">
+                <SheetTitle>Add New User</SheetTitle>
+                <SheetDescription>Enter user information</SheetDescription>
+              </SheetHeader>
+              <Card className="m-2">
+                <CardContent className="grid gap-4 pt-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="add-name">Name *</Label>
+                    <Input
+                      id="add-name"
+                      value={addFormData.name}
+                      onChange={(e) => setAddFormData({ ...addFormData, name: e.target.value })}
+                      placeholder="Enter name"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="add-email">Email *</Label>
+                    <Input
+                      id="add-email"
+                      type="email"
+                      value={addFormData.email}
+                      onChange={(e) => setAddFormData({ ...addFormData, email: e.target.value })}
+                      placeholder="Enter email"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="add-phone">Phone</Label>
+                    <Input
+                      id="add-phone"
+                      value={addFormData.phone}
+                      onChange={(e) => setAddFormData({ ...addFormData, phone: e.target.value })}
+                      placeholder="Enter phone"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="add-cin">CIN</Label>
+                    <Input
+                      id="add-cin"
+                      value={addFormData.cin}
+                      onChange={(e) => setAddFormData({ ...addFormData, cin: e.target.value })}
+                      placeholder="Enter CIN"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="add-role">Role</Label>
+                    <Select
+                      value={addFormData.role}
+                      onValueChange={(value) => setAddFormData({ ...addFormData, role: value as UserRole })}
+                    >
+                      <SelectTrigger id="add-role">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="add-status"
+                      checked={addFormData.status}
+                      onCheckedChange={(checked) => setAddFormData({ ...addFormData, status: !!checked })}
+                    />
+                    <Label htmlFor="add-status">Active</Label>
+                  </div>
+                  <Button className="mt-2 w-full" onClick={() => setShowAddSheet(false)}>
+                    Add User
+                  </Button>
+                </CardContent>
+              </Card>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 

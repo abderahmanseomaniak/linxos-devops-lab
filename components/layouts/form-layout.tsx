@@ -9,7 +9,7 @@ export default function FormLayout({ children }: { children: ReactNode }) {
         <div className="min-h-screen bg-muted">
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 md:px-8">
                 <header className="flex items-center justify-center gap-4 pt-4">
-                    <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
+                    <Link href="/forms/sponsorship" className="flex items-center transition-opacity hover:opacity-80">
                         {/* Light mode */}
                         <img
                             src="/assets/logos/logo-texte-noir.svg"

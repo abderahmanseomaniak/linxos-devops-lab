@@ -74,12 +74,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import type { ActivityLog, LogsData } from "@/types/logs"
 import logsData from "@/data/logs.json"
@@ -188,61 +189,60 @@ function RowActions({ row }: { row: Row<ActivityLog> }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Log Details</DialogTitle>
-            <DialogDescription>Full information about this action</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Typography variant="small" className="text-muted-foreground">IconUser</Typography>
-                <Typography variant="small" className="font-medium">{log.userName}</Typography>
-              </div>
-              <div>
-                <Typography variant="small" className="text-muted-foreground">Action</Typography>
+      <Sheet open={showModal} onOpenChange={setShowModal}>
+        <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+          <SheetHeader className="mb-4">
+            <SheetTitle>Log Details</SheetTitle>
+            <SheetDescription>Full information about this action</SheetDescription>
+          </SheetHeader>
+          <Card className="m-2">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle>{log.action}</CardTitle>
                 <Badge variant={actionVariants[log.action] as "default" | "secondary" | "destructive" | "outline"}>
                   {log.action}
                 </Badge>
               </div>
-              <div>
-                <Typography variant="small" className="text-muted-foreground">Entity Type</Typography>
-                <Typography variant="small" className="font-medium">{log.entityType}</Typography>
+              <CardDescription>{log.entityType}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3">
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
+                <Typography variant="small" className="text-muted-foreground">User</Typography>
+                <Typography variant="small" className="font-medium">{log.userName}</Typography>
               </div>
-              <div>
-                <Typography variant="small" className="text-muted-foreground">Entity ID</Typography>
-                <Typography variant="small" className="font-medium">{log.entityId}</Typography>
-              </div>
-              <div className="col-span-2">
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
                 <Typography variant="small" className="text-muted-foreground">Entity Name</Typography>
                 <Typography variant="small" className="font-medium">{log.entityName}</Typography>
               </div>
-              <div className="col-span-2">
-                <Typography variant="small" className="text-muted-foreground">Description</Typography>
-                <Typography variant="small" className="font-medium">{log.description}</Typography>
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
+                <Typography variant="small" className="text-muted-foreground">Entity ID</Typography>
+                <Typography variant="small" className="font-medium">{log.entityId}</Typography>
               </div>
-              <div className="col-span-2">
+              <div className="flex justify-between rounded-md bg-muted/50 p-3">
                 <Typography variant="small" className="text-muted-foreground">Timestamp</Typography>
                 <Typography variant="small" className="font-medium">{formatDate(log.timestamp)}</Typography>
               </div>
-              {Object.keys(log.details).length > 0 && (
-                <div className="col-span-2">
-                  <Typography variant="small" className="text-muted-foreground mb-2">Details</Typography>
-                  <div className="bg-muted p-3 rounded-md space-y-1">
-                    {Object.entries(log.details).map(([key, value]) => (
-                      <div key={key} className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{key}:</span>
-                        <span className="font-medium">{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
+              {log.description && (
+                <div className="rounded-md bg-muted/50 p-3">
+                  <Typography variant="small" className="text-muted-foreground mb-1 block">Description</Typography>
+                  <Typography variant="small" className="font-medium">{log.description}</Typography>
                 </div>
               )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+              {Object.keys(log.details).length > 0 && (
+                <div className="rounded-md bg-muted/50 p-3 space-y-2">
+                  <Typography variant="small" className="text-muted-foreground">Details</Typography>
+                  {Object.entries(log.details).map(([key, value]) => (
+                    <div key={key} className="flex justify-between text-sm  pt-3" >
+                      <span className="text-muted-foreground">{key}</span>
+                      <span className="font-medium text-right">{String(value)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </SheetContent>
+      </Sheet>
     </>
   )
 }

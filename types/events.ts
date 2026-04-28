@@ -97,6 +97,7 @@ export interface EventDetailSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   event: EventApplication | null
+  onSave?: (event: EventApplication) => void
 }
 
 export interface EventFormDialogProps {

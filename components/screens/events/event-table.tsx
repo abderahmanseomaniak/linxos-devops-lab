@@ -105,10 +105,10 @@ export const columns: ColumnDef<EventApplication>[] = [
            <Avatar size="lg">
              <AvatarFallback>{organization.charAt(0).toUpperCase()}</AvatarFallback>
            </Avatar>
-           <div className="flex flex-col">
-             <span className="font-medium text-base">{eventName}</span>
-             <span className="text-sm text-muted-foreground">@{organization}</span>
-           </div>
+<         div className="flex flex-col line-clamp-2">
+              <span className="font-medium text-base">{eventName}</span>
+              <span className="text-sm text-muted-foreground">@{organization}</span>
+            </div>
          </div>
        )
     },

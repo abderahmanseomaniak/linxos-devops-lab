@@ -173,4 +173,31 @@ export function useFilterWithDefault<T>(defaultValues: T[] = []): UseFilterRetur
   }
 }
 
+interface UseTextFilterReturn {
+  value: string
+  setValue: (value: string) => void
+  clear: () => void
+  isEmpty: boolean
+  hasValue: boolean
+}
+
+export function useTextFilter(initialValue: string = ""): UseTextFilterReturn {
+  const [value, setValue] = useState(initialValue)
+
+  const clear = useCallback(() => {
+    setValue("")
+  }, [])
+
+  const isEmpty = value === ""
+  const hasValue = value !== ""
+
+  return {
+    value,
+    setValue,
+    clear,
+    isEmpty,
+    hasValue,
+  }
+}
+
 export { useFilter as default }

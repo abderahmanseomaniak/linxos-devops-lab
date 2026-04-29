@@ -1,0 +1,28 @@
+{
+  "ugcSettings": {
+    "minUgcCreators": 2
+  },
+  "eventPipeline": {
+    "defaultEventStages": [
+      "Nouveau",
+      "En revue",
+      "Approuvé",
+      "En cours",
+      "Terminé",
+      "Archivé"
+    ]
+  },
+  "scoringSystem": {
+    "scoringWeights": {
+      "audienceWeight": 40,
+      "engagementWeight": 35,
+      "contentQualityWeight": 25
+    }
+  },
+  "notificationSettings": {
+    "emailEnabled": true,
+    "inAppEnabled": true,
+    "deliveryAlerts": true,
+    "contentAlerts": true
+  }
+}

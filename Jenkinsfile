@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         BUN_DIR = "%USERPROFILE%\\.bun\\bin"
-        PATH = "${env.BUN_DIR};${env.PATH}"
+        PATH = "${BUN_DIR};$PATH"
     }
 
     stages {
@@ -42,6 +42,15 @@ pipeline {
             }
         }
 
+        stage('Type Check') {
+            steps {
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+                bunx tsc --noEmit
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 bat '''
@@ -54,10 +63,11 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build successful'
+            echo '✅ CI Passed Successfully'
         }
+
         failure {
-            echo '❌ Build failed'
+            echo '❌ CI Failed - Check logs'
         }
     }
 }

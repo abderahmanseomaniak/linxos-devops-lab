@@ -68,7 +68,7 @@ export function useMultiSelectFilter<T>(
   }
 }
 
-interface UseFilterReturn<T> {
+export interface UseFilterReturn<T> {
   filterState: T[]
   toggleFilter: (value: T) => void
   setFilter: (values: T[]) => void

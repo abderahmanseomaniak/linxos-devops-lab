@@ -275,7 +275,7 @@ function ColumnVisibilityDropdown<TData = unknown>({ table, columnVisibility }: 
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           <IconColumns3 aria-hidden="true" className="-ms-1 opacity-60" size={16} />
-          View
+          Colonnes
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

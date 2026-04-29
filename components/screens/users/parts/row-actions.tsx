@@ -14,8 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import type { UserItem, UserRole } from "@/types/users"
-import { UserDetailsSheet } from "../sheet/user-details-sheet"
 import { EditUserSheet } from "../sheet/edit-user-sheet"
+import { UserDetailsSheet } from "../sheet/details-users-sheet"
 
 interface RowActionsProps {
   row: Row<UserItem>

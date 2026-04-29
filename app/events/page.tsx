@@ -1,19 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import dynamic from "next/dynamic"
+import { useState, useMemo, Suspense } from "react"
 import { EventTable } from "@/components/screens/events/event-table"
-import { DashboardStats } from "@/components/screens/events/dashboard-stats"
+import { DashboardStats } from "@/components/screens/events/components/dashboard-stats"
 import { EventApplication } from "@/types/events"
 import eventsData from "@/data/events.json"
-
-const EventFormDialog = dynamic(() => import("@/components/screens/events/event-form-dialog").then((mod) => mod.EventFormDialog), {
-  loading: () => null,
-})
-
-const DeleteConfirmDialog = dynamic(() => import("@/components/screens/events/delete-confirm-dialog").then((mod) => mod.DeleteConfirmDialog), {
-  loading: () => null,
-})
 
 const initialApplications: EventApplication[] = eventsData as EventApplication[]
 
@@ -66,25 +57,13 @@ export default function EventsPage() {
   return (
     <div className="flex flex-col gap-6">
       <DashboardStats data={stats} />
-      <EventTable
-        data={applications}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onDeleteMultiple={handleDeleteMultiple}
-      />
-      <EventFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        event={editingEvent}
-        onSave={handleSave}
-      />
-      <DeleteConfirmDialog
-        open={!!deleteEvent}
-        onOpenChange={(open) => !open && setDeleteEvent(null)}
-        onConfirm={confirmDelete}
-        eventName={deleteEvent?.eventName}
-      />
+        <EventTable
+          data={applications}
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onDeleteMultiple={handleDeleteMultiple}
+        />
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { ReactNode } from "react"
 
-export default function eventsLayout({
+export default function EventsLayout({
   children,
 }: {
   children: ReactNode

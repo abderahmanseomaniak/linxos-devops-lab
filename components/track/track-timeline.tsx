@@ -6,10 +6,11 @@ import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-type TrackStatus = "confirmed" | "pending" | "cancelled" | "approved"
+type TrackStatus = "confirmed" | "pending" | "cancelled" | "approved" | "ready"
 
 interface TrackTimelineProps {
   status: TrackStatus
+  reference?: string
   className?: string
 }
 
@@ -21,11 +22,15 @@ const steps = [
   { key: "complete", label: "Complete", icon: CheckCircle2 },
 ] as const
 
-const getProgress = (status: TrackStatus) => {
+const getProgress = (status: TrackStatus, reference?: string) => {
   if (status === "confirmed") return 6
   if (status === "cancelled") return -1
   if (status === "approved") return 6
-  if (status === "pending") return 2
+  if (status === "pending") {
+    if (reference === "SPO-2026-002") return 3
+    return 2
+  }
+  if (status === "ready") return 4
   return 2
 }
 
@@ -34,8 +39,6 @@ interface StepState {
   isCurrent: boolean
   isRejected: boolean
   isApproved: boolean
-  isPendingCurrent: boolean
-  isPendingCompleted: boolean
   isEmpty: boolean
 }
 
@@ -47,8 +50,6 @@ const getStepState = (progress: number, index: number, status: TrackStatus): Ste
     isCurrent: isCurrentStep,
     isRejected: progress === -1 && status === "cancelled",
     isApproved: status === "approved",
-    isPendingCurrent: isCurrentStep && status === "pending",
-    isPendingCompleted: isCompletedStep && status === "pending",
     isEmpty: progress < index + 1 && progress !== -1,
   }
 }
@@ -65,8 +66,8 @@ function Empty({ size = "default" }: { size?: "default" | "small" }) {
   )
 }
 
-function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; status: TrackStatus }) {
-  const progress = useMemo(() => getProgress(status), [status])
+function TimelineDesktop({ stepStates, status, reference }: { stepStates: StepState[]; status: TrackStatus; reference?: string }) {
+  const progress = useMemo(() => getProgress(status, reference), [status, reference])
 
   return (
     <div className="relative">
@@ -74,13 +75,13 @@ function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; stat
       <div
         className={cn(
           "absolute top-5 left-0 h-0.5",
-          status === "approved" || status === "pending" ? "bg-green-500" : "bg-primary"
+          status === "cancelled" ? "bg-red-500" : status === "pending" || status === "approved" || status === "ready" ? "bg-green-500" : "bg-primary"
         )}
         style={{ width: `${progress > 0 ? `calc(${Math.min(progress - 1, 4) * 25}% - 16px)` : "0%" }` }}
       />
       <div className="relative flex justify-between">
         {steps.map((step, index) => {
-          const { isCompleted, isCurrent, isRejected, isApproved, isPendingCurrent, isPendingCompleted, isEmpty } = stepStates[index]
+          const { isCompleted, isCurrent, isRejected, isApproved, isEmpty } = stepStates[index]
           const Icon = step.icon
 
           return (
@@ -91,14 +92,12 @@ function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; stat
                   isCurrent && "ring-4 ring-primary/20"
                 )}
               >
-                {isApproved ? (
-                  <Icon className="h-5 w-5 text-green-500" />
-                ) : isPendingCompleted ? (
-                  <Icon className="h-5 w-5 text-green-500" />
-                ) : isRejected ? (
+                {isRejected ? (
                   <Icon className="h-5 w-5 text-red-500" />
-                ) : isPendingCurrent ? (
+                ) : isCurrent ? (
                   <Icon className="h-5 w-5 text-orange-500" />
+                ) : isCompleted ? (
+                  <Icon className="h-5 w-5 text-green-500" />
                 ) : isEmpty ? (
                   <Empty />
                 ) : (
@@ -109,7 +108,7 @@ function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; stat
                 variant="small"
                 className={cn(
                   "mt-2 text-xs font-medium text-center",
-                  isApproved ? "text-green-500" : isRejected ? "text-red-500" : isPendingCurrent ? "text-orange-500" : isPendingCompleted ? "text-green-500" : isCompleted ? "text-foreground" : isCurrent ? "text-primary" : "text-muted-foreground"
+                  isRejected ? "text-red-500" : isCurrent ? "text-orange-500" : isCompleted || isApproved ? "text-green-500" : isEmpty ? "text-muted-foreground" : "text-foreground"
                 )}
               >
                 {step.label}
@@ -122,13 +121,13 @@ function TimelineDesktop({ stepStates, status }: { stepStates: StepState[]; stat
   )
 }
 
-function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; status: TrackStatus }) {
-  const progress = useMemo(() => getProgress(status), [status])
+function TimelineMobile({ stepStates, status, reference }: { stepStates: StepState[]; status: TrackStatus; reference?: string }) {
+  const progress = useMemo(() => getProgress(status, reference), [status, reference])
 
   return (
     <div className="space-y-0">
       {steps.map((step, index) => {
-        const { isCompleted, isCurrent, isRejected, isApproved, isPendingCurrent, isPendingCompleted, isEmpty } = stepStates[index]
+        const { isCompleted, isCurrent, isRejected, isApproved, isEmpty } = stepStates[index]
         const Icon = step.icon
 
         return (
@@ -140,14 +139,12 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
                   isCurrent && "ring-2 ring-primary/30"
                 )}
               >
-                {isApproved ? (
-                  <Icon className="h-4 w-4 text-green-500" />
-                ) : isPendingCompleted ? (
-                  <Icon className="h-4 w-4 text-green-500" />
-                ) : isRejected ? (
+                {isRejected ? (
                   <Icon className="h-4 w-4 text-red-500" />
-                ) : isPendingCurrent ? (
+                ) : isCurrent ? (
                   <Icon className="h-4 w-4 text-orange-500" />
+                ) : isCompleted ? (
+                  <Icon className="h-4 w-4 text-green-500" />
                 ) : isEmpty ? (
                   <Empty size="small" />
                 ) : (
@@ -155,7 +152,7 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
                 )}
               </div>
               {index < steps.length - 1 && (
-                <div className={cn("w-0.5 h-6", (isCompleted && status === "approved") || (isPendingCompleted && status === "pending") ? "bg-green-500" : isCompleted ? "bg-primary" : "bg-muted")} />
+                <div className={cn("w-0.5 h-6", isRejected ? "bg-red-500" : isCompleted ? "bg-green-500" : "bg-muted")} />
               )}
             </div>
             <div className="flex-1 pb-4">
@@ -163,12 +160,12 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
                 variant="small"
                 className={cn(
                   "font-medium",
-                  isApproved ? "text-green-500" : isRejected ? "text-red-500" : isPendingCurrent ? "text-orange-500" : isPendingCompleted ? "text-green-500" : isCompleted ? "text-foreground" : isCurrent ? "text-primary" : "text-muted-foreground"
+                  isRejected ? "text-red-500" : isCurrent ? "text-orange-500" : isCompleted || isApproved ? "text-green-500" : isEmpty ? "text-muted-foreground" : "text-foreground"
                 )}
               >
                 {step.label}
               </Typography>
-              {isCurrent && !isRejected && !isApproved && !isPendingCurrent && (
+              {isCurrent && !isRejected && (
                 <Typography variant="small" className="text-muted-foreground text-xs">Current step</Typography>
               )}
             </div>
@@ -179,10 +176,10 @@ function TimelineMobile({ stepStates, status }: { stepStates: StepState[]; statu
   )
 }
 
-export function TrackTimeline({ status, className }: TrackTimelineProps) {
+export function TrackTimeline({ status, reference, className }: TrackTimelineProps) {
   const isMobile = useIsMobile()
 
-  const progress = useMemo(() => getProgress(status), [status])
+  const progress = useMemo(() => getProgress(status, reference), [status, reference])
 
   const stepStates = useMemo(() =>
     steps.map((_, index) => getStepState(progress, index, status)),
@@ -190,11 +187,11 @@ export function TrackTimeline({ status, className }: TrackTimelineProps) {
   )
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full mt-4", className)}>
       {isMobile ? (
-        <TimelineMobile stepStates={stepStates} status={status} />
+        <TimelineMobile stepStates={stepStates} status={status} reference={reference} />
       ) : (
-        <TimelineDesktop stepStates={stepStates} status={status} />
+        <TimelineDesktop stepStates={stepStates} status={status} reference={reference} />
       )}
     </div>
   )

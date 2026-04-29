@@ -7,7 +7,7 @@ export function TrackLoading({ className }: { className?: string }) {
   return (
     <div className={className}>
       <Card className="border">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2">
           <div className="flex items-center gap-3">
             <Skeleton className="w-10 h-10 rounded-lg" />
             <div className="space-y-2 flex-1">
@@ -18,13 +18,13 @@ export function TrackLoading({ className }: { className?: string }) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-6">
+          <div className="flex gap-4">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-4 w-24" />
           </div>
         </CardContent>
       </Card>
-      <Skeleton className="h-16 w-full mt-4" />
+      <Skeleton className="h-12 w-full mt-4" />
     </div>
   )
 }

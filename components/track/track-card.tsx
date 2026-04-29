@@ -1,12 +1,13 @@
 "use client"
 
-import { CheckCircle2, Clock, XCircle, Calendar, MapPin, Building2 } from "lucide-react"
+import { CheckCircle2, Clock, XCircle } from "lucide-react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Typography } from "@/components/ui/typography"
 import { cn } from "@/lib/utils"
 import type { TrackResult } from "@/components/track/track.types"
+import { Building2, Calendar, MapPin } from "lucide-react"
 
 interface TrackCardProps {
   result: TrackResult
@@ -18,6 +19,7 @@ const statusConfig = {
   pending: { icon: Clock, label: "Pending", bg: "bg-amber-500" },
   cancelled: { icon: XCircle, label: "Rejected", bg: "bg-red-500" },
   approved: { icon: CheckCircle2, label: "Approved", bg: "bg-green-500" },
+  ready: { icon: CheckCircle2, label: "Ready", bg: "bg-amber-500" },
 }
 
 export function TrackCard({ result, className }: TrackCardProps) {
@@ -25,8 +27,8 @@ export function TrackCard({ result, className }: TrackCardProps) {
   const StatusIcon = status.icon
 
   return (
-    <Card className={cn("border transition-all duration-300 hover:shadow-md animate-in fade-in slide-in-from-bottom-2", className)}>
-      <CardHeader className="pb-3">
+    <Card className={cn("border hover:shadow-md", className)}>
+      <CardHeader className="pb-2">
         <div className="flex justify-between items-start gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0", status.bg)}>
@@ -48,7 +50,7 @@ export function TrackCard({ result, className }: TrackCardProps) {
 
       <Separator />
 
-      <CardContent className="pt-4">
+      <CardContent className="pt-3">
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-start gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
@@ -65,6 +67,7 @@ export function TrackCard({ result, className }: TrackCardProps) {
             </div>
           </div>
         </div>
+        
       </CardContent>
     </Card>
   )

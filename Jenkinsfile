@@ -13,50 +13,73 @@ pipeline {
             }
         }
 
-        stage('Setup Bun') {
+        stage('Environment Check') {
             steps {
-                powershell '''
-                Write-Host "📦 Setting up Bun..."
+                bat '''
+                echo Checking environment...
 
-                if (!(Test-Path $env:USERPROFILE\\.bun)) {
-                    irm https://bun.sh/install.ps1 | iex
-                }
+                echo Node:
+                node -v
 
-                $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
+                echo Git:
+                git --version
 
-                bun --version
+                echo Bun:
+                "%USERPROFILE%\\.bun\\bin\\bun.exe" --version
                 '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                powershell '''
-                $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "📦 Installing dependencies..."
+                echo Installing dependencies...
                 bun install
+                '''
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+
+                echo Running lint...
+                bun run lint
+                '''
+            }
+        }
+
+        stage('Type Check') {
+            steps {
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+
+                echo Type checking...
+                bunx tsc --noEmit
                 '''
             }
         }
 
         stage('Test') {
             steps {
-                powershell '''
-                $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "🧪 Running tests..."
-                bun test || echo "No tests found"
+                echo Running tests...
+                bun test || echo No tests found
                 '''
             }
         }
 
         stage('Build') {
             steps {
-                powershell '''
-                $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "🏗 Building project..."
+                echo Building project...
                 bun run build
                 '''
             }
@@ -64,11 +87,20 @@ pipeline {
 
         stage('Deploy (Vercel)') {
             steps {
-                powershell '''
-                $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "🚀 Deploying to Vercel..."
+                echo Deploying to Vercel...
                 bunx vercel --prod --yes
+                '''
+            }
+        }
+
+        stage('Commit Info') {
+            steps {
+                bat '''
+                echo Last commit:
+                git log -1 --pretty=format:"Commit: %%h%%nMessage: %%s%%nAuthor: %%an"
                 '''
             }
         }
@@ -76,7 +108,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ CI/CD SUCCESS (Bun)"
+            echo "✅ CI/CD SUCCESS (Bun + Jenkins + Vercel)"
         }
 
         failure {

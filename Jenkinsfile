@@ -30,19 +30,9 @@ pipeline {
             }
         }
 
-        stage('Install Bun') {
+        stage('Setup Bun') {
     steps {
-        powershell '''
-        Write-Host "Installing Bun..."
-
-        if (!(Test-Path $env:USERPROFILE\\.bun)) {
-            irm https://bun.sh/install.ps1 | iex
-        }
-
-        $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
-
-        bun --version
-        '''
+        bat '"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Write-Host Bun Setup"'
     }
 }
 

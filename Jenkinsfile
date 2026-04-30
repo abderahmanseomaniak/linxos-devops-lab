@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        BUN_PATH = "${env.USERPROFILE}\\.bun\\bin"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -11,37 +15,27 @@ pipeline {
 
         stage('Environment Check') {
             steps {
-                powershell '''
-                Write-Host "🔍 Checking environment..."
+                bat '''
+                echo Checking environment...
 
-                Write-Host "Node:"
-                node -v || Write-Host "Node not found"
+                echo Node:
+                node -v
 
-                Write-Host "Git:"
+                echo Git:
                 git --version
 
-                Write-Host "Bun:"
-                if (Get-Command bun -ErrorAction SilentlyContinue) {
-                    bun --version
-                } else {
-                    Write-Host "Bun not found yet"
-                }
+                echo Bun:
+                "%USERPROFILE%\\.bun\\bin\\bun.exe" --version
                 '''
             }
         }
 
-        stage('Setup Bun') {
-    steps {
-        bat '"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "Write-Host Bun Setup"'
-    }
-}
-
         stage('Install Dependencies') {
             steps {
-                powershell '''
-                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "📦 Installing dependencies..."
+                echo Installing dependencies...
                 bun install
                 '''
             }
@@ -49,10 +43,10 @@ pipeline {
 
         stage('Lint') {
             steps {
-                powershell '''
-                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "🧹 Running lint..."
+                echo Running lint...
                 bun run lint
                 '''
             }
@@ -60,10 +54,10 @@ pipeline {
 
         stage('Type Check') {
             steps {
-                powershell '''
-                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "🧠 Type checking..."
+                echo Type checking...
                 bunx tsc --noEmit
                 '''
             }
@@ -71,10 +65,10 @@ pipeline {
 
         stage('Build') {
             steps {
-                powershell '''
-                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
 
-                Write-Host "🏗 Building project..."
+                echo Building project...
                 bun run build
                 '''
             }
@@ -82,10 +76,9 @@ pipeline {
 
         stage('Commit Info') {
             steps {
-                powershell '''
-                Write-Host "📝 Last commit info:"
-
-                git log -1 --pretty=format:"Commit: %h%nMessage: %s%nAuthor: %an"
+                bat '''
+                echo Last commit info:
+                git log -1 --pretty=format:"Commit: %%h%%nMessage: %%s%%nAuthor: %%an"
                 '''
             }
         }

@@ -23,7 +23,7 @@ pipeline {
         bun --version
         '''
     }
-}
+  } 
         stage('Install Dependencies') {
             steps {
                 powershell '''

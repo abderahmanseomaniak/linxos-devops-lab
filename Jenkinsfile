@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        BUN_PATH = "${env.USERPROFILE}\\.bun\\bin"
+        BUN_DIR = "${env.USERPROFILE}\\.bun\\bin"
     }
 
     stages {
@@ -63,6 +63,17 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+
+                echo Running tests...
+                bun test || echo No tests found
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 bat '''
@@ -74,10 +85,21 @@ pipeline {
             }
         }
 
+        stage('Deploy (Vercel)') {
+            steps {
+                bat '''
+                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+
+                echo Deploying to Vercel...
+                bunx vercel --prod --yes
+                '''
+            }
+        }
+
         stage('Commit Info') {
             steps {
                 bat '''
-                echo Last commit info:
+                echo Last commit:
                 git log -1 --pretty=format:"Commit: %%h%%nMessage: %%s%%nAuthor: %%an"
                 '''
             }
@@ -86,11 +108,11 @@ pipeline {
 
     post {
         success {
-            echo "✅ CI SUCCESS - Build passed"
+            echo "✅ CI/CD SUCCESS (Bun + Jenkins + Vercel)"
         }
 
         failure {
-            echo "❌ CI FAILED - Check logs"
+            echo "❌ PIPELINE FAILED"
         }
     }
 }

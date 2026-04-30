@@ -1,13 +1,14 @@
 "use client"
 
-import { CheckCircle2, Clock, XCircle } from "lucide-react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Typography } from "@/components/ui/typography"
+import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import type { TrackResult } from "@/components/track/track.types"
-import { Building2, Calendar, MapPin } from "lucide-react"
+import { TrackShare } from "./track-share"
+import { TrackHelp } from "./track-help"
+import { Calendar, MapPin, Hash } from "lucide-react"
 
 interface TrackCardProps {
   result: TrackResult
@@ -15,11 +16,47 @@ interface TrackCardProps {
 }
 
 const statusConfig = {
-  confirmed: { icon: CheckCircle2, label: "Approved", bg: "bg-emerald-500" },
-  pending: { icon: Clock, label: "Pending", bg: "bg-amber-500" },
-  cancelled: { icon: XCircle, label: "Rejected", bg: "bg-red-500" },
-  approved: { icon: CheckCircle2, label: "Approved", bg: "bg-green-500" },
-  ready: { icon: CheckCircle2, label: "Ready", bg: "bg-amber-500" },
+  pending: {
+    icon: Clock,
+    label: "Pending",
+    bg: "bg-amber-500",
+    description: "Your request is being reviewed.",
+  },
+  confirmed: {
+    icon: CheckCircle2,
+    label: "Confirmed",
+    bg: "bg-emerald-500",
+    description: "Your request has been confirmed.",
+  },
+  approved: {
+    icon: CheckCircle2,
+    label: "Approved",
+    bg: "bg-green-500",
+    description: "Your request has been approved.",
+  },
+  ready: {
+    icon: AlertCircle,
+    label: "Ready",
+    bg: "bg-amber-500",
+    description: "Your request is ready.",
+  },
+  cancelled: {
+    icon: XCircle,
+    label: "Cancelled",
+    bg: "bg-red-500",
+    description: "Your request was cancelled.",
+  },
+}
+
+function formatLastUpdate(): string {
+  const now = new Date()
+  return now.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 }
 
 export function TrackCard({ result, className }: TrackCardProps) {
@@ -27,47 +64,72 @@ export function TrackCard({ result, className }: TrackCardProps) {
   const StatusIcon = status.icon
 
   return (
-    <Card className={cn("border hover:shadow-md", className)}>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0", status.bg)}>
-              <StatusIcon className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <Typography variant="h4" className="text-base truncate">{result.name}</Typography>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Building2 className="h-3 w-3" />
-                <Typography variant="small" className="truncate">{result.clubName}</Typography>
-              </div>
-            </div>
+    <Card className={cn("border shadow-sm w-full max-w-md", className)}>
+      <CardContent className="p-5">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div
+            className={cn(
+              "w-14 h-14 rounded-full flex items-center justify-center text-white",
+              status.bg
+            )}
+          >
+            <StatusIcon className="h-7 w-7" />
           </div>
-          <Badge className={cn("text-white shrink-0", status.bg)}>
-            {status.label}
-          </Badge>
-        </div>
-      </CardHeader>
 
-      <Separator />
+          <div className="space-y-1">
+            <Typography variant="h3" className="text-xl font-semibold">
+              {status.label}
+            </Typography>
+            <Typography variant="small" className="text-muted-foreground">
+              {status.description}
+            </Typography>
+          </div>
 
-      <CardContent className="pt-3">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-start gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
-            <div>
-              <Typography variant="small" className="text-muted-foreground">Date</Typography>
-              <Typography variant="p" className="text-sm">{result.eventStartDate}</Typography>
+          <Separator className="w-full" />
+
+          <div className="w-full space-y-3 text-left">
+            <div className="flex items-start gap-3">
+              <Typography variant="small" className="text-muted-foreground w-20 shrink-0">
+                Event
+              </Typography>
+              <Typography variant="p" className="font-medium text-sm">
+                {result.name}
+              </Typography>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <Typography variant="p" className="text-sm">
+                {result.eventStartDate}
+              </Typography>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <Typography variant="p" className="text-sm">
+                {result.city}
+              </Typography>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Hash className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <Typography variant="p" className="text-sm font-mono">
+                {result.reference}
+              </Typography>
             </div>
           </div>
-          <div className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-            <div>
-              <Typography variant="small" className="text-muted-foreground">Location</Typography>
-              <Typography variant="p" className="text-sm">{result.city}</Typography>
-            </div>
+
+          <Separator className="w-full" />
+
+          <Typography variant="small" className="text-muted-foreground">
+            Last Update: {formatLastUpdate()}
+          </Typography>
+
+          <div className="flex gap-2 w-full">
+            <TrackHelp className="flex-1" />
+            <TrackShare reference={result.reference} className="flex-1" />
           </div>
         </div>
-        
       </CardContent>
     </Card>
   )

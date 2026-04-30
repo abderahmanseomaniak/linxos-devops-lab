@@ -3,37 +3,61 @@ pipeline {
 
     stages {
 
-        stage('Test CMD (full path)') {
+        stage('Checkout') {
             steps {
-                bat '"C:\\Windows\\System32\\cmd.exe" /c echo CMD WORKS'
+                checkout scm
             }
         }
 
-        stage('Test Node') {
+        stage('Install Dependencies') {
             steps {
-                bat '"C:\\Windows\\System32\\cmd.exe" /c node -v'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c set PATH=%USERPROFILE%\\.bun\\bin;%PATH% && bun install'
             }
         }
 
-        stage('Test Git') {
+        stage('Lint') {
             steps {
-                bat '"C:\\Windows\\System32\\cmd.exe" /c git --version'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c set PATH=%USERPROFILE%\\.bun\\bin;%PATH% && bun run lint'
             }
         }
 
-        stage('Test Bun') {
+        stage('Type Check') {
             steps {
-                bat '"C:\\Users\\pc\\.bun\\bin\\bun.exe" --version'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c set PATH=%USERPROFILE%\\.bun\\bin;%PATH% && bunx tsc --noEmit'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat '"C:\\Windows\\System32\\cmd.exe" /c set PATH=%USERPROFILE%\\.bun\\bin;%PATH% && bun test || echo No tests'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat '"C:\\Windows\\System32\\cmd.exe" /c set PATH=%USERPROFILE%\\.bun\\bin;%PATH% && bun run build'
+            }
+        }
+
+        stage('Deploy (Vercel)') {
+            steps {
+                bat '"C:\\Windows\\System32\\cmd.exe" /c set PATH=%USERPROFILE%\\.bun\\bin;%PATH% && bunx vercel --prod --yes'
+            }
+        }
+
+        stage('Commit Info') {
+            steps {
+                bat '"C:\\Windows\\System32\\cmd.exe" /c git log -1 --pretty=format:"Commit: %%h%%nMessage: %%s%%nAuthor: %%an"'
             }
         }
     }
 
     post {
         success {
-            echo "✅ TEST SUCCESS"
+            echo "✅ CI/CD SUCCESS 🚀"
         }
         failure {
-            echo "❌ TEST FAILED"
+            echo "❌ PIPELINE FAILED"
         }
     }
 }

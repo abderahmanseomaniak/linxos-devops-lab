@@ -2,7 +2,13 @@ pipeline {
     agent any
 
     environment {
-        BUN_PATH = "%USERPROFILE%\\.bun\\bin"
+        BUN = "${env.USERPROFILE}\\.bun\\bin\\bun.exe"
+        PATH = "${env.USERPROFILE}\\.bun\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\nodejs\\;${env.PATH}"
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
     }
 
     stages {
@@ -16,9 +22,10 @@ pipeline {
         stage('Environment Check') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c echo Checking environment...
-                node -v
-                git --version
+                    echo === ENV CHECK ===
+                    node -v
+                    git --version
+                    "%USERPROFILE%\\.bun\\bin\\bun.exe" --version
                 '''
             }
         }
@@ -26,7 +33,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c set PATH=%BUN_PATH%;%PATH% && bun install
+                    "%USERPROFILE%\\.bun\\bin\\bun.exe" install
                 '''
             }
         }
@@ -34,7 +41,8 @@ pipeline {
         stage('Lint (non-blocking)') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c set PATH=%BUN_PATH%;%PATH% && bun run lint || echo Lint warnings detected
+                    "%USERPROFILE%\\.bun\\bin\\bun.exe" run lint
+                    exit /b 0
                 '''
             }
         }
@@ -42,7 +50,7 @@ pipeline {
         stage('Type Check') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c set PATH=%BUN_PATH%;%PATH% && bunx tsc --noEmit
+                    "%USERPROFILE%\\.bun\\bin\\bun.exe" run typecheck
                 '''
             }
         }
@@ -50,7 +58,7 @@ pipeline {
         stage('Test') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c set PATH=%BUN_PATH%;%PATH% && bun test || echo No tests found
+                    "%USERPROFILE%\\.bun\\bin\\bun.exe" test
                 '''
             }
         }
@@ -58,7 +66,7 @@ pipeline {
         stage('Build') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c set PATH=%BUN_PATH%;%PATH% && bun run build
+                    "%USERPROFILE%\\.bun\\bin\\bun.exe" run build
                 '''
             }
         }
@@ -66,7 +74,8 @@ pipeline {
         stage('Deploy (Vercel)') {
             steps {
                 bat '''
-                "C:\\Windows\\System32\\cmd.exe" /c set PATH=%BUN_PATH%;%PATH% && bunx vercel --prod --yes || echo Deploy skipped
+                    echo Deploying to Vercel...
+                    vercel --prod --yes
                 '''
             }
         }
@@ -74,7 +83,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ CI/CD SUCCESS 🚀"
+            echo "✅ PIPELINE SUCCESS"
         }
 
         failure {

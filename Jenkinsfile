@@ -12,8 +12,6 @@ pipeline {
         stage('Install Bun') {
     steps {
         powershell '''
-        Write-Host "Installing Bun..."
-
         if (!(Test-Path $env:USERPROFILE\\.bun)) {
             irm https://bun.sh/install.ps1 | iex
         }
@@ -23,7 +21,7 @@ pipeline {
         bun --version
         '''
     }
-  } 
+} 
         stage('Install Dependencies') {
             steps {
                 powershell '''

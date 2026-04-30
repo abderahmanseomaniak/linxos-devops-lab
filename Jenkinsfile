@@ -1,118 +1,39 @@
 pipeline {
     agent any
 
-    environment {
-        BUN_DIR = "${env.USERPROFILE}\\.bun\\bin"
-    }
-
     stages {
 
-        stage('Checkout') {
+        stage('Test CMD (full path)') {
             steps {
-                checkout scm
+                bat '"C:\\Windows\\System32\\cmd.exe" /c echo CMD WORKS'
             }
         }
 
-        stage('Environment Check') {
+        stage('Test Node') {
             steps {
-                bat '''
-                echo Checking environment...
-
-                echo Node:
-                node -v
-
-                echo Git:
-                git --version
-
-                echo Bun:
-                "%USERPROFILE%\\.bun\\bin\\bun.exe" --version
-                '''
+                bat '"C:\\Windows\\System32\\cmd.exe" /c node -v'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Test Git') {
             steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
-
-                echo Installing dependencies...
-                bun install
-                '''
+                bat '"C:\\Windows\\System32\\cmd.exe" /c git --version'
             }
         }
 
-        stage('Lint') {
+        stage('Test Bun') {
             steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
-
-                echo Running lint...
-                bun run lint
-                '''
-            }
-        }
-
-        stage('Type Check') {
-            steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
-
-                echo Type checking...
-                bunx tsc --noEmit
-                '''
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
-
-                echo Running tests...
-                bun test || echo No tests found
-                '''
-            }
-        }
-
-        stage('Build') {
-            steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
-
-                echo Building project...
-                bun run build
-                '''
-            }
-        }
-
-        stage('Deploy (Vercel)') {
-            steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
-
-                echo Deploying to Vercel...
-                bunx vercel --prod --yes
-                '''
-            }
-        }
-
-        stage('Commit Info') {
-            steps {
-                bat '''
-                echo Last commit:
-                git log -1 --pretty=format:"Commit: %%h%%nMessage: %%s%%nAuthor: %%an"
-                '''
+                bat '"C:\\Users\\pc\\.bun\\bin\\bun.exe" --version'
             }
         }
     }
 
     post {
         success {
-            echo "✅ CI/CD SUCCESS (Bun + Jenkins + Vercel)"
+            echo "✅ TEST SUCCESS"
         }
-
         failure {
-            echo "❌ PIPELINE FAILED"
+            echo "❌ TEST FAILED"
         }
     }
 }

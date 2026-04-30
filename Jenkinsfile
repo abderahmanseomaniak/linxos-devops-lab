@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        BUN_DIR = "%USERPROFILE%\\.bun\\bin"
-        PATH = "${BUN_DIR};$PATH"
-    }
-
     stages {
 
         stage('Checkout') {
@@ -14,11 +9,18 @@ pipeline {
             }
         }
 
-        stage('Install Bun') {
+        stage('Setup Bun') {
             steps {
-                bat '''
-                powershell -Command "if (!(Test-Path $env:USERPROFILE\\.bun)) { irm https://bun.sh/install.ps1 | iex }"
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+                powershell '''
+                Write-Host "🔧 Checking Bun installation..."
+
+                if (!(Test-Path $env:USERPROFILE\\.bun)) {
+                    Write-Host "📦 Installing Bun..."
+                    irm https://bun.sh/install.ps1 | iex
+                }
+
+                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
+
                 bun --version
                 '''
             }
@@ -26,8 +28,8 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+                powershell '''
+                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
                 bun install
                 '''
             }
@@ -35,8 +37,8 @@ pipeline {
 
         stage('Lint') {
             steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+                powershell '''
+                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
                 bun run lint
                 '''
             }
@@ -44,8 +46,8 @@ pipeline {
 
         stage('Type Check') {
             steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+                powershell '''
+                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
                 bunx tsc --noEmit
                 '''
             }
@@ -53,9 +55,18 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat '''
-                set PATH=%USERPROFILE%\\.bun\\bin;%PATH%
+                powershell '''
+                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
                 bun run build
+                '''
+            }
+        }
+
+        stage('Commit Info') {
+            steps {
+                powershell '''
+                Write-Host "📝 Latest Commit Triggered This Build:"
+                git log -1 --pretty=format:"%h - %s (%an)"
                 '''
             }
         }
@@ -63,11 +74,11 @@ pipeline {
 
     post {
         success {
-            echo '✅ CI Passed Successfully'
+            echo "✅ CI SUCCESS - Build passed"
         }
 
         failure {
-            echo '❌ CI Failed - Check logs'
+            echo "❌ CI FAILED - Check logs"
         }
     }
 }

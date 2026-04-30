@@ -31,20 +31,20 @@ pipeline {
         }
 
         stage('Install Bun') {
-            steps {
-                powershell '''
-                Write-Host "📦 Installing Bun if needed..."
+    steps {
+        powershell '''
+        Write-Host "Installing Bun..."
 
-                if (!(Test-Path $env:USERPROFILE\\.bun)) {
-                    irm https://bun.sh/install.ps1 | iex
-                }
-
-                $env:PATH="$env:USERPROFILE\\.bun\\bin;$env:PATH"
-
-                bun --version
-                '''
-            }
+        if (!(Test-Path $env:USERPROFILE\\.bun)) {
+            irm https://bun.sh/install.ps1 | iex
         }
+
+        $env:PATH = "$env:USERPROFILE\\.bun\\bin;" + $env:PATH
+
+        bun --version
+        '''
+    }
+}
 
         stage('Install Dependencies') {
             steps {

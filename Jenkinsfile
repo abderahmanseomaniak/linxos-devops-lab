@@ -2,8 +2,14 @@ pipeline {
     agent any
 
     environment {
-        BUN = "${env.USERPROFILE}\\.bun\\bin\\bun.exe"
-        PATH = "${env.USERPROFILE}\\.bun\\bin;${env.PATH}"
+        // FIX: hard path for Windows Jenkins service (important)
+        BUN = "C:\\Users\\pc\\.bun\\bin\\bun.exe"
+        PATH = "C:\\Users\\pc\\.bun\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\nodejs\\;${env.PATH}"
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
     }
 
     stages {
@@ -20,7 +26,7 @@ pipeline {
                     echo === ENV CHECK ===
                     node -v
                     git --version
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" --version
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe --version
                 '''
             }
         }
@@ -28,7 +34,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat '''
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" install
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe install
                 '''
             }
         }
@@ -36,7 +42,7 @@ pipeline {
         stage('Lint (non-blocking)') {
             steps {
                 bat '''
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" run lint || echo Lint warnings detected
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe run lint || echo Lint warnings detected
                 '''
             }
         }
@@ -44,7 +50,7 @@ pipeline {
         stage('Type Check') {
             steps {
                 bat '''
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" x tsc --noEmit
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe x tsc --noEmit
                 '''
             }
         }
@@ -52,7 +58,7 @@ pipeline {
         stage('Test') {
             steps {
                 bat '''
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" test || echo No tests found
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe test || echo No tests found
                 '''
             }
         }
@@ -60,7 +66,7 @@ pipeline {
         stage('Build') {
             steps {
                 bat '''
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" run build
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe run build
                 '''
             }
         }
@@ -68,7 +74,7 @@ pipeline {
         stage('Deploy (Vercel)') {
             steps {
                 bat '''
-                    "%USERPROFILE%\\.bun\\bin\\bun.exe" x vercel --prod --yes
+                    C:\\Users\\pc\\.bun\\bin\\bun.exe x vercel --prod --yes
                 '''
             }
         }

@@ -1,7 +1,5 @@
 "use client"
-
-import { ActivityLogs } from "@/components/screens/logs/activity-logs"
-
+import { ActivityLogs } from '@/components/screens/logs/ActivityLogs'
 export default function LogsPage() {
   return <ActivityLogs />
 }

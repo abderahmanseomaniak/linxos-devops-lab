@@ -1,63 +1,69 @@
-import { IconChevronsLeft, IconChevronsRight, IconChevronLeft, IconChevronRight } from "@tabler/icons-react"
+"use client"
+
+import React, { useId, useCallback } from "react"
+import type { Table } from "@tanstack/react-table"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import {
+  IconChevronsLeft,
+  IconChevronsRight,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Typography } from "@/components/ui/typography"
-import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination"
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { PAGE_SIZES } from "../lib/constants"
-import { useId, useCallback, useEffect } from "react"
-import type { ColumnFiltersState } from "@tanstack/react-table"
-
-interface PaginationState {
-  pageIndex: number
-  pageSize: number
-}
 
 const VALID_PAGE_SIZES: number[] = [5, 10, 25, 50]
 
-interface LogsPaginationProps {
-  id: string
-  table: any
-  columnFilters?: ColumnFiltersState
-  onPaginationChange?: (state: PaginationState) => void
+interface LogsTablePaginationProps<TData = unknown> {
+  table: Table<TData>
 }
 
-export function LogsPagination({ id, table, columnFilters, onPaginationChange }: LogsPaginationProps) {
+export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginationProps<TData>) {
+  const id = useId()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const pageIndex = Number(searchParams.get("page")) || 0
   const pageSize = Number(searchParams.get("pageSize")) || 10
-
   const totalPages = table.getPageCount()
+
   const canPreviousPage = pageIndex > 0
   const canNextPage = pageIndex < totalPages - 1
 
   const handlePageChange = useCallback((newPageIndex: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", newPageIndex.toString())
-    params.set("pageSize", pageSize.toString())
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
-    onPaginationChange?.({ pageIndex: newPageIndex, pageSize })
-  }, [pathname, router, searchParams, pageSize, onPaginationChange])
+  }, [pathname, router, searchParams])
 
   const handlePageSizeChange = useCallback((newPageSize: string) => {
-    const newSizeNumber = Number(newPageSize)
     const params = new URLSearchParams(searchParams.toString())
-    params.set("pageSize", newSizeNumber.toString())
-    
-    // When changing page size, always reset to first page to ensure valid page state
+    params.set("pageSize", newPageSize)
     params.set("page", "0")
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
-    
-    // Notify parent of both changes
-    onPaginationChange?.({ pageIndex: 0, pageSize: newSizeNumber })
-  }, [pathname, router, searchParams, onPaginationChange])
+  }, [pathname, router, searchParams])
 
-  useEffect(() => {
-    // Sync table state with URL params
+  const handleFirstPage = () => handlePageChange(0)
+  const handlePreviousPage = () => handlePageChange(pageIndex - 1)
+  const handleNextPage = () => handlePageChange(pageIndex + 1)
+  const handleLastPage = () => handlePageChange(totalPages - 1)
+
+  React.useEffect(() => {
     const urlPage = Number(searchParams.get("page")) || 0
     const urlPageSize = Number(searchParams.get("pageSize")) || 10
 
@@ -72,14 +78,8 @@ export function LogsPagination({ id, table, columnFilters, onPaginationChange }:
     }
   }, [searchParams, table])
 
-  const handleFirstPage = () => handlePageChange(0)
-  const handlePreviousPage = () => handlePageChange(pageIndex - 1)
-  const handleNextPage = () => handlePageChange(pageIndex + 1)
-  const handleLastPage = () => handlePageChange(totalPages - 1)
-
-  const filteredRowCount = table.getFilteredRowModel().rows.length
   const startRow = pageIndex * pageSize + 1
-  const endRow = Math.min((pageIndex + 1) * pageSize, filteredRowCount)
+  const endRow = Math.min((pageIndex + 1) * pageSize, table.getRowCount())
 
   return (
     <div className="flex items-center justify-between gap-8 shrink-0">
@@ -93,8 +93,8 @@ export function LogsPagination({ id, table, columnFilters, onPaginationChange }:
             <SelectValue placeholder="Sélectionner" />
           </SelectTrigger>
           <SelectContent>
-            {PAGE_SIZES.map((pageSizeOption) => (
-              <SelectItem key={pageSizeOption} value={pageSizeOption.toString()}>{pageSizeOption}</SelectItem>
+            {PAGE_SIZES.map((size) => (
+              <SelectItem key={size} value={size.toString()}>{size}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -102,10 +102,12 @@ export function LogsPagination({ id, table, columnFilters, onPaginationChange }:
       <div className="flex grow justify-end whitespace-nowrap text-muted-foreground text-xs">
         <Typography variant="small">
           <span className="text-foreground">
-            {startRow} - {endRow}
+            {table.getRowCount() > 0 ? startRow : 0}
+            -
+            {table.getRowCount() > 0 ? endRow : 0}
           </span>
           {" sur "}
-          <span className="text-foreground">{filteredRowCount}</span>
+          <span className="text-foreground">{table.getRowCount()}</span>
         </Typography>
       </div>
       <div>

@@ -59,14 +59,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/" className="flex items-center gap-2">
                 <img
-                  src="/assets/logos/logo-texte-noir.svg"
-                  alt="Logo LINX"
-                  className="h-7 block dark:hidden"
+                  src="/assets/logos/logo-texte-noir.png"
+                  alt="Logo"
+                  className="h-12 block dark:hidden"
                 />
                 <img
-                  src="/assets/logos/logo-texte-blanc.svg"
-                  alt="Logo LINX"
-                  className="h-7 hidden dark:block"
+                  src="/assets/logos/logo-texte-blanc.png"
+                  alt="Logo"
+                  className="h-12 hidden dark:block"
                 />
               </Link>
             </SidebarMenuButton>

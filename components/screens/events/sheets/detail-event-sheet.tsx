@@ -4,9 +4,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { EventApplication, type EventDetailSheetProps, type Step1Data, type Step2Data, type Step3Data, type Creator, type Step4Data, type Step5Data, type Step6Data } from "@/types/events"
+import { EventApplication, type EventDetailSheetProps } from "@/types/events"
 
 function InfoRow({ label, value, isBadge }: { label: string; value: string | React.ReactNode; isBadge?: boolean }) {
   return (
@@ -26,7 +25,7 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
+      <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
         <SheetHeader>
           <SheetTitle>Demande de sponsoring</SheetTitle>
           <SheetDescription>
@@ -34,60 +33,51 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
           </SheetDescription>
         </SheetHeader>
         
-        <div className="flex flex-col gap-4 py-4 px-1 pr-2">
+        <div className="flex flex-col gap-6 py-4 px-5 pr-2">
           {step1 && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Informations du club</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-2">
+            <section>
+              <Typography variant="h4" className="mb-3 text-sm font-semibold">Informations du club</Typography>
+              <div className="grid gap-2">
                 <InfoRow label="Nom du club" value={step1.nomClub} />
                 <InfoRow label="Sport" value={step1.sport} />
                 <InfoRow label="Ville" value={step1.ville} />
                 <InfoRow label="Email" value={step1.email} />
                 <InfoRow label="Téléphone" value={step1.telephone} />
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
           {step2 && (
-            <Card >
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Responsable</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-2">
+            <section>
+              <Typography variant="h4" className="mb-3 text-sm font-semibold">Responsable</Typography>
+              <div className="grid gap-2">
                 <InfoRow label="Nom" value={step2.nomResponsable} />
                 <InfoRow label="Fonction" value={step2.fonction} />
                 <InfoRow label="Email" value={step2.emailResponsable} />
                 <InfoRow label="Téléphone" value={step2.telephoneResponsable} />
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
           {step3 && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Événement</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-2">
+            <section>
+              <Typography variant="h4" className="mb-3 text-sm font-semibold">Événement</Typography>
+              <div className="grid gap-2">
                 <InfoRow label="Nom" value={step3.nomEvenement} />
-                <div className="grid grid-cols-2 gap-2">
                   <InfoRow label="Date début" value={new Date(step3.dateDebut).toLocaleDateString("fr-FR")} />
                   <InfoRow label="Date fin" value={new Date(step3.dateFin).toLocaleDateString("fr-FR")} />
-                </div>
+                
                 <InfoRow label="Lieu" value={step3.lieu} />
                 <InfoRow label="Description" value={step3.description} />
                 <InfoRow label="UGC" value={<Badge variant={step3.hasUGC ? "default" : "secondary"}>{step3.hasUGC ? "Oui" : "Non"}</Badge>} isBadge />
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
           {step4 && step4.creators && step4.creators.length > 0 && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Créateurs UGC</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-3">
+            <section>
+              <Typography variant="h4" className="mb-3 text-sm font-semibold">Créateurs UGC</Typography>
+              <div className="grid gap-3">
                 {step4.creators.map((creator) => (
                   <div key={creator.id} className="rounded-md border p-3 space-y-2">
                     <div className="flex items-center justify-between">
@@ -104,36 +94,30 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
                     </div>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
           {step5 && step5.selectedContentTypes && step5.selectedContentTypes.length > 0 && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Types de contenu</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {step5.selectedContentTypes.map((type) => (
-                    <Badge key={type} variant="outline">{type}</Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <section>
+              <Typography variant="h4" className="mb-3 text-sm font-semibold">Types de contenu</Typography>
+              <div className="flex flex-wrap gap-2">
+                {step5.selectedContentTypes.map((type) => (
+                  <Badge key={type} variant="outline">{type}</Badge>
+                ))}
+              </div>
+            </section>
           )}
 
           {step6 && (step6.visibilite || step6.mentions || step6.autresConditions) && (
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Visibilité</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-2">
+            <section>
+              <Typography variant="h4" className="mb-3 text-sm font-semibold">Visibilité</Typography>
+              <div className="grid gap-2">
                 {step6.visibilite && <InfoRow label="Visibilité" value={step6.visibilite} />}
                 {step6.mentions && <InfoRow label="Mentions" value={step6.mentions} />}
                 {step6.autresConditions && <InfoRow label="Autres" value={step6.autresConditions} />}
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
           <Separator />

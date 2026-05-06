@@ -119,6 +119,51 @@
         "budget": "50000",
         "duration": "3 months"
       }
+    },
+    {
+      "id": "log-008",
+      "userId": "user-002",
+      "userName": "Sarah Manager",
+      "action": "CREATE",
+      "entityType": "Campaign",
+      "entityId": "camp-777",
+      "entityName": "Spring Campaign",
+      "description": "Created new sponsorship campaign",
+      "timestamp": "2026-04-19T09:00:00Z",
+      "details": {
+        "budget": "50000",
+        "duration": "3 months"
+      }
+    },
+    {
+      "id": "log-008",
+      "userId": "user-002",
+      "userName": "Sarah Manager",
+      "action": "CREATE",
+      "entityType": "Campaign",
+      "entityId": "camp-777",
+      "entityName": "Spring Campaign",
+      "description": "Created new sponsorship campaign",
+      "timestamp": "2026-04-19T09:00:00Z",
+      "details": {
+        "budget": "50000",
+        "duration": "3 months"
+      }
+    },
+    {
+      "id": "log-008",
+      "userId": "user-002",
+      "userName": "Sarah Manager",
+      "action": "CREATE",
+      "entityType": "Campaign",
+      "entityId": "camp-777",
+      "entityName": "Spring Campaign",
+      "description": "Created new sponsorship campaign",
+      "timestamp": "2026-04-19T09:00:00Z",
+      "details": {
+        "budget": "50000",
+        "duration": "3 months"
+      }
     }
   ]
 }

@@ -1,10 +1,15 @@
-import type { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { actionVariants } from "../lib/constants"
 import { formatDate } from "../lib/formatters"
 import type { ActivityLog } from "@/types/logs"
 import { LogsRowActions } from "./logs-row-actions"
-import { statusFilterFn } from "../lib/filterFns"
+
+const actionFilterFn: FilterFn<ActivityLog> = (row, columnId, filterValue: string[]) => {
+  if (!filterValue?.length) return true
+  const action = row.getValue(columnId) as string
+  return filterValue.includes(action)
+}
 
 export function createLogsColumns(): ColumnDef<ActivityLog>[] {
   return [
@@ -23,7 +28,7 @@ export function createLogsColumns(): ColumnDef<ActivityLog>[] {
       ),
       header: "Action",
       size: 100,
-      filterFn: statusFilterFn,
+      filterFn: actionFilterFn,
     },
     {
       accessorKey: "entityType",

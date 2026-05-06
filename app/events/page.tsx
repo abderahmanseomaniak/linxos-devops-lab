@@ -57,6 +57,7 @@ export default function EventsPage() {
   return (
     <div className="flex flex-col gap-6">
       <DashboardStats data={stats} />
+      <Suspense fallback={<div className="h-96" />}>
         <EventTable
           data={applications}
           onAdd={handleAdd}
@@ -64,6 +65,7 @@ export default function EventsPage() {
           onDelete={handleDelete}
           onDeleteMultiple={handleDeleteMultiple}
         />
+      </Suspense>
     </div>
   )
 }

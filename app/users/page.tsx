@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { UsersTable } from "@/components/screens/users/users-table"
 import { User } from "@/types/users"
 import usersData from "@/data/users.json"
@@ -12,6 +13,8 @@ export default function UsersPage() {
   }
 
   return (
-    <UsersTable data={initialUsers} onAdd={handleAdd} />
+    <Suspense fallback={<div className="h-96" />}>
+      <UsersTable data={initialUsers} onAdd={handleAdd} />
+    </Suspense>
   )
 }

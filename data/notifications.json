@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "title": "New sponsorship request",
+    "description": "ENSA Casablanca submitted a new request.",
+    "type": "application",
+    "createdAt": "2 min ago",
+    "read": false
+  },
+  {
+    "id": "2",
+    "title": "Delivery marked as shipped",
+    "description": "Linx Summer Fest shipment is now in transit.",
+    "type": "logistics",
+    "createdAt": "1 hour ago",
+    "read": true
+  },
+  {
+    "id": "3",
+    "title": "New UGC content uploaded",
+    "description": "3 new photos were uploaded for Linx Tech Summit.",
+    "type": "ugc",
+    "createdAt": "3 hours ago",
+    "read": false
+  },
+  {
+    "id": "4",
+    "title": "System maintenance scheduled",
+    "description": "Scheduled maintenance on Sunday 2AM UTC.",
+    "type": "system",
+    "createdAt": "5 hours ago",
+    "read": true
+  },
+  {
+    "id": "5",
+    "title": "Sponsorship approved",
+    "description": "TechCorp sponsorship request has been approved.",
+    "type": "application",
+    "createdAt": "1 day ago",
+    "read": true
+  },
+  {
+    "id": "6",
+    "title": "Delivery delayed",
+    "description": "Winter Gala delivery delayed by 2 days.",
+    "type": "logistics",
+    "createdAt": "2 days ago",
+    "read": true
+  }
+]

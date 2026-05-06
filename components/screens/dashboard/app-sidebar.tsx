@@ -12,14 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconCalendar, IconLayoutBoardSplit, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList, IconList } from "@tabler/icons-react"
+import { IconCalendar, IconHome, IconLayoutDashboard, IconLogin, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconList } from "@tabler/icons-react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import uiConstants from "@/data/ui-constants.json"
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutDashboard: IconLayoutDashboard,
   Home: IconHome,
-  Search: IconSearch,
   Settings: IconSettings,
   Calendar: IconCalendar,
   Users: IconUsers,
@@ -27,7 +27,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Truck: IconTruck,
   FileText: IconFileText,
   MapPin: IconMapPin,
-  ClipboardList: IconClipboardList,
+  ClipboardList: IconList,
   Scroll: IconList,
 }
 
@@ -36,36 +36,36 @@ const generalItems = uiConstants.sidebar.general.map(item => ({
   icon: iconMap[item.icon],
 }))
 
-
-
 const managementItems = uiConstants.sidebar.management.map(item => ({
-  ...item,
-  icon: iconMap[item.icon],
-}))
-const testItems = uiConstants.sidebar.test.map(item => ({
   ...item,
   icon: iconMap[item.icon],
 }))
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard-global") {
+      return pathname === href || pathname === "/"
+    }
+    return pathname.startsWith(href)
+  }
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/" >
-                {/* Light mode */}
+              <Link href="/" className="flex items-center gap-2">
                 <img
                   src="/assets/logos/logo-texte-noir.svg"
-                  alt="Logo"
+                  alt="Logo LINX"
                   className="h-7 block dark:hidden"
                 />
-
-                {/* Dark mode */}
                 <img
                   src="/assets/logos/logo-texte-blanc.svg"
-                  alt="Logo"
+                  alt="Logo LINX"
                   className="h-7 hidden dark:block"
                 />
               </Link>
@@ -79,8 +79,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <SidebarMenu>
               {generalItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild isActive={isActive(item.href)}>
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -91,31 +91,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-       
+
         <SidebarGroup>
           <SidebarGroupLabel>Gestion</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {managementItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-         <SidebarGroup>
-          <SidebarGroupLabel>Test</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {testItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild isActive={isActive(item.href)}>
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -130,10 +113,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild isActive={pathname === "/auth"}>
               <Link href="/auth">
                 <IconLogin />
-                <span>Login</span>
+                <span>Connexion</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

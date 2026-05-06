@@ -1,13 +1,3 @@
-import { ReactNode } from "react";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 
-export default function TrackingLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <div className="min-h-screen bg-background">
-      {children}
-    </div>
-  );
-}
+export default DashboardLayout

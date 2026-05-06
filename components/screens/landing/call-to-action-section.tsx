@@ -1,0 +1,65 @@
+"use client";
+import { useRef } from "react";
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { ArrowUpRight } from "lucide-react";
+
+type CallToActionSectionProps = {
+  className?: string;
+};
+
+const CallToActionSection = ({ className }: CallToActionSectionProps) => {
+  const ref = useRef(null);
+
+  const bottomAnimation = {
+    initial: { y: "5%", opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    transition: { duration: 1, delay: 0.8 },
+  };
+
+  return (
+    <section id="contact" className="bg-white text-white">
+      <div className="sm:py-20 py-8">
+        <div className="max-w-7xl mx-auto sm:px-16 px-4">
+          <div
+            ref={ref}
+            className="relative  bg-[#16213E] overflow-hidden min-h-96 flex items-center justify-center px-6 border border-white/10 rounded-3xl before:absolute before:w-full before:h-4/5 before:bg-linear-to-r before:from-sky-100 before:from-15% before:via-white before:via-55% before:to-amber-100 before:to-90% before:rounded-full before:top-24 before:blur-3xl before:-z-10 dark:before:from-sky-400/10 dark:before:from-40% dark:before:via-black dark:before:via-55% dark:before:to-amber-300/10 dark:before:to-60% dark:before:rounded-full dark:before:-z-10"
+          >
+            <motion.div
+              {...bottomAnimation}
+              className="flex flex-col gap-6 items-center mx-auto"
+            >
+              <div className="flex flex-col gap-3 items-center text-center">
+                <h2 className="text-3xl md:text-5xl font-medium leading-tight">
+                  <span className="text-white">Build and control your </span>
+                  <span className="text-amber-400">
+                    operational workflow
+                  </span>
+                </h2>
+
+                <p className="max-w-2xl mx-auto text-white/80">
+                  Design, manage, and automate sponsorships, logistics, and
+                  content operations in one unified system.
+                </p>
+              </div>
+
+             <Button className="relative text-sm font-medium rounded-full h-12 p-1 ps-6 pe-14 group transition-all duration-500 hover:ps-14 hover:pe-6 w-fit overflow-hidden bg-amber-400 text-white hover:bg-amber-300 cursor-pointer">
+
+  <span className="relative z-10 transition-all duration-500">
+    Start building workflows
+  </span>
+
+  <div className="absolute right-1 w-10 h-10 bg-white text-amber-400 rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-44px)] group-hover:rotate-45">
+    <ArrowUpRight size={16} />
+  </div>
+
+</Button>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default CallToActionSection;

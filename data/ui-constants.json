@@ -30,21 +30,18 @@
   },
   "sidebar": {
     "general": [
-      { "title": "dashboard-global", "href": "/dashboard-global", "icon": "LayoutDashboard" }
+      { "title": "Dashboard", "href": "/dashboard-global", "icon": "LayoutDashboard" }
     ],
-   
+
     "management": [
-      { "title": "Events", "href": "/events", "icon": "Calendar" },
-      { "title": "Users", "href": "/users", "icon": "Users" },
-      { "title": "kanban", "href": "/kanban", "icon": "LayoutGrid" },
-      { "title": "logistics", "href": "/logistics", "icon": "Truck" },
-      { "title": "content", "href": "/content", "icon": "FileText" },
-      { "title": "logs", "href": "/logs", "icon": "Scroll" },
-      { "title": "config", "href": "/config", "icon": "Settings" }
-    ],
-    "test": [
-      { "title": "tracking", "href": "/tracking", "icon": "MapPin" },
-      { "title": "forms", "href": "/forms/sponsorship", "icon": "ClipboardList" }
+      { "title": "Événements", "href": "/events", "icon": "Calendar" },
+      { "title": "Utilisateurs", "href": "/users", "icon": "Users" },
+      { "title": "Tableau Kanban", "href": "/kanban", "icon": "LayoutGrid" },
+      { "title": "Logistique", "href": "/logistics", "icon": "Truck" },
+      { "title": "Contenu UGC", "href": "/content", "icon": "FileText" },
+      { "title": "Journal", "href": "/logs", "icon": "Scroll" },
+      { "title": "Configuration", "href": "/config", "icon": "Settings" },
+      { "title": "Suivi", "href": "/tracking", "icon": "MapPin" }
     ]
   },
   "iconMap": {
@@ -59,6 +56,7 @@
     "MapPin": "MapPin",
     "ClipboardList": "ClipboardList",
     "Scroll": "Scroll",
-    "Settings": "Settings"
+    "Settings": "Settings",
+    "Users": "Users"
   }
 }

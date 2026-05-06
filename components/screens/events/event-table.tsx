@@ -226,7 +226,9 @@ const table = useReactTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers
+                  .filter((header) => header.column.getIsVisible())
+                  .map((header) => (
                   <TableHead className="h-8" key={header.id} style={{ width: `${header.getSize()}px` }}>
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div

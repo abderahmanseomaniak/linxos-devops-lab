@@ -14,7 +14,7 @@ export const columns: ColumnDef<ActivityLog>[] = [
   {
     accessorKey: "userName",
     cell: ({ row }) => <span className="font-medium">{row.getValue("userName")}</span>,
-    header: "IconUser",
+    header: "User",
     size: 150,
   },
   {

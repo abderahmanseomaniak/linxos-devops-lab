@@ -22,7 +22,7 @@ import { DEFAULT_PAGE_SIZE } from "./lib/constants"
 import type { ActivityLog } from "@/types/logs"
 
 export function ActivityLogs() {
-const id = useId()
+  const id = useId()
 const searchParams = useSearchParams()
 
 // Get pagination state from URL
@@ -35,14 +35,14 @@ const handlePaginationChange = useCallback((newState: { pageIndex: number; pageS
 // This callback allows the hook to reset to page 0 when filters change
 }, [])
 
-const { table, selectedActions, handleActionChange } = useActivityLogsTable(
-pageIndex,
-pageSize,
+const { table, selectedActions, handleActionChange, columnVisibility } = useActivityLogsTable(
+    pageIndex,
+    pageSize,
   )
 
-const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null)
-const [showDetails, setShowDetails] = useState(false)
-const [searchValue, setSearchValue] = useState("")
+  const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null)
+  const [showDetails, setShowDetails] = useState(false)
+  const [searchValue, setSearchValue] = useState("")
 
   const handleViewDetails = (log: ActivityLog) => {
     setSelectedLog(log)
@@ -85,33 +85,40 @@ const [searchValue, setSearchValue] = useState("")
         searchValue={searchValue}
         onSearchChange={handleSearchChange}
         onSearchClear={handleSearchClear}
+        columnVisibility={columnVisibility}
       />
 
       <div className="overflow-hidden rounded-md border bg-background">
-        <Table className="table-fixed">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} style={{ width: `${header.getSize()}px` }}>
-                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                      <div
-                        className={cn(
-                          header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2",
-                        )}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{
-                          asc: <IconChevronUp aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-                          desc: <IconChevronDown aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    ) : (
-                      flexRender(header.column.columnDef.header, header.getContext())
-                    )}
-                  </TableHead>
-                ))}
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers
+                  .filter((header) => header.column.getIsVisible())
+                  .map((header) => (
+                    <TableHead
+                      key={header.id}
+                      style={{
+                        width: `${header.getSize()}px`,
+                        minWidth: `${header.getSize()}px`,
+                      }}
+                    >
+                      {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                        <div
+                          className="flex items-center justify-between cursor-pointer"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: <IconChevronUp size={16} />,
+                            desc: <IconChevronDown size={16} />,
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
+                      )}
+                    </TableHead>
+                  ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -120,7 +127,7 @@ const [searchValue, setSearchValue] = useState("")
               filteredRows.map((row) => (
                 <TableRow data-state={row.getIsSelected() && "selected"} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} style={{ width: `${cell.column.getSize()}px`, minWidth: `${cell.column.getSize()}px` }}>
                       {flexRender(cell.column.columnDef.cell, { ...cell.getContext(), onViewDetails: handleViewDetails })}
                     </TableCell>
                   ))}
@@ -128,7 +135,7 @@ const [searchValue, setSearchValue] = useState("")
               ))
             ) : (
               <TableRow>
-                <TableCell className="h-24 text-center" colSpan={table.getAllColumns().length}>
+                <TableCell className="h-24 text-center"colSpan={table.getVisibleLeafColumns().length}>
                   No logs found.
                 </TableCell>
               </TableRow>

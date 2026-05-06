@@ -57,16 +57,16 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               <Link href="/" >
                 {/* Light mode */}
                 <img
-                  src="/assets/logos/logo-texte-noir.svg"
+                  src="/assets/logos/logo-texte-noir.png"
                   alt="Logo"
-                  className="h-7 block dark:hidden"
+                  className="h-12 block dark:hidden"
                 />
 
                 {/* Dark mode */}
                 <img
-                  src="/assets/logos/logo-texte-blanc.svg"
+                  src="/assets/logos/logo-texte-blanc.png"
                   alt="Logo"
-                  className="h-7 hidden dark:block"
+                  className="h-12 hidden dark:block"
                 />
               </Link>
             </SidebarMenuButton>

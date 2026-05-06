@@ -27,6 +27,7 @@ interface LogsToolbarProps<TData = unknown> {
   searchValue: string
   onSearchChange: (value: string) => void
   onSearchClear: () => void
+  columnVisibility: Record<string, boolean>
 }
 
 export function LogsToolbar<TData = unknown>({
@@ -37,6 +38,7 @@ export function LogsToolbar<TData = unknown>({
   searchValue,
   onSearchChange,
   onSearchClear,
+  columnVisibility,
 }: LogsToolbarProps<TData>) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -111,12 +113,14 @@ export function LogsToolbar<TData = unknown>({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-            {table.getAllColumns().filter((column: any) => column.getCanHide()).map((column: any) => (
-              <DropdownMenuCheckboxItem
+            {table.getAllColumns().filter((column: any) => column.getCanHide() && column.id !== "actions").map((column: any) => (
+<DropdownMenuCheckboxItem
                 checked={column.getIsVisible()}
                 className="capitalize"
                 key={column.id}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                onCheckedChange={(checked) => {
+                  table.setColumnVisibility((old) => ({ ...old, [column.id]: checked }))
+                }}
                 onSelect={(event) => event.preventDefault()}
               >
                 {column.id}

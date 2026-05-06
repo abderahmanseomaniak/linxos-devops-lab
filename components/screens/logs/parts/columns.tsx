@@ -18,6 +18,7 @@ export function createLogsColumns(): ColumnDef<ActivityLog>[] {
       cell: ({ row }) => <span className="font-medium">{row.getValue("userName")}</span>,
       header: "User",
       size: 150,
+      enableHiding: false, 
     },
     {
       accessorKey: "action",

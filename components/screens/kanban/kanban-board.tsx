@@ -120,8 +120,16 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
         autoScroll={false}
 
     >
-      <div className="grid grid-cols-5 h-full gap-2 p-1 overflow-hidden min-h-0">
-        {STAGES.map((stage) => (
+<div
+  className="
+    flex md:grid md:grid-cols-5
+    overflow-x-auto md:overflow-visible
+    snap-x snap-mandatory
+    md:snap-none
+    gap-3 p-2 min-h-0 h-full
+    scroll-smooth
+  "
+>        {STAGES.map((stage) => (
           <KanbanColumn key={stage} stage={stage} events={eventsByStage[stage]} />
         ))}
       </div>

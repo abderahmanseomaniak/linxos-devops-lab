@@ -12,12 +12,17 @@ export function KanbanColumn({ stage, events }: KanbanColumnProps) {
 
   return (
     <div
-      ref={setNodeRef}
-      className={`
-        flex flex-col rounded-2xl border bg-muted/30 p-2 transition-all duration-200 min-h-0 
-        ${isOver ? "bg-muted/60 ring-2 ring-primary/20" : ""}
-      `}
-    >
+  ref={setNodeRef}
+  className={`
+    flex flex-col rounded-2xl border bg-muted/30 p-2
+    transition-all duration-200 min-h-0
+
+    min-w-[85%] sm:min-w-[350px] md:min-w-0
+    snap-start shrink-0
+
+    ${isOver ? "bg-muted/60 ring-2 ring-primary/20" : ""}
+  `}
+>
       <div className="flex items-center justify-between mb-2 px-1 shrink-0 ">
         <div className="flex items-center gap-2">
           <div className={`size-2 rounded-full ${KanbanStageColors[stage]}`} />

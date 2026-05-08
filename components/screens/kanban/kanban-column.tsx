@@ -33,7 +33,7 @@ export function KanbanColumn({ stage, events }: KanbanColumnProps) {
         </Typography>
       </div>
 
-      <div className="flex flex-col gap-2 overflow-x-hidden overflow-y-auto flex-1 pr-1 min-h-0">
+      <div className="flex flex-col gap-2 overflow-y-auto flex-1 pr-1 min-h-0 max-h-[calc(100vh-220px)]">
         {events.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}

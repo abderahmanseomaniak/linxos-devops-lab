@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Typography } from '@/components/ui/typography'
 import { CheckCircle, Edit, Upload, Shield } from 'lucide-react'
 
 const activities = [
@@ -42,10 +43,10 @@ export function ProfileActivityCard() {
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <Typography variant="small" className="font-medium">{activity.title}</Typography>
+                  <Typography variant="small" className="mt-0.5 text-muted-foreground">
                     {activity.timestamp}
-                  </p>
+                  </Typography>
                 </div>
               </div>
             )

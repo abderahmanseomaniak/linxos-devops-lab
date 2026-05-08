@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Typography } from "@/components/ui/typography";
 
 const links = [
   { title: "Workflow", href: "#workflow" },
@@ -14,7 +15,6 @@ export default function FooterMetrics() {
   return (
     <footer className="bg-white border-t border-gray-100 py-10 md:py-12">
       <div className="mx-auto max-w-5xl px-6">
-
         {/* LOGO (replaced Logo component) */}
         <Link href="/" className="mx-auto block w-fit">
           <div className="relative h-8 w-[140px]">
@@ -22,6 +22,7 @@ export default function FooterMetrics() {
               src="/assets/logos/logo-texte-noir.png"
               alt="LinxOS Logo"
               fill
+              sizes="140px"
               className="object-contain"
               priority
             />
@@ -36,16 +37,17 @@ export default function FooterMetrics() {
               href={link.href}
               className="text-sm text-gray-500 hover:text-gray-900 transition"
             >
-              {link.title}
+              <Typography variant="small">{link.title}</Typography>
             </Link>
           ))}
         </div>
 
         {/* DESCRIPTION */}
-        <p className="text-center text-sm text-gray-500 max-w-xl mx-auto">
+        <Typography variant="muted" className="text-center max-w-xl mx-auto">
           LinxOS is an internal sponsorship operations platform helping teams
-          manage requests, logistics, and content workflows in one unified system.
-        </p>
+          manage requests, logistics, and content workflows in one unified
+          system.
+        </Typography>
 
         {/* SOCIALS */}
         <div className="mt-6 flex justify-center gap-5 text-gray-400">
@@ -61,10 +63,12 @@ export default function FooterMetrics() {
         </div>
 
         {/* COPYRIGHT */}
-        <span className="mt-6 block text-center text-xs text-gray-400">
+        <Typography
+          variant="small"
+          className="mt-6 block text-center text-muted-foreground"
+        >
           © 2026 LinxOS. All rights reserved.
-        </span>
-
+        </Typography>
       </div>
     </footer>
   );

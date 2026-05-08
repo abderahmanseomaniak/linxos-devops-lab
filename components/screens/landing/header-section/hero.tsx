@@ -2,6 +2,7 @@
 
 import { Instrument_Serif } from "next/font/google";
 import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 
@@ -40,16 +41,17 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                     through one unified workflow.
                   </span>
                 </motion.h1>
-                <motion.p
+                <motion.div
                   initial={{ opacity: 0, y: 32 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, delay: 0.1, ease: "easeInOut" }}
-                  className="text-base font-normal max-w-2xl text-muted-foreground"
                 >
-                  LinxOS centralizes requests, logistics,
-                  content production, approvals, and operational tracking
-                  into one structured system.
-                </motion.p>
+                  <Typography variant="lead" className="max-w-2xl">
+                    LinxOS centralizes requests, logistics, content production,
+                    approvals, and operational tracking into one structured
+                    system.
+                  </Typography>
+                </motion.div>
               </div>
               <motion.div
                 initial={{ opacity: 0, y: 32 }}
@@ -77,9 +79,9 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                         />
                       ))}
                     </div>
-                    <p className="sm:text-sm text-xs font-normal text-muted-foreground">
+                    <Typography variant="small">
                       Trusted by 1000+ clients
-                    </p>
+                    </Typography>
                   </div>
                 </div>
               </motion.div>

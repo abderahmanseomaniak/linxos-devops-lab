@@ -11,6 +11,8 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 
+import { Typography } from "@/components/ui/typography";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -40,7 +42,7 @@ const CollaborateButton = ({ className }: { className?: string }) => (
     className={cn(
       "relative text-sm font-medium rounded-full h-10 p-1 ps-4 pe-12 group transition-all duration-500 hover:ps-12 hover:pe-4 w-fit overflow-hidden",
       className,
-      "cursor-pointer"
+      "cursor-pointer",
     )}
   >
     <span className="relative z-10 transition-all duration-500">
@@ -83,7 +85,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
       transition={{ duration: 0.7, ease: "easeInOut" }}
       className={cn(
         "inset-x-0 z-50 px-4 flex items-center justify-center sticky top-0 h-20",
-        className
+        className,
       )}
     >
       <div
@@ -91,7 +93,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
           "w-full max-w-6xl flex items-center justify-between gap-4 transition-all duration-500",
           sticky
             ? "p-2.5 bg-background/60 backdrop-blur-lg border border-border/40 shadow-2xl rounded-full"
-            : "bg-transparent border-transparent"
+            : "bg-transparent border-transparent",
         )}
       >
         {/* LOGO (NO COMPONENT) */}
@@ -102,6 +104,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                 src="/assets/logos/logo-texte-noir.png"
                 alt="LinxOS"
                 fill
+                sizes="140px"
                 priority
                 className="object-contain"
               />
@@ -119,9 +122,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                     href={navItem.href}
                     className={cn(
                       "px-3 py-2 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-background transition",
-                      navItem.isActive
-                        ? "bg-background text-foreground"
-                        : ""
+                      navItem.isActive ? "bg-background text-foreground" : "",
                     )}
                   >
                     {navItem.title}
@@ -157,6 +158,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                       src="/assets/logos/logo-texte-noir.svg"
                       alt="LinxOS"
                       fill
+                      sizes="120px"
                       className="object-contain"
                     />
                   </div>
@@ -180,7 +182,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                               "text-2xl font-semibold transition",
                               item.isActive
                                 ? "text-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                                : "text-muted-foreground hover:text-foreground",
                             )}
                           >
                             {item.title}
@@ -212,9 +214,9 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                     ))}
                   </div>
 
-                  <p className="text-sm text-muted-foreground">
+                  <Typography variant="small" className="text-muted-foreground">
                     © 2026 LinxOS
-                  </p>
+                  </Typography>
                 </div>
               </SheetContent>
             </Sheet>

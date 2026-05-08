@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
 import { ArrowUpRight } from "lucide-react";
 
 type CallToActionSectionProps = {
@@ -30,17 +31,16 @@ const CallToActionSection = ({ className }: CallToActionSectionProps) => {
               className="flex flex-col gap-6 items-center mx-auto"
             >
               <div className="flex flex-col gap-3 items-center text-center">
-                <h2 className="text-3xl md:text-5xl font-medium leading-tight">
-                  <span className="text-white">Build and control your </span>
+                <Typography variant="h3" className="text-white font-medium leading-tight">
+                  Build and control your{" "}
                   <span className="text-amber-400">
                     operational workflow
                   </span>
-                </h2>
+                </Typography>
 
-                <p className="max-w-2xl mx-auto text-white/80">
-                  Design, manage, and automate sponsorships, logistics, and
-                  content operations in one unified system.
-                </p>
+                <Typography variant="lead" className="max-w-2xl mx-auto text-white/80">
+                  Design, manage, and automate sponsorships, logistics, and content operations in one unified system.
+                </Typography>
               </div>
 
              <Button className="relative text-sm font-medium rounded-full h-12 p-1 ps-6 pe-14 group transition-all duration-500 hover:ps-14 hover:pe-6 w-fit overflow-hidden bg-amber-400 text-white hover:bg-amber-300 cursor-pointer">

@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Typography } from "@/components/ui/typography"
 import { Upload, CheckCircle, X } from "lucide-react"
 import { User } from "@/types/users"
 import { cn } from "@/lib/utils"
@@ -115,8 +116,8 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
           )}
 
           <div className="space-y-1">
-            <h3 className="font-semibold text-lg">{user.name}</h3>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
+            <Typography variant="h3" className="font-semibold">{user.name}</Typography>
+            <Typography variant="small" className="text-muted-foreground">{user.email}</Typography>
           </div>
 
           <Badge variant="secondary" className="capitalize">
@@ -124,20 +125,20 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
           </Badge>
 
           <div className="w-full pt-4 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Status</span>
+            <div className="flex items-center justify-between">
+              <Typography variant="small" className="text-muted-foreground">Status</Typography>
               <div className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span className="font-medium">Active</span>
+                <Typography variant="small" className="font-medium">Active</Typography>
               </div>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Phone</span>
-              <span className="font-medium">{user.phone}</span>
+            <div className="flex items-center justify-between">
+              <Typography variant="small" className="text-muted-foreground">Phone</Typography>
+              <Typography variant="small" className="font-medium">{user.phone}</Typography>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">CIN</span>
-              <span className="font-medium">{user.cin}</span>
+            <div className="flex items-center justify-between">
+              <Typography variant="small" className="text-muted-foreground">CIN</Typography>
+              <Typography variant="small" className="font-medium">{user.cin}</Typography>
             </div>
           </div>
         </div>

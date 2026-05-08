@@ -1,4 +1,4 @@
-import { TrackPageClient } from "@/components/screens/tracking/components/track-page-client"
+import { TrackPageClient } from "@/components/screens/track/components/track-page-client"
 
 export default function TrackPage() {
   return <TrackPageClient />

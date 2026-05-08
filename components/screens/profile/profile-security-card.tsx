@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
+import { Typography } from '@/components/ui/typography'
 
 export function ProfileSecurityCard() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ export function ProfileSecurityCard() {
       <CardContent className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Current Password</label>
+            <Typography variant="small" className="font-medium">Current Password</Typography>
             <Input
               type="password"
               value={formData.currentPassword}
@@ -33,7 +34,7 @@ export function ProfileSecurityCard() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">New Password</label>
+            <Typography variant="small" className="font-medium">New Password</Typography>
             <Input
               type="password"
               value={formData.newPassword}
@@ -42,7 +43,7 @@ export function ProfileSecurityCard() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Confirm Password</label>
+            <Typography variant="small" className="font-medium">Confirm Password</Typography>
             <Input
               type="password"
               value={formData.confirmPassword}
@@ -56,10 +57,10 @@ export function ProfileSecurityCard() {
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Two-Factor Authentication</Label>
-            <p className="text-xs text-muted-foreground">
+            <Typography variant="small" className="font-medium">Two-Factor Authentication</Typography>
+            <Typography variant="small" className="text-muted-foreground">
               Add an extra layer of security to your account
-            </p>
+            </Typography>
           </div>
           <Switch
             checked={twoFactorEnabled}
@@ -67,9 +68,9 @@ export function ProfileSecurityCard() {
           />
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Last password update</span>
-          <span className="font-medium">30 days ago</span>
+        <div className="flex items-center justify-between">
+          <Typography variant="small" className="text-muted-foreground">Last password update</Typography>
+          <Typography variant="small" className="font-medium">30 days ago</Typography>
         </div>
 
         <Separator />

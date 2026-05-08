@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import HeroSection from "@/components/screens/landing/shadcn-space/blocks/hero-01/hero";
-import Header, { type NavigationSection } from "@/components/screens/landing/shadcn-space/blocks/hero-01/header";
-import BrandSlider, { BrandList } from "@/components/screens/landing/shadcn-space/blocks/hero-01/brand-slider";
+import HeroSection from "@/components/screens/landing/header-section/hero";
+import Header, { type NavigationSection } from "@/components/screens/landing/header-section/header";
+import BrandSlider, { BrandList } from "@/components/screens/landing/header-section/brand-slider";
 import CoreFeatures from "@/components/screens/landing/core-features";
 import PerformanceMetrics from "@/components/screens/landing/performance-metrics";
 import FooterMetrics from "@/components/screens/landing/footer-metrics";

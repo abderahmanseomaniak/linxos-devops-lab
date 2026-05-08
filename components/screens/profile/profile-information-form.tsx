@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Typography } from '@/components/ui/typography'
 import { User } from '@/types/users'
 
 interface ProfileInformationFormProps {
@@ -37,7 +38,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">First Name</label>
+            <Typography variant="small" className="font-medium">First Name</Typography>
             <Input
               value={formData.firstName}
               onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -45,7 +46,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Last Name</label>
+            <Typography variant="small" className="font-medium">Last Name</Typography>
             <Input
               value={formData.lastName}
               onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
@@ -55,7 +56,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Email</label>
+          <Typography variant="small" className="font-medium">Email</Typography>
           <Input
             type="email"
             value={formData.email}
@@ -66,7 +67,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Phone</label>
+            <Typography variant="small" className="font-medium">Phone</Typography>
             <Input
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -74,7 +75,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">CIN</label>
+            <Typography variant="small" className="font-medium">CIN</Typography>
             <Input
               value={formData.cin}
               onChange={(e) => setFormData({ ...formData, cin: e.target.value })}

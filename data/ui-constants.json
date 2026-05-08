@@ -29,9 +29,7 @@
     }
   },
   "sidebar": {
-    "general": [
-      { "title": "dashboard-global", "href": "/dashboard-global", "icon": "LayoutDashboard" }
-    ],
+    
    
     "management": [
       { "title": "Events", "href": "/events", "icon": "Calendar" },
@@ -44,6 +42,8 @@
     ],
     "test": [
       { "title": "tracking", "href": "/tracking", "icon": "MapPin" },
+      { "title": "track", "href": "/track", "icon": "ClipboardList" },
+      { "title": "landing", "href": "/landing", "icon": "ClipboardList" },
       { "title": "forms", "href": "/forms/sponsorship", "icon": "ClipboardList" }
     ]
   },

@@ -31,10 +31,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Scroll: IconList,
 }
 
-const generalItems = uiConstants.sidebar.general.map(item => ({
-  ...item,
-  icon: iconMap[item.icon],
-}))
+
 
 
 
@@ -74,23 +71,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* <SidebarGroup>
-          <SidebarGroupLabel>Général</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {generalItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
+        
        
         <SidebarGroup>
           <SidebarGroupLabel>Gestion</SidebarGroupLabel>

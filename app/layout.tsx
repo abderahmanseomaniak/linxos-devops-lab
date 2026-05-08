@@ -23,12 +23,13 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", "bg-background", "font-sans", inter.variable)}
       suppressHydrationWarning
     >
-      <body className="min-h-screen overflow-auto">
-        <ThemeProvider
+      <body className="min-h-screen overflow-auto" suppressHydrationWarning>
+          <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          suppressHydrationWarning
         >
           <TooltipProvider>
             {children}

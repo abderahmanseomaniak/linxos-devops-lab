@@ -74,7 +74,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel>Général</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -90,7 +90,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
        
         <SidebarGroup>
           <SidebarGroupLabel>Gestion</SidebarGroupLabel>

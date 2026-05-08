@@ -77,7 +77,7 @@ function Dot({ className }: { className?: string }) {
   );
 }
 
-export default function Component() {
+export default function Notifications() {
   const [notifications, setNotifications] = useState(initialNotifications);
   const unreadCount = notifications.filter((n) => n.unread).length;
 

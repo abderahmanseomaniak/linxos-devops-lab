@@ -25,8 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { profile } from "console";
 
-export default function Component() {
+export default function DropdownProfile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

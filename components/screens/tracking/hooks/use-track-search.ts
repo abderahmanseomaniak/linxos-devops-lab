@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import type { TrackResult } from "@/features/tracking/components/track.types"
+import type { TrackResult } from "@/components/screens/tracking/types/track.types"
 
 interface UseTrackSearchOptions {
   data: TrackResult[]

@@ -34,7 +34,7 @@ export interface ContentActions {
   reset: () => void
 }
 
-type ContentStore = ContentState & ContentActions
+export type ContentStore = ContentState & ContentActions
 
 const initialState: ContentState = {
   contents: [],

@@ -1,4 +1,4 @@
-export type LogisticsStatus = "Ready" | "Shipped" | "Delivered" | "Issue";
+export type LogisticsStatus = string;
 
 export type IssueType = "not_delivered" | "returned" | "damaged" | "wrong_address" | "other";
 

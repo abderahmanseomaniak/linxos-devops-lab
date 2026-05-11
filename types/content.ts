@@ -25,6 +25,7 @@ export interface UGCEvent {
   ugcCreatorsCount: number
   driveLink?: string
   contentStatus: ContentStatus
+  status?: string
   creators: UGCCreator[]
   notes: UGCNote[]
   contentReceivedAt?: string

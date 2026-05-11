@@ -29,7 +29,7 @@ export interface UserActions {
   reset: () => void
 }
 
-type UserStore = UserState & UserActions
+export type UserStore = UserState & UserActions
 
 const initialState: UserState = {
   users: [],

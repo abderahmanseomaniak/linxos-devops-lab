@@ -26,7 +26,7 @@ export interface ConfigActions {
   reset: () => void
 }
 
-type ConfigStore = ConfigState & ConfigActions
+export type ConfigStore = ConfigState & ConfigActions
 
 const initialConfig: AppConfig = {
   theme: "system",

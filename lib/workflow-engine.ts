@@ -83,8 +83,8 @@ export const ROLE_PERMISSIONS = {
 export type UserRole = keyof typeof ROLE_PERMISSIONS
 
 export function hasPermission(role: UserRole, module: string): boolean {
-  const permissions = ROLE_PERMISSIONS[role]
-  return permissions.includes("*") || permissions.includes(module as any)
+  const permissions: readonly string[] = ROLE_PERMISSIONS[role]
+  return permissions.includes("*") || permissions.includes(module)
 }
 
 export const NOTIFICATION_TYPES = {
@@ -113,6 +113,7 @@ export const AUDIT_ACTIONS = {
   MOVE_KANBAN: "MOVE_KANBAN",
   ASSIGN_DELIVERY: "ASSIGN_DELIVERY",
   UPDATE_DELIVERY: "UPDATE_DELIVERY",
+  DELIVER: "DELIVER",
   UPLOAD_CONTENT: "UPLOAD_CONTENT",
   APPROVE_CONTENT: "APPROVE_CONTENT",
   REVISION_CONTENT: "REVISION_CONTENT",
@@ -120,6 +121,7 @@ export const AUDIT_ACTIONS = {
   CREATE_USER: "CREATE_USER",
   UPDATE_USER: "UPDATE_USER",
   DELETE_USER: "DELETE_USER",
+  INVITE: "INVITE",
   LOGIN: "LOGIN",
   LOGOUT: "LOGOUT"
 } as const

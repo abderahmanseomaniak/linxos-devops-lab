@@ -44,7 +44,7 @@ export interface EventActions {
   reset: () => void
 }
 
-type EventStore = EventState & EventActions
+export type EventStore = EventState & EventActions
 
 const initialState: EventState = {
   events: [],
@@ -143,14 +143,14 @@ export const useEventStore = create<EventStore>((set, get) => ({
         action: "CREATE_EVENT",
         entityType: "EVENT",
         entityId: newEvent.id,
-        entityName: newEvent.event.name,
+        entityName: newEvent.eventName,
         details: { status: newEvent.status },
       })
 
       useNotificationStore.getState().createNotification({
         type: "EVENT_SUBMITTED",
         title: "Nouveau projet soumis",
-        message: `Le projet "${newEvent.event.name}" a été soumis avec succès`,
+        message: `Le projet "${newEvent.eventName}" a été soumis avec succès`,
         relatedEntity: { type: "EVENT", id: newEvent.id },
       })
 
@@ -192,7 +192,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         action: "UPDATE_EVENT",
         entityType: "EVENT",
         entityId: id,
-        entityName: updatedEvent.event.name,
+        entityName: updatedEvent.eventName,
         details: { updates },
       })
     } catch (error) {
@@ -277,14 +277,14 @@ export const useEventStore = create<EventStore>((set, get) => ({
       action: "APPROVE_EVENT",
       entityType: "EVENT",
       entityId: id,
-      entityName: event.event.name,
+      entityName: event.eventName,
       details: { previousStatus: currentStage, newStatus: newStage },
     })
 
     useNotificationStore.getState().createNotification({
       type: "EVENT_APPROVED",
       title: "Projet approuvé",
-      message: `Le projet "${event.event.name}" a été approuvé`,
+      message: `Le projet "${event.eventName}" a été approuvé`,
       relatedEntity: { type: "EVENT", id },
     })
   },
@@ -299,14 +299,14 @@ export const useEventStore = create<EventStore>((set, get) => ({
       action: "REJECT_EVENT",
       entityType: "EVENT",
       entityId: id,
-      entityName: event.event.name,
+      entityName: event.eventName,
       details: {},
     })
 
     useNotificationStore.getState().createNotification({
       type: "EVENT_REJECTED",
       title: "Projet rejeté",
-      message: `Le projet "${event.event.name}" a été rejeté`,
+      message: `Le projet "${event.eventName}" a été rejeté`,
       relatedEntity: { type: "EVENT", id },
     })
   },
@@ -317,13 +317,13 @@ export const useEventStore = create<EventStore>((set, get) => ({
 
     await get().updateEvent(id, {
       status: "LOGISTICS_PENDING",
-      assignments: { ...event.assignments, logisticsManagerId },
+      assignments: { ...(event.assignments || {}), logisticsManagerId },
     })
 
     useNotificationStore.getState().createNotification({
       type: "DELIVERY_ASSIGNED",
       title: "Logistique assignée",
-      message: `La logistique a été assignée pour "${event.event.name}"`,
+      message: `La logistique a été assignée pour "${event.eventName}"`,
       relatedEntity: { type: "EVENT", id },
     })
   },
@@ -345,14 +345,14 @@ export const useEventStore = create<EventStore>((set, get) => ({
       action: "MOVE_KANBAN",
       entityType: "EVENT",
       entityId: id,
-      entityName: event.event.name,
+      entityName: event.eventName,
       details: { previousStage: currentStage, newStage },
     })
 
     useNotificationStore.getState().createNotification({
       type: "KANBAN_MOVED",
       title: "Statut mis à jour",
-      message: `Le projet "${event.event.name}" est maintenant "${newStage}"`,
+      message: `Le projet "${event.eventName}" est maintenant "${newStage}"`,
       relatedEntity: { type: "EVENT", id },
     })
   },

@@ -34,7 +34,7 @@ export interface KanbanActions {
   reset: () => void
 }
 
-type KanbanStore = KanbanState & KanbanActions
+export type KanbanStore = KanbanState & KanbanActions
 
 const initialColumns: KanbanColumn[] = KanbanStages.map((stage) => ({
   id: stage,

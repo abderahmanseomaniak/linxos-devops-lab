@@ -1,4 +1,9 @@
-export type UserRole = "admin" | "moderator" | "user";
+export type UserRole = 
+  | "system_administrator" 
+  | "sponsorship_manager" 
+  | "logistics_manager" 
+  | "ugc_content_manager" 
+  | "club_partner";
 
 export interface User {
   id: number;

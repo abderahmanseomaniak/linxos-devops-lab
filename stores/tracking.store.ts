@@ -30,13 +30,14 @@ export interface TrackingActions {
   fetchTrackingByReference: (reference: string) => Promise<TrackingEvent | null>
   fetchMyTrackingEvents: (userId: number) => Promise<void>
   getTrackingSteps: (event: EventApplication) => TrackingStep[]
+  getCurrentStepIndex: (event: EventApplication) => number
   setSelectedTrackingEvent: (event: TrackingEvent | null) => void
   setFilter: (filter: TrackingFilter) => void
   clearError: () => void
   reset: () => void
 }
 
-type TrackingStore = TrackingState & TrackingActions
+export type TrackingStore = TrackingState & TrackingActions
 
 const STAGE_ORDER = [
   "SUBMITTED",
@@ -142,8 +143,8 @@ export const useTrackingStore = create<TrackingStore>((set, get) => ({
   },
 
   getTrackingSteps: (event) => {
-    const currentStatus = event.status
-    const workflow = event.workflow
+    const currentStatus = event.status as string
+    const workflow = event.workflow as Record<string, string> | undefined
 
     return STAGE_ORDER.map((stage) => {
       let completed = false
@@ -151,28 +152,28 @@ export const useTrackingStore = create<TrackingStore>((set, get) => ({
 
       if (stage === currentStatus) {
         completed = true
-      } else if (STAGE_ORDER.indexOf(stage as typeof STAGE_ORDER[number]) < STAGE_ORDER.indexOf(currentStatus)) {
+      } else if (STAGE_ORDER.indexOf(stage as typeof STAGE_ORDER[number]) < STAGE_ORDER.indexOf(currentStatus as typeof STAGE_ORDER[number])) {
         completed = true
       }
 
       switch (stage) {
         case "SUBMITTED":
-          timestamp = workflow.submittedAt
+          timestamp = workflow?.submittedAt
           break
         case "APPROVED":
-          timestamp = workflow.approvedAt
+          timestamp = workflow?.approvedAt
           break
         case "SHIPPED":
-          timestamp = workflow.shippedAt
+          timestamp = workflow?.shippedAt
           break
         case "DELIVERED":
-          timestamp = workflow.deliveredAt
+          timestamp = workflow?.deliveredAt
           break
         case "PUBLISHED":
-          timestamp = workflow.publishedAt
+          timestamp = workflow?.publishedAt
           break
         case "COMPLETED":
-          timestamp = workflow.completedAt
+          timestamp = workflow?.completedAt
           break
       }
 

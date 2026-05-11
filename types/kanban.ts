@@ -2,6 +2,7 @@ export type KanbanStage = "Validée" | "Préparation" | "Logistique" | "Livré" 
 
 export interface KanbanEvent {
   id: number
+  eventId: number
   name: string
   clubName: string
   city: string

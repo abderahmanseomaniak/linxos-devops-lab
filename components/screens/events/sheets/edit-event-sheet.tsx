@@ -18,13 +18,13 @@ const editEventSchema = z.object({
   product: z.string().min(1, "Le produit est requis"),
   quantity: z.number().min(1, "La quantité doit être > 0"),
   priority: z.number().min(1, "La priorité doit être >= 1"),
-  status: z.enum(["Pending", "Accepted", "Rejected"]),
+  status: z.string(),
   deliveryStatus: z.enum(["Livrée", "Non livrée"]),
 })
 
 type EditEventFormData = z.infer<typeof editEventSchema>
 
-const STATUS_OPTIONS: EventStatus[] = ["Pending", "Accepted", "Rejected"]
+const STATUS_OPTIONS = ["Pending", "Accepted", "Rejected"] as const
 const DELIVERY_OPTIONS: DeliveryStatus[] = ["Livrée", "Non livrée"]
 
 interface EventEditSheetProps {
@@ -63,7 +63,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
       setValue("product", event.product || "")
       setValue("quantity", event.quantity || 1)
       setValue("priority", event.priority)
-      setValue("status", event.status)
+      setValue("status", event.status as EventStatus)
       setValue("deliveryStatus", event.deliveryStatus)
     }
   }, [open, event, setValue])
@@ -154,7 +154,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
             <div className="space-y-2">
               <Label htmlFor="status">Statut</Label>
               <Select
-                onValueChange={(value: EventStatus) => setValue("status", value)}
+                onValueChange={(value) => setValue("status", value as EventStatus)}
                 defaultValue={event.status}
               >
                 <SelectTrigger>

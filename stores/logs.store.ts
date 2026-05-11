@@ -43,7 +43,7 @@ export interface LogActions {
   reset: () => void
 }
 
-type LogsStore = LogState & LogActions
+export type LogsStore = LogState & LogActions
 
 const initialState: LogState = {
   logs: [],

@@ -1,7 +1,7 @@
 
 
 
-export type EventStatus = 'Pending' | 'Accepted' | 'Rejected';
+export type EventStatus = string;
 
 export type DeliveryStatus = 'Livrée' | 'Non livrée';
 
@@ -73,6 +73,9 @@ export interface EventApplication {
   step4?: Step4Data
   step5?: Step5Data
   step6?: Step6Data
+  event?: EventApplication
+  assignments?: unknown
+  workflow?: unknown
 }
 
 export interface FilterCounts {

@@ -32,7 +32,7 @@ export interface NotificationActions {
   reset: () => void
 }
 
-type NotificationStore = NotificationState & NotificationActions
+export type NotificationStore = NotificationState & NotificationActions
 
 const initialState: NotificationState = {
   notifications: [],

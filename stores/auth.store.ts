@@ -27,7 +27,7 @@ export interface AuthActions {
   reset: () => void
 }
 
-type AuthStore = AuthState & AuthActions
+export type AuthStore = AuthState & AuthActions
 
 const initialState: AuthState = {
   user: null,

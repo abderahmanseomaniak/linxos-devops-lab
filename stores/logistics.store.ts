@@ -43,7 +43,7 @@ export interface LogisticsActions {
   reset: () => void
 }
 
-type LogisticsStore = LogisticsState & LogisticsActions
+export type LogisticsStore = LogisticsState & LogisticsActions
 
 const initialState: LogisticsState = {
   deliveries: [],
@@ -372,11 +372,11 @@ export const useLogisticsStore = create<LogisticsStore>((set, get) => ({
     set({
       shipmentStats: {
         total: safeDeliveries.length,
-        pending: safeDeliveries.filter((d) => d.status === "PENDING").length,
-        preparing: safeDeliveries.filter((d) => d.status === "PREPARING").length,
-        shipped: safeDeliveries.filter((d) => d.status === "SHIPPED").length,
-        delivered: safeDeliveries.filter((d) => d.status === "DELIVERED").length,
-        issues: safeDeliveries.filter((d) => d.status === "ISSUE").length,
+        pending: safeDeliveries.filter((d) => d.status === "Ready").length,
+        preparing: safeDeliveries.filter((d) => d.status === "Preparing").length,
+        shipped: safeDeliveries.filter((d) => d.status === "Shipped").length,
+        delivered: safeDeliveries.filter((d) => d.status === "Delivered").length,
+        issues: safeDeliveries.filter((d) => d.status === "Issue").length,
       },
     })
   },

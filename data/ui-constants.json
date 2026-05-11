@@ -23,9 +23,11 @@
   },
   "userRole": {
     "labels": {
-      "admin": "Admin",
-      "moderator": "Moderator",
-      "user": "User"
+      "system_administrator": "Admin Système",
+      "sponsorship_manager": "Responsable Sponsoring",
+      "logistics_manager": "Responsable Logistique",
+      "ugc_content_manager": "Responsable Contenu UGC",
+      "club_partner": "Partenaire Club"
     }
   },
   "sidebar": {

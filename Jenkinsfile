@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         BUN = "C:\\Users\\pc\\.bun\\bin\\bun.exe"
-        PATH = "C:\\Users\\pc\\.bun\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\nodejs\\;${env.PATH}"
+        PATH = "C:\\Users\\pc\\.bun\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\nodejs\\;$PATH"
     }
 
     options {
@@ -25,7 +25,13 @@ pipeline {
                     echo === ENV CHECK ===
                     node -v
                     git --version
-                    if exist "%BUN%" (%BUN% --version) else (echo Bun not found)
+
+                    if exist "%BUN%" (
+                        %BUN% --version
+                    ) else (
+                        echo Bun not found
+                        exit /b 1
+                    )
                 '''
             }
         }
@@ -39,12 +45,12 @@ pipeline {
             }
         }
 
-        // 🔥 NEW: SonarCloud
         stage('SonarCloud Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                     bat '''
                         echo === SonarCloud Analysis ===
+
                         %BUN% x sonar-scanner ^
                         -Dsonar.projectKey=linxos-devops-lab ^
                         -Dsonar.organization=abderahmanseomaniak ^
@@ -99,7 +105,11 @@ pipeline {
                 withCredentials([string(credentialsId: 'VERCEL_TOKEN', variable: 'VERCEL_TOKEN')]) {
                     bat '''
                         echo === Deploying to Vercel ===
-                        %BUN% x vercel --prod --yes --token %VERCEL_TOKEN% || echo Deploy failed but CI continues
+
+                        %BUN% x vercel ^
+                        --prod ^
+                        --yes ^
+                        --token %VERCEL_TOKEN%
                     '''
                 }
             }
@@ -109,6 +119,7 @@ pipeline {
             steps {
                 bat '''
                     echo === Commit Info ===
+
                     git log -1 --pretty=format:"Commit: %%h%%nMessage: %%s%%nAuthor: %%an"
                 '''
             }
@@ -116,11 +127,17 @@ pipeline {
     }
 
     post {
+
         success {
             echo "✅ CI/CD SUCCESS 🚀"
         }
+
         failure {
             echo "❌ CI/CD FAILED"
+        }
+
+        always {
+            cleanWs()
         }
     }
 }

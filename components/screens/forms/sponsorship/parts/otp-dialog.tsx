@@ -89,7 +89,7 @@ export function OtpDialog({
             <Button
               type="button"
               variant="outline"
-              size="xs"
+              size="sm"
               onClick={onResend}
               disabled={loading || !onResend}
             >

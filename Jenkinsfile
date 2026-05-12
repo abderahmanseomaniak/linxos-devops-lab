@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         BUN = "C:\\Users\\pc\\.bun\\bin\\bun.exe"
-        PATH = "C:\\Users\\pc\\.bun\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\nodejs\\;${env.PATH}"
+        PATH = "C:\\Users\\pc\\.bun\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\nodejs\\;$PATH"
     }
 
     options {
@@ -39,7 +39,6 @@ pipeline {
             }
         }
 
-        // 🔥 NEW: SonarCloud
         stage('SonarCloud Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
@@ -49,7 +48,7 @@ pipeline {
                         -Dsonar.projectKey=linxos-devops-lab ^
                         -Dsonar.organization=abderahmanseomaniak ^
                         -Dsonar.host.url=https://sonarcloud.io ^
-                        -Dsonar.login=%SONAR_TOKEN%
+                        -Dsonar.token=%SONAR_TOKEN%
                     '''
                 }
             }

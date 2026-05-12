@@ -51,7 +51,7 @@ function NumberInput({
       <Button
         type="button"
         variant="outline"
-        size="icon-sm"
+        size="sm"
         disabled={disabled || (min !== undefined && value <= min)}
         onClick={decrement}
         aria-label="Diminuer"
@@ -71,7 +71,7 @@ function NumberInput({
       <Button
         type="button"
         variant="outline"
-        size="icon-sm"
+        size="sm"
         disabled={disabled || (max !== undefined && value >= max)}
         onClick={increment}
         aria-label="Augmenter"

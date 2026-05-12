@@ -52,7 +52,7 @@ export function createColumns(handlers: ColumnHandlers = {}): ColumnDef<EventApp
         const eventName = row.original.eventName
         return (
           <div className="flex items-center gap-3">
-            <Avatar size="lg">
+            <Avatar className="size-12">
               <AvatarFallback>{organization.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col line-clamp-2">

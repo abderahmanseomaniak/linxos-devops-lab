@@ -226,9 +226,11 @@ const table = useReactTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                {headerGroup.headers
-                  .filter((header) => header.column.getIsVisible())
-                  .map((header) => (
+                {(() => {
+                  const items: React.ReactNode[] = []
+                  for (const header of headerGroup.headers) {
+                    if (header.column.getIsVisible()) {
+                      items.push(
                   <TableHead className="h-8" key={header.id} style={{ width: `${header.getSize()}px` }}>
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
@@ -243,7 +245,11 @@ const table = useReactTable({
                       flexRender(header.column.columnDef.header, header.getContext())
                     )}
                   </TableHead>
-                ))}
+                  )
+                }
+              }
+              return items
+              })()}
               </TableRow>
             ))}
           </TableHeader>

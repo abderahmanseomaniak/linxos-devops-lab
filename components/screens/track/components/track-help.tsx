@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { HelpCircle, Mail, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,7 +21,7 @@ export function TrackHelp({ className }: { className?: string }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className={className}>
-          <HelpCircle className="h-4 w-4 mr-2" />
+          <HelpCircle className="size-4 mr-2" />
           Help
         </Button>
       </DialogTrigger>
@@ -79,16 +80,16 @@ export function TrackHelp({ className }: { className?: string }) {
               <div className="flex flex-col gap-2">
                 <Button variant="outline" className="w-full" asChild>
                   <a href="mailto:support@linxos.com">
-                    <Mail className="h-4 w-4 mr-2" />
+                    <Mail className="size-4 mr-2" />
                     Email Support
                   </a>
                 </Button>
 
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="/contact" target="_blank">
-                    <ExternalLink className="h-4 w-4 mr-2" />
+                  <Link href="/contact" target="_blank">
+                    <ExternalLink className="size-4 mr-2" />
                     Contact Form
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </div>

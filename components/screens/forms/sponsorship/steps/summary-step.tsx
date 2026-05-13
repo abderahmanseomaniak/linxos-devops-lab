@@ -22,12 +22,11 @@ function formatFiles(files: SponsorshipFormValues["files"]) {
   const entries = Object.entries(files).filter(([, v]) => !!v)
   if (entries.length === 0) return "Aucun fichier"
   return entries
-    .map(([key, value]) => {
-      if (Array.isArray(value)) return `${labelFor(key, formOptions.contentTypes)} (${value.length})`
+    .flatMap(([key, value]) => {
+      if (Array.isArray(value)) return [`${labelFor(key, formOptions.contentTypes)} (${value.length})`]
       const name = (value as File | null)?.name
-      return name ? `${labelFor(key, formOptions.contentTypes)} : ${name}` : null
+      return name ? [`${labelFor(key, formOptions.contentTypes)} : ${name}`] : []
     })
-    .filter(Boolean)
     .join(" · ")
 }
 
@@ -35,9 +34,10 @@ export function SummaryStep({ onEdit }: SummaryStepProps) {
   const { control } = useFormContext<SponsorshipFormValues>()
   const values = useWatch({ control })
 
-  const reseaux = (values.reseaux ?? [])
-    .map((r) => r?.url?.trim())
-    .filter((url): url is string => !!url)
+  const reseaux = (values.reseaux ?? []).flatMap((r) => {
+    const url = r?.url?.trim()
+    return url ? [url] : []
+  })
 
   const eventTypeLabel = values.eventType
     ? labelFor(values.eventType, formOptions.eventTypes)
@@ -56,7 +56,7 @@ export function SummaryStep({ onEdit }: SummaryStepProps) {
   return (
     <div className="space-y-3">
       <SummaryCard
-        icon={<IconBuilding className="h-5 w-5" />}
+        icon={<IconBuilding className="size-5" />}
         title="Club"
         onEdit={() => onEdit?.(1)}
       >
@@ -71,7 +71,7 @@ export function SummaryStep({ onEdit }: SummaryStepProps) {
       </SummaryCard>
 
       <SummaryCard
-        icon={<IconUser className="h-5 w-5" />}
+        icon={<IconUser className="size-5" />}
         title="Responsable"
         onEdit={() => onEdit?.(1)}
       >
@@ -82,7 +82,7 @@ export function SummaryStep({ onEdit }: SummaryStepProps) {
       </SummaryCard>
 
       <SummaryCard
-        icon={<IconCalendarEvent className="h-5 w-5" />}
+        icon={<IconCalendarEvent className="size-5" />}
         title="Événement"
         onEdit={() => onEdit?.(2)}
       >
@@ -101,7 +101,7 @@ export function SummaryStep({ onEdit }: SummaryStepProps) {
       </SummaryCard>
 
       <SummaryCard
-        icon={<IconFileText className="h-5 w-5" />}
+        icon={<IconFileText className="size-5" />}
         title="Contenus"
         onEdit={() => onEdit?.(3)}
       >
@@ -110,7 +110,7 @@ export function SummaryStep({ onEdit }: SummaryStepProps) {
       </SummaryCard>
 
       <SummaryCard
-        icon={<IconEye className="h-5 w-5" />}
+        icon={<IconEye className="size-5" />}
         title="Visibilité et logistique"
         onEdit={() => onEdit?.(4)}
       >
@@ -147,7 +147,7 @@ function SummaryCard({
             onClick={onEdit}
             className="h-8 px-2"
           >
-            <IconEdit className="h-4 w-4" />
+            <IconEdit className="size-4" />
           </Button>
         </div>
       </CardHeader>

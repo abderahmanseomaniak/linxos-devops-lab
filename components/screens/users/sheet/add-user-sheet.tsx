@@ -55,7 +55,7 @@ export function AddUserSheet({ open, onOpenChange, formData, setFormData, onAdd 
             <Input
               id="add-name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="Enter name"
             />
           </div>
@@ -65,7 +65,7 @@ export function AddUserSheet({ open, onOpenChange, formData, setFormData, onAdd 
               id="add-email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
               placeholder="Enter email"
             />
           </div>
@@ -74,7 +74,7 @@ export function AddUserSheet({ open, onOpenChange, formData, setFormData, onAdd 
             <Input
               id="add-phone"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
               placeholder="Enter phone"
             />
           </div>
@@ -83,7 +83,7 @@ export function AddUserSheet({ open, onOpenChange, formData, setFormData, onAdd 
             <Input
               id="add-cin"
               value={formData.cin}
-              onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, cin: e.target.value }))}
               placeholder="Enter CIN"
             />
           </div>
@@ -91,7 +91,7 @@ export function AddUserSheet({ open, onOpenChange, formData, setFormData, onAdd 
             <Label htmlFor="add-role">Role</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, role: value as UserRole }))}
             >
               <SelectTrigger id="add-role">
                 <SelectValue />
@@ -107,7 +107,7 @@ export function AddUserSheet({ open, onOpenChange, formData, setFormData, onAdd 
             <Checkbox
               id="add-status"
               checked={formData.status}
-              onCheckedChange={(checked) => setFormData({ ...formData, status: !!checked })}
+              onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, status: !!checked }))}
             />
             <Label htmlFor="add-status">Active</Label>
           </div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   Sheet,
@@ -49,7 +50,7 @@ const CollaborateButton = ({ className }: { className?: string }) => (
       Start Workflow
     </span>
 
-    <span className="absolute right-1 w-8 h-8 bg-background text-foreground rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-36px)] group-hover:rotate-45">
+    <span className="absolute right-1 size-8 bg-background text-foreground rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-36px)] group-hover:rotate-45">
       <ArrowUpRight size={16} />
     </span>
   </Button>
@@ -67,15 +68,24 @@ const Header = ({ navigationData, className }: HeaderProps) => {
     if (window.innerWidth >= 768) setIsOpen(false);
   }, []);
 
+  const handleScrollRef = useRef(handleScroll)
+  handleScrollRef.current = handleScroll
+
+  const handleResizeRef = useRef(handleResize)
+  handleResizeRef.current = handleResize
+
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", handleResize);
+    const onScroll = () => handleScrollRef.current()
+    const onResize = () => handleResizeRef.current()
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
-  }, [handleScroll, handleResize]);
+  }, []);
 
   return (
     <motion.header
@@ -98,7 +108,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
       >
         {/* LOGO (NO COMPONENT) */}
         <div>
-          <a href="/">
+          <Link href="/">
             <div className="relative h-10 w-[140px]">
               <Image
                 src="/assets/logos/logo-texte-noir.png"
@@ -109,7 +119,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                 className="object-contain"
               />
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* DESKTOP NAV */}
@@ -204,13 +214,13 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                       "lucide:twitter",
                       "lucide:linkedin",
                     ].map((icon) => (
-                      <a
+                      <button
                         key={icon}
-                        href="#"
-                        className="p-3 border rounded-full hover:bg-muted transition"
+                        className="p-3 border rounded-full hover:bg-muted transition cursor-pointer"
+                        aria-label={icon}
                       >
                         <Icon icon={icon} width={16} />
-                      </a>
+                      </button>
                     ))}
                   </div>
 

@@ -23,6 +23,14 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
 
   const { step1, step2, step3, step4, step5, step6 } = event
 
+  const formatDate = (dateString: string) => {
+    const d = new Date(dateString)
+    const day = String(d.getUTCDate()).padStart(2, '0')
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0')
+    const year = d.getUTCFullYear()
+    return `${day}/${month}/${year}`
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
@@ -64,8 +72,8 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
               <Typography variant="h4" className="mb-3 text-sm font-semibold">Événement</Typography>
               <div className="grid gap-2">
                 <InfoRow label="Nom" value={step3.nomEvenement} />
-                  <InfoRow label="Date début" value={new Date(step3.dateDebut).toLocaleDateString("fr-FR")} />
-                  <InfoRow label="Date fin" value={new Date(step3.dateFin).toLocaleDateString("fr-FR")} />
+                  <InfoRow label="Date début" value={step3.dateDebut ? formatDate(step3.dateDebut) : "-"} />
+                  <InfoRow label="Date fin" value={step3.dateFin ? formatDate(step3.dateFin) : "-"} />
                 
                 <InfoRow label="Lieu" value={step3.lieu} />
                 <InfoRow label="Description" value={step3.description} />

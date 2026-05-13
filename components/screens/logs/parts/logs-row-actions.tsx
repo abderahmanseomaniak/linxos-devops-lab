@@ -25,14 +25,14 @@ export function LogsRowActions({ row }: RowActionsProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className="size-8 p-0">
             <span className="sr-only">Open menu</span>
-            <IconDots className="h-4 w-4" />
+            <IconDots className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setShowDetails(true)}>
-            <IconEye className="mr-2 h-4 w-4" />
+            <IconEye className="mr-2 size-4" />
             View details
           </DropdownMenuItem>
         </DropdownMenuContent>

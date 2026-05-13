@@ -22,7 +22,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 ">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 " suppressHydrationWarning>
           <SidebarTrigger className="-ml-1" />
           <div className="ml-auto flex items-center gap-6">
             {mounted && <Notifications />}

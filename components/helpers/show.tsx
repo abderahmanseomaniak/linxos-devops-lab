@@ -74,7 +74,7 @@ export function Show({ when, children }: ShowProps) {
   return (
     <>
       {allChildren.map((child, index) => (
-        <Activity key={index} mode={child === activeChild ? 'visible' : 'hidden'}>
+        <Activity key={child.key || index} mode={child === activeChild ? 'visible' : 'hidden'}>
           {child}
         </Activity>
       ))}

@@ -25,7 +25,7 @@ export function EventHeader({
       <Typography variant="h1">{eventName}</Typography>
       <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
         <Typography variant="p">{formattedDate}</Typography>
-        <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+        <span className="size-1 rounded-full bg-muted-foreground/40" />
         <Typography variant="p">{city}</Typography>
       </div>
       <div className="mx-auto max-w-xs space-y-2">

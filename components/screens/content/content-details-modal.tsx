@@ -164,7 +164,7 @@ export function ContentDetailsModal({
                     return (
                       <div key={step.key} className="flex items-center gap-3">
                         {isPast ? (
-                          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                          <div className="size-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                             <IconCircleCheck size={14} className="text-green-600" />
                           </div>
                         ) : isActive ? (
@@ -172,7 +172,7 @@ export function ContentDetailsModal({
                             <IconClock size={14} />
                           </div>
                         ) : (
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0" />
+                          <div className="size-6 rounded-full bg-muted flex items-center justify-center shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
                           <Typography className={isActive ? "font-medium" : isPast ? "" : "text-muted-foreground"}>
@@ -248,7 +248,7 @@ export function ContentDetailsModal({
                   <Card key={creator.id} className="hover:border-primary/50 transition-colors">
                     <CardContent className="p-3">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                           <Typography variant="small" className="font-medium">{creator.name.charAt(0)}</Typography>
                         </div>
                         <div className="min-w-0">

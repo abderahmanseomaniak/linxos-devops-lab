@@ -29,7 +29,7 @@ export function ProfileSecurityCard() {
             <Input
               type="password"
               value={formData.currentPassword}
-              onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, currentPassword: e.target.value }))}
               placeholder="Enter current password"
             />
           </div>
@@ -38,7 +38,7 @@ export function ProfileSecurityCard() {
             <Input
               type="password"
               value={formData.newPassword}
-              onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, newPassword: e.target.value }))}
               placeholder="Enter new password"
             />
           </div>
@@ -47,7 +47,7 @@ export function ProfileSecurityCard() {
             <Input
               type="password"
               value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
               placeholder="Confirm new password"
             />
           </div>

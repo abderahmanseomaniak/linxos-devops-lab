@@ -55,7 +55,7 @@ export function EditUserSheet({ open, onOpenChange, formData, setFormData, onSav
             <Input
               id="edit-name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
             />
           </div>
           <div className="grid gap-2">
@@ -64,7 +64,7 @@ export function EditUserSheet({ open, onOpenChange, formData, setFormData, onSav
               id="edit-email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
             />
           </div>
           <div className="grid gap-2">
@@ -72,7 +72,7 @@ export function EditUserSheet({ open, onOpenChange, formData, setFormData, onSav
             <Input
               id="edit-phone"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
             />
           </div>
           <div className="grid gap-2">
@@ -80,14 +80,14 @@ export function EditUserSheet({ open, onOpenChange, formData, setFormData, onSav
             <Input
               id="edit-cin"
               value={formData.cin}
-              onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, cin: e.target.value }))}
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="edit-role">Role</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, role: value as UserRole }))}
             >
               <SelectTrigger id="edit-role">
                 <SelectValue />
@@ -103,7 +103,7 @@ export function EditUserSheet({ open, onOpenChange, formData, setFormData, onSav
             <Checkbox
               id="edit-status"
               checked={formData.status}
-              onCheckedChange={(checked) => setFormData({ ...formData, status: !!checked })}
+              onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, status: !!checked }))}
             />
             <Label htmlFor="edit-status">Active</Label>
           </div>

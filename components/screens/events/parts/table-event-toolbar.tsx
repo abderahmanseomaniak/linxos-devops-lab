@@ -245,17 +245,25 @@ function ColumnVisibilityDropdown<TData = unknown>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Afficher/Masquer</DropdownMenuLabel>
-        {table.getAllColumns().filter((column) => column.getCanHide()).map((column) => (
-          <DropdownMenuCheckboxItem
-            checked={columnVisibility[column.id] !== false}
-            className="capitalize"
-            key={column.id}
-            onCheckedChange={(value) => column.toggleVisibility(!!value)}
-            onSelect={(event) => event.preventDefault()}
-          >
-            {column.id}
-          </DropdownMenuCheckboxItem>
-        ))}
+        {(() => {
+          const items: React.ReactNode[] = []
+          for (const column of table.getAllColumns()) {
+            if (column.getCanHide()) {
+              items.push(
+                <DropdownMenuCheckboxItem
+                  checked={columnVisibility[column.id] !== false}
+                  className="capitalize"
+                  key={column.id}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onSelect={(event) => event.preventDefault()}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              )
+            }
+          }
+          return items
+        })()}
       </DropdownMenuContent>
     </DropdownMenu>
   )

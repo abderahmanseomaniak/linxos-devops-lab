@@ -36,10 +36,10 @@ export function ProfileActivityCard() {
           {activities.map((activity, index) => {
             const Icon = activity.icon
             return (
-              <div key={index} className="flex gap-3">
+              <div key={activity.title} className="flex gap-3">
                 <div className="flex-shrink-0">
-                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                  <div className="size-8 rounded-full bg-muted flex items-center justify-center">
+                    <Icon className="size-4 text-muted-foreground" />
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">

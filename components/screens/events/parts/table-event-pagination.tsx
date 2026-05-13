@@ -24,10 +24,9 @@ const VALID_PAGE_SIZES: number[] = [5, 10, 25, 50]
 
 export function EventTablePagination<TData = unknown>({ table }: EventTablePaginationProps<TData>) {
   const id = useId()
-  const router = useRouter()
+  const { push: routerPush } = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-
   const pageIndex = Number(searchParams.get("page")) || 0
   const pageSize = Number(searchParams.get("pageSize")) || 10
   const totalPages = table.getPageCount()
@@ -39,9 +38,9 @@ export function EventTablePagination<TData = unknown>({ table }: EventTablePagin
     (newPageIndex: number) => {
       const params = new URLSearchParams(searchParams.toString())
       params.set("page", newPageIndex.toString())
-      router.push(`${pathname}?${params.toString()}`, { scroll: false })
+      routerPush(`${pathname}?${params.toString()}`, { scroll: false })
     },
-    [pathname, router, searchParams]
+    [pathname, searchParams]
   )
 
   const handlePageSizeChange = useCallback(
@@ -49,9 +48,9 @@ export function EventTablePagination<TData = unknown>({ table }: EventTablePagin
       const params = new URLSearchParams(searchParams.toString())
       params.set("pageSize", newPageSize)
       params.set("page", "0")
-      router.push(`${pathname}?${params.toString()}`, { scroll: false })
+      routerPush(`${pathname}?${params.toString()}`, { scroll: false })
     },
-    [pathname, router, searchParams]
+    [pathname, searchParams]
   )
 
   const handleFirstPage = useCallback(() => handlePageChange(0), [handlePageChange])
@@ -111,7 +110,7 @@ export function EventTablePagination<TData = unknown>({ table }: EventTablePagin
             <PaginationItem>
               <Button
                 aria-label="First page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canPreviousPage}
                 onClick={handleFirstPage}
                 size="icon"
@@ -123,7 +122,7 @@ export function EventTablePagination<TData = unknown>({ table }: EventTablePagin
             <PaginationItem>
               <Button
                 aria-label="Previous page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canPreviousPage}
                 onClick={handlePreviousPage}
                 size="icon"
@@ -135,7 +134,7 @@ export function EventTablePagination<TData = unknown>({ table }: EventTablePagin
             <PaginationItem>
               <Button
                 aria-label="Next page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canNextPage}
                 onClick={handleNextPage}
                 size="icon"
@@ -147,7 +146,7 @@ export function EventTablePagination<TData = unknown>({ table }: EventTablePagin
             <PaginationItem>
               <Button
                 aria-label="Last page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canNextPage}
                 onClick={handleLastPage}
                 size="icon"

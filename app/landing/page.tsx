@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import HeroSection from "@/components/screens/landing/header-section/hero";
 import Header, { type NavigationSection } from "@/components/screens/landing/header-section/header";
 import BrandSlider, { BrandList } from "@/components/screens/landing/header-section/brand-slider";
@@ -28,11 +28,15 @@ export default function LeadingPage() {
     }
   }, []);
 
+  const handleScrollRef = useRef(handleScroll)
+  handleScrollRef.current = handleScroll
+
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    const onScroll = () => handleScrollRef.current()
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const avatarList = [
     { image: "https://images.shadcnspace.com/assets/profiles/user-1.jpg" },

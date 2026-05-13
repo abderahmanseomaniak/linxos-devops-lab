@@ -1,6 +1,7 @@
 "use client"
 
 import type { ComponentType, SVGProps } from "react"
+import Image from "next/image"
 import { Controller, useFormContext } from "react-hook-form"
 import {
   IconFileDescription,
@@ -119,10 +120,11 @@ export function ContentStep() {
                     <FieldLegend variant="label">Fichiers à téléverser</FieldLegend>
                     <FieldGroup className="gap-4">
                       {contentTypes
-                        .filter((type) => selected.includes(type.id))
-                        .map((type) => (
-                          <FileSlot key={type.id} type={type} />
-                        ))}
+                        .flatMap((type) => 
+                          selected.includes(type.id) 
+                            ? [<FileSlot key={type.id} type={type} />]
+                            : []
+                        )}
                     </FieldGroup>
                   </FieldSet>
                 )}
@@ -167,9 +169,9 @@ function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProp
     accept: type.accept,
     multiple: type.multiple,
     onFilesChange: (next) => {
-      const realFiles = next
-        .map((f) => f.file)
-        .filter((f): f is File => f instanceof File)
+      const realFiles = next.flatMap((f) =>
+        f.file instanceof File ? [f.file] : []
+      )
       if (type.multiple) {
         onChange(realFiles.length > 0 ? realFiles : null)
       } else {
@@ -302,11 +304,12 @@ function PreviewTile({
       aria-hidden="true"
     >
       {isImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={entry.preview}
           alt=""
-          className="size-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 36px"
+          className="object-cover"
         />
       ) : (
         Icon && <Icon className="size-4 opacity-60" />

@@ -39,7 +39,7 @@ function NumberInput({
   const decrement = () => onValueChange?.(clamp(value - step))
   const increment = () => onValueChange?.(clamp(value + step))
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value
     if (raw === "" || raw === "-") return
     const parsed = Number(raw)
@@ -62,7 +62,7 @@ function NumberInput({
         inputMode="numeric"
         className="text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
         value={value}
-        onChange={handleChange}
+        onChange={handleInputChange}
         disabled={disabled}
         min={min}
         max={max}

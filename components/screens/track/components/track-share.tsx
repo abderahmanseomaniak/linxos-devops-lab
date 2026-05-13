@@ -42,21 +42,21 @@ export function TrackShare({ reference, className }: TrackShareProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className={className}>
-          <Share2 className="h-4 w-4 mr-2" />
+          <Share2 className="size-4 mr-2" />
           Share
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[180px]">
         <DropdownMenuItem onClick={handleCopy}>
           {copied ? (
-            <Check className="h-4 w-4 mr-2" />
+            <Check className="size-4 mr-2" />
           ) : (
-            <Copy className="h-4 w-4 mr-2" />
+            <Copy className="size-4 mr-2" />
           )}
           {copied ? "Copied!" : "Copy Link"}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleEmail}>
-          <Mail className="h-4 w-4 mr-2" />
+          <Mail className="size-4 mr-2" />
           Email
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -65,7 +65,7 @@ export function TrackShare({ reference, className }: TrackShareProps) {
             navigator.clipboard.writeText(reference)
           }}
         >
-          <Link2 className="h-4 w-4 mr-2" />
+          <Link2 className="size-4 mr-2" />
           Copy Reference
         </DropdownMenuItem>
       </DropdownMenuContent>

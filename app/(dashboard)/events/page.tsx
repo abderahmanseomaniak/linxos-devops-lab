@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, Suspense } from "react"
+import { useState, useMemo, Suspense, useRef } from "react"
 import { EventTable } from "@/components/screens/events/event-table"
 import { DashboardStats } from "@/components/screens/events/components/dashboard-stats"
 import { EventApplication } from "@/types/events"
@@ -10,9 +10,9 @@ const initialApplications: EventApplication[] = eventsData as EventApplication[]
 
 export default function EventsPage() {
   const [applications, setApplications] = useState<EventApplication[]>(initialApplications)
-  const [formOpen, setFormOpen] = useState(false)
-  const [editingEvent, setEditingEvent] = useState<EventApplication | null>(null)
-  const [deleteEvent, setDeleteEvent] = useState<EventApplication | null>(null)
+  const formOpenRef = useRef(false)
+  const editingEventRef = useRef<EventApplication | null>(null)
+  const deleteEventRef = useRef<EventApplication | null>(null)
 
   const stats = useMemo(() => ({
     total: applications.length,
@@ -22,17 +22,17 @@ export default function EventsPage() {
   }), [applications])
 
   const handleAdd = () => {
-    setEditingEvent(null)
-    setFormOpen(true)
+    editingEventRef.current = null
+    formOpenRef.current = true
   }
 
   const handleEdit = (event: EventApplication) => {
-    setEditingEvent(event)
-    setFormOpen(true)
+    editingEventRef.current = event
+    formOpenRef.current = true
   }
 
   const handleSave = (event: EventApplication) => {
-    if (editingEvent) {
+    if (editingEventRef.current) {
       setApplications((prev) => prev.map((e) => (e.id === event.id ? event : e)))
     } else {
       setApplications((prev) => [...prev, { ...event, id: Date.now() }])
@@ -40,7 +40,7 @@ export default function EventsPage() {
   }
 
   const handleDelete = (event: EventApplication) => {
-    setDeleteEvent(event)
+    deleteEventRef.current = event
   }
 
   const handleDeleteMultiple = (ids: number[]) => {
@@ -48,9 +48,9 @@ export default function EventsPage() {
   }
 
   const confirmDelete = () => {
-    if (deleteEvent) {
-      setApplications((prev) => prev.filter((e) => e.id !== deleteEvent.id))
-      setDeleteEvent(null)
+    if (deleteEventRef.current) {
+      setApplications((prev) => prev.filter((e) => e.id !== deleteEventRef.current!.id))
+      deleteEventRef.current = null
     }
   }
 

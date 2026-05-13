@@ -57,16 +57,18 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
 
   useEffect(() => {
     if (open && event) {
-      setValue("eventName", event.eventName)
-      setValue("organization", event.organization)
-      setValue("date", event.date)
-      setValue("product", event.product || "")
-      setValue("quantity", event.quantity || 1)
-      setValue("priority", event.priority)
-      setValue("status", event.status)
-      setValue("deliveryStatus", event.deliveryStatus)
+      reset({
+        eventName: event.eventName,
+        organization: event.organization,
+        date: event.date,
+        product: event.product || "",
+        quantity: event.quantity || 1,
+        priority: event.priority,
+        status: event.status,
+        deliveryStatus: event.deliveryStatus,
+      })
     }
-  }, [open, event, setValue])
+  }, [open, event, reset])
 
   const handleClose = useCallback(() => {
     onOpenChange(false)

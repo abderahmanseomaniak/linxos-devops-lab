@@ -49,7 +49,7 @@ const CallToActionSection = ({ className }: CallToActionSectionProps) => {
     Start building workflows
   </span>
 
-  <div className="absolute right-1 w-10 h-10 bg-white text-amber-400 rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-44px)] group-hover:rotate-45">
+  <div className="absolute right-1 size-10 bg-white text-amber-400 rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-44px)] group-hover:rotate-45">
     <ArrowUpRight size={16} />
   </div>
 

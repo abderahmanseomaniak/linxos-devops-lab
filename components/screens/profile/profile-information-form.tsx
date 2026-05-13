@@ -41,7 +41,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
             <Typography variant="small" className="font-medium">First Name</Typography>
             <Input
               value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, firstName: e.target.value }))}
               placeholder="Enter your first name"
             />
           </div>
@@ -49,7 +49,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
             <Typography variant="small" className="font-medium">Last Name</Typography>
             <Input
               value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, lastName: e.target.value }))}
               placeholder="Enter your last name"
             />
           </div>
@@ -60,7 +60,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
           <Input
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
             placeholder="Enter your email"
           />
         </div>
@@ -70,7 +70,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
             <Typography variant="small" className="font-medium">Phone</Typography>
             <Input
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
               placeholder="Enter your phone number"
             />
           </div>
@@ -78,7 +78,7 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
             <Typography variant="small" className="font-medium">CIN</Typography>
             <Input
               value={formData.cin}
-              onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+              onChange={(e) => setFormData((prev) => ({ ...prev, cin: e.target.value }))}
               placeholder="Enter your CIN"
             />
           </div>

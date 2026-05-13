@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { Marquee } from "@/components/screens/landing/header-section/animations/marquee";
 import { Typography } from "@/components/ui/typography";
 import { motion } from "motion/react";
@@ -37,16 +38,22 @@ function BrandSlider({ brandList }: { brandList: BrandList[] }) {
               <div className="py-4">
                 <Marquee pauseOnHover className="[--duration:20s] p-0">
                   {brandList.map((brand, index) => (
-                    <div key={index}>
-                      <img
+                    <div key={brand.name}>
+                      <Image
                         src={brand.image}
                         alt={brand.name}
-                        className="w-36 h-8 mr-6 lg:mr-20 dark:hidden"
+                        width={144}
+                        height={32}
+                        className="mr-6 lg:mr-20 dark:hidden"
+                        unoptimized
                       />
-                      <img
+                      <Image
                         src={brand.lightimg}
                         alt={brand.name}
-                        className="hidden dark:block w-36 h-8 mr-12 lg:mr-20"
+                        width={144}
+                        height={32}
+                        className="hidden dark:block mr-12 lg:mr-20"
+                        unoptimized
                       />
                     </div>
                   ))}

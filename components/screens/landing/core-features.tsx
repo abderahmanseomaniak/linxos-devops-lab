@@ -1,12 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 
-const IMAGE_SPPONSORSHIP = "assets/images/4.png";
-const IMAGE_LOGISTICS = "assets/images/2.png";
-const IMAGE_CONTENT = "assets/images/3.png";
-const IMAGE_DASHBOARD = "assets/images/1.png";
+const IMAGE_SPPONSORSHIP = "/assets/images/4.png";
+
+const IMAGE_LOGISTICS = "/assets/images/2.png";
+
+const IMAGE_CONTENT = "/assets/images/3.png";
+
+const IMAGE_DASHBOARD = "/assets/images/1.png";
 
 export default function CoreFeatures() {
   return (
@@ -44,11 +48,13 @@ export default function CoreFeatures() {
                 Request intake, validation workflow, and approval pipeline.
               </Typography>
 
-              <div className="mt-auto aspect-[3/4]">
-                <img
+              <div className="mt-auto aspect-[3/4] relative">
+                <Image
                   src={IMAGE_SPPONSORSHIP}
                   alt="Sponsorship Dashboard"
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover"
                 />
               </div>
             </Card>
@@ -71,11 +77,13 @@ export default function CoreFeatures() {
                 Real-time task assignment and operational flow tracking.
               </Typography>
 
-              <div className="mt-auto aspect-[3/4] ">
-                <img
+              <div className="mt-auto aspect-[3/4] relative">
+                <Image
                   src={IMAGE_LOGISTICS}
                   alt="Logistics Board"
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover"
                 />
               </div>
             </Card>
@@ -98,11 +106,13 @@ export default function CoreFeatures() {
                 Control content lifecycle from creation to validation.
               </Typography>
 
-              <div className="mt-auto aspect-[3/4] ">
-                <img
+              <div className="mt-auto aspect-[3/4] relative">
+                <Image
                   src={IMAGE_CONTENT}
                   alt="Content Review"
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover"
                 />
               </div>
             </Card>
@@ -125,11 +135,13 @@ export default function CoreFeatures() {
                 System-wide KPIs, analytics, and operational visibility.
               </Typography>
 
-              <div className="mt-auto aspect-[3/4]">
-                <img
+              <div className="mt-auto aspect-[3/4] relative">
+                <Image
                   src={IMAGE_DASHBOARD}
                   alt="Analytics Dashboard"
-                  className="h-full w-full object-cover "
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover"
                 />
               </div>
             </Card>

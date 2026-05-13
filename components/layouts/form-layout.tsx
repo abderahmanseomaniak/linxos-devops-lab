@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { ReactNode } from "react"
 
@@ -11,21 +12,21 @@ export default function FormLayout({ children }: { children: ReactNode }) {
                 <header className="flex items-center justify-center gap-4 pt-4">
                     <Link href="/forms/sponsorship" className="flex items-center transition-opacity hover:opacity-80">
                         {/* Light mode */}
-                        <img
+                        <Image
                             src="/assets/logos/logo-texte-noir.svg"
                             alt="Lynxos"
                             width={160}
                             height={40}
-                            className="block h-10 w-auto dark:hidden"
+                            className="block dark:hidden"
                         />
 
                         {/* Dark mode */}
-                        <img
+                        <Image
                             src="/assets/logos/logo-texte-blanc.svg"
                             alt="Lynxos"
                             width={160}
                             height={40}
-                            className="hidden h-10 w-auto dark:block"
+                            className="hidden dark:block"
                         />
                     </Link>
                     <Separator orientation="vertical" className="h-6 mt-2" />

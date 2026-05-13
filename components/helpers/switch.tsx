@@ -13,6 +13,14 @@ export interface SwitchProps {
   preserveState?: boolean;
 }
 
+function CaseRenderer({ component }: { component: CaseComponent }) {
+  if (typeof component === 'function') {
+    const Component = component as ComponentType;
+    return <Component />;
+  }
+  return <>{component}</>;
+}
+
 function renderCase(component: CaseComponent): ReactNode {
   if (typeof component === 'function') {
     const Component = component as ComponentType;
@@ -44,18 +52,18 @@ export function Switch({ value, cases, defaultCase, preserveState = true }: Swit
 
   // If not preserving state, only render the active case
   if (!preserveState) {
-    return <>{renderCase(activeKey ? cases[activeKey] : defaultCase)}</>;
+    return <CaseRenderer component={activeKey ? cases[activeKey] : defaultCase} />;
   }
 
   return (
     <>
       {caseKeys.map((key) => (
         <Activity key={key} mode={key === activeKey ? 'visible' : 'hidden'}>
-          {renderCase(cases[key])}
+          <CaseRenderer component={cases[key]} />
         </Activity>
       ))}
       <Activity mode={activeKey === undefined ? 'visible' : 'hidden'}>
-        {renderCase(defaultCase)}
+        <CaseRenderer component={defaultCase} />
       </Activity>
     </>
   );

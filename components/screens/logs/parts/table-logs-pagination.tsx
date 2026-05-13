@@ -34,10 +34,9 @@ interface LogsTablePaginationProps<TData = unknown> {
 
 export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginationProps<TData>) {
   const id = useId()
-  const router = useRouter()
+  const { push: routerPush } = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-
   const pageIndex = Number(searchParams.get("page")) || 0
   const pageSize = Number(searchParams.get("pageSize")) || 10
   const totalPages = table.getPageCount()
@@ -48,15 +47,15 @@ export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginat
   const handlePageChange = useCallback((newPageIndex: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", newPageIndex.toString())
-    router.push(`${pathname}?${params.toString()}`, { scroll: false })
-  }, [pathname, router, searchParams])
+    routerPush(`${pathname}?${params.toString()}`, { scroll: false })
+  }, [pathname, searchParams])
 
   const handlePageSizeChange = useCallback((newPageSize: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("pageSize", newPageSize)
     params.set("page", "0")
-    router.push(`${pathname}?${params.toString()}`, { scroll: false })
-  }, [pathname, router, searchParams])
+    routerPush(`${pathname}?${params.toString()}`, { scroll: false })
+  }, [pathname, searchParams])
 
   const handleFirstPage = () => handlePageChange(0)
   const handlePreviousPage = () => handlePageChange(pageIndex - 1)
@@ -116,7 +115,7 @@ export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginat
             <PaginationItem>
               <Button
                 aria-label="First page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canPreviousPage}
                 onClick={handleFirstPage}
                 size="icon"
@@ -128,7 +127,7 @@ export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginat
             <PaginationItem>
               <Button
                 aria-label="Previous page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canPreviousPage}
                 onClick={handlePreviousPage}
                 size="icon"
@@ -140,7 +139,7 @@ export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginat
             <PaginationItem>
               <Button
                 aria-label="Next page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canNextPage}
                 onClick={handleNextPage}
                 size="icon"
@@ -152,7 +151,7 @@ export function LogsTablePagination<TData = unknown>({ table }: LogsTablePaginat
             <PaginationItem>
               <Button
                 aria-label="Last page"
-                className="disabled:pointer-events-none disabled:opacity-50 h-7 w-7"
+                className="disabled:pointer-events-none disabled:opacity-50 size-7"
                 disabled={!canNextPage}
                 onClick={handleLastPage}
                 size="icon"

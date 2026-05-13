@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useMemo, useState, useCallback, useEffect } from "react"
+import React, { useId, useMemo, useState, useCallback, useEffect, Suspense } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -112,7 +112,7 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
   if (loading) {
     return (
       <div className="flex h-40 items-center justify-center">
-        <Typography>Loading...</Typography>
+        <Typography>Loading…</Typography>
       </div>
     )
   }
@@ -142,14 +142,15 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                {headerGroup.headers
-                  .filter((header) => header.column.getIsVisible())
-                  .map((header) => (
+                {headerGroup.headers.map((header) =>
+                  header.column.getIsVisible() ? (
                   <TableHead className="h-11" key={header.id} style={{ width: `${header.getSize()}px` }}>
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
                         className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
                         onClick={header.column.getToggleSortingHandler()}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()(e) } }}
+                        role="button"
                         tabIndex={header.column.getCanSort() ? 0 : undefined}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -159,7 +160,8 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
                       flexRender(header.column.columnDef.header, header.getContext())
                     )}
                   </TableHead>
-                ))}
+                  ) : null
+                )}
               </TableRow>
             ))}
           </TableHeader>
@@ -185,7 +187,9 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
         </Table>
       </div>
 
-      <UsersTablePagination table={table} />
+      <Suspense fallback={null}>
+        <UsersTablePagination table={table} />
+      </Suspense>
     </div>
   )
 }

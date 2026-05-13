@@ -57,20 +57,25 @@ const HINT_SECTION = (
 
 export function TrackPageClient() {
   const normalized = useMemo(
-    () =>
-      trackData
-        .filter((item) => VALID_STATUSES.has(item.status))
-        .map((item) => ({
-          id: item.id,
-          reference: item.reference,
-          status: item.status as "confirmed" | "pending" | "cancelled" | "approved" | "ready",
-          name: item.name,
-          clubName: item.clubName,
-          city: item.city,
-          responsibleName: item.responsibleName!,
-          responsibleEmail: item.responsibleEmail!,
-          eventStartDate: item.eventStartDate,
-        })),
+    () => {
+      const result: TrackDataNormalized[] = []
+      for (const item of trackData) {
+        if (VALID_STATUSES.has(item.status)) {
+          result.push({
+            id: item.id,
+            reference: item.reference,
+            status: item.status as "confirmed" | "pending" | "cancelled" | "approved" | "ready",
+            name: item.name,
+            clubName: item.clubName,
+            city: item.city,
+            responsibleName: item.responsibleName!,
+            responsibleEmail: item.responsibleEmail!,
+            eventStartDate: item.eventStartDate,
+          })
+        }
+      }
+      return result
+    },
     []
   )
 

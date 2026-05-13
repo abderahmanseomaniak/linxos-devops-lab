@@ -37,7 +37,7 @@ const RowActionsComponent = function RowActions({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex justify-end">
-          <Button aria-label="Actions" className="shadow-none h-7 w-7" size="icon" variant="ghost">
+          <Button aria-label="Actions" className="shadow-none size-7" size="icon" variant="ghost">
             <IconDots size={14} />
           </Button>
         </div>

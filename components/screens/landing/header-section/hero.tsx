@@ -1,6 +1,7 @@
 "use client";
 
 import { Instrument_Serif } from "next/font/google";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { motion } from "motion/react";
@@ -24,7 +25,7 @@ function HeroSection({ avatarList }: HeroSectionProps) {
   return (
     <section id="home">
       <div className="w-full h-full relative">
-        <div className="relative w-full pt-0 md:pt-20 pb-6 md:pb-10 before:absolute before:w-full before:h-full before:bg-linear-to-r before:from-sky-100 before:via-white before:to-amber-100 before:rounded-full before:top-24 before:blur-3xl before:-z-10 dark:before:from-slate-800 dark:before:via-black dark:before:to-stone-700 dark:before:rounded-full dark:before:blur-3xl dark:before:-z-10">
+        <div className="relative w-full pt-0 md:pt-20 pb-6 md:pb-10 before:absolute before:w-full before:h-full before:bg-linear-to-r before:from-sky-100 before:via-white before:to-amber-100 before:rounded-full before:top-24 before:blur-3xl before:-z-10 dark:before:from-zinc-800 dark:before:via-black dark:before:to-stone-700 dark:before:rounded-full dark:before:blur-3xl dark:before:-z-10">
           <div className="container mx-auto relative z-10">
             <div className="flex flex-col max-w-5xl mx-auto gap-8">
               <div className="relative flex flex-col text-center items-center sm:gap-6 gap-4">
@@ -63,7 +64,7 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                   <span className="relative z-10 transition-all duration-500">
                     Start Workflow
                   </span>
-                  <span className="absolute right-1 w-10 h-10 bg-background text-foreground rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-44px)] group-hover:rotate-45">
+                  <span className="absolute right-1 size-10 bg-background text-foreground rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-44px)] group-hover:rotate-45">
                     <ArrowUpRight size={16} />
                   </span>
                 </Button>
@@ -71,11 +72,14 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                   <div className="gap-1 flex flex-col items-start">
                     <div className="flex gap-1">
                       {Array.from({ length: 5 }).map((_, index) => (
-                        <img
-                          key={index}
+                        <Image
+                          key={`star-${index}`}
                           src="https://images.shadcnspace.com/assets/svgs/icon-star.svg"
                           alt="star"
-                          className="h-4 w-4"
+                          width={16}
+                          height={16}
+                          className="size-4"
+                          unoptimized
                         />
                       ))}
                     </div>

@@ -21,7 +21,7 @@ export function TrackSearch({ value, onChange, onSearch, loading, error, classNa
     <div className={cn("w-full space-y-2", className)}>
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <Input
             type="text"
             value={value}
@@ -39,13 +39,13 @@ export function TrackSearch({ value, onChange, onSearch, loading, error, classNa
               className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
               aria-label="Clear input"
             >
-              <X className="h-4 w-4 text-muted-foreground" />
+              <X className="size-4 text-muted-foreground" />
             </button>
           )}
         </div>
         <Button onClick={onSearch} disabled={loading} className="h-10 px-4">
           {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="size-4 animate-spin" />
           ) : (
             "Track"
           )}

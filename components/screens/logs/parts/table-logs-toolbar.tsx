@@ -115,17 +115,25 @@ export function LogsTableToolbar<TData = unknown>({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Afficher/Masquer</DropdownMenuLabel>
-            {table.getAllColumns().filter((column) => column.getCanHide() && column.id !== "actions").map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                checked={columnVisibility[column.id] !== false}
-                className="capitalize"
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                onSelect={(event) => event.preventDefault()}
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
-            ))}
+            {(() => {
+              const items: React.ReactNode[] = []
+              for (const column of table.getAllColumns()) {
+                if (column.getCanHide() && column.id !== "actions") {
+                  items.push(
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      checked={columnVisibility[column.id] !== false}
+                      className="capitalize"
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onSelect={(event) => event.preventDefault()}
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                }
+              }
+              return items
+            })()}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

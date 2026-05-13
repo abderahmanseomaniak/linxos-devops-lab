@@ -104,15 +104,14 @@ export function OtpDialog({
             onChange={onValueChange}
             maxLength={length}
             aria-label={`Code de vérification à ${length} chiffres`}
-            autoFocus
             containerClassName="justify-center"
           >
             {pairs.map((pair, groupIndex) => (
-              <Fragment key={groupIndex}>
+              <Fragment key={`otp-pair-${groupIndex}`}>
                 {groupIndex > 0 && <InputOTPSeparator className="mx-2" />}
                 <InputOTPGroup className={SLOT_CLASSES}>
                   {pair.map((index) => (
-                    <InputOTPSlot key={index} index={index} />
+                    <InputOTPSlot key={`otp-slot-${index}`} index={index} />
                   ))}
                 </InputOTPGroup>
               </Fragment>

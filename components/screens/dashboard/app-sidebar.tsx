@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image"
+import Link from "next/link"
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +15,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { IconCalendar, IconLayoutBoardSplit, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList, IconList } from "@tabler/icons-react"
-import Link from "next/link"
+
 import uiConstants from "@/data/ui-constants.json"
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -53,17 +55,21 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/" >
                 {/* Light mode */}
-                <img
+                <Image
                   src="/assets/logos/logo-texte-noir.png"
                   alt="Logo"
-                  className="h-12 block dark:hidden"
+                  width={128}
+                  height={48}
+                  className="block dark:hidden"
                 />
 
                 {/* Dark mode */}
-                <img
+                <Image
                   src="/assets/logos/logo-texte-blanc.png"
                   alt="Logo"
-                  className="h-12 hidden dark:block"
+                  width={128}
+                  height={48}
+                  className="hidden dark:block"
                 />
               </Link>
             </SidebarMenuButton>

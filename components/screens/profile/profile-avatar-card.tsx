@@ -70,9 +70,9 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex flex-col items-center text-center space-y-4">
+        <div className="flex flex-col items-center text-center gap-4">
           <div className="relative group">
-            <Avatar className="h-24 w-24 ring-2 ring-offset-2 ring-muted">
+            <Avatar className="size-24 ring-2 ring-offset-2 ring-muted">
               <AvatarImage src={currentAvatar} alt={user.name} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
@@ -89,14 +89,14 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
                 <Button
                   size="icon"
                   variant="secondary"
-                  className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -bottom-2 -right-2 size-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                 >
                   {uploading ? (
-                    <Upload className="h-4 w-4 animate-pulse" />
+                    <Upload className="size-4 animate-pulse" />
                   ) : (
-                    <Upload className="h-4 w-4" />
+                    <Upload className="size-4" />
                   )}
                 </Button>
               </>
@@ -110,7 +110,7 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
               className="h-7 text-destructive hover:text-destructive"
               onClick={handleRemove}
             >
-              <X className="h-3 w-3 mr-1" />
+              <X className="size-3 mr-1" />
               Supprimer
             </Button>
           )}
@@ -128,7 +128,7 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
             <div className="flex items-center justify-between">
               <Typography variant="small" className="text-muted-foreground">Status</Typography>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="size-4 text-green-500" />
                 <Typography variant="small" className="font-medium">Active</Typography>
               </div>
             </div>

@@ -1,7 +1,7 @@
-// ::"use client"
+"use client"
 
-// import { DashboardGlobal } from "@/components/screens/dashboard-global/dashboard-global"
+import { DashboardGlobal } from "@/components/screens/dashboard-global/dashboard-global"
 
-// export default function DashboardPage() {
-//   return <DashboardGlobal />
-// }
+export default function DashboardPage() {
+  return <DashboardGlobal />
+}

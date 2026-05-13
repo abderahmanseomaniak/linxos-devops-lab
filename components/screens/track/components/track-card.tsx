@@ -66,14 +66,14 @@ export function TrackCard({ result, className }: TrackCardProps) {
   return (
     <Card className={cn("border shadow-sm w-full max-w-md", className)}>
       <CardContent className="p-5">
-        <div className="flex flex-col items-center text-center space-y-4">
+        <div className="flex flex-col items-center text-center gap-4">
           <div
             className={cn(
-              "w-14 h-14 rounded-full flex items-center justify-center text-white",
+              "size-14 rounded-full flex items-center justify-center text-white",
               status.bg
             )}
           >
-            <StatusIcon className="h-7 w-7" />
+            <StatusIcon className="size-7" />
           </div>
 
           <div className="space-y-1">
@@ -98,21 +98,21 @@ export function TrackCard({ result, className }: TrackCardProps) {
             </div>
 
             <div className="flex items-start gap-3">
-              <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <Calendar className="size-4 text-muted-foreground mt-0.5 shrink-0" />
               <Typography variant="p" className="text-sm">
                 {result.eventStartDate}
               </Typography>
             </div>
 
             <div className="flex items-start gap-3">
-              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <MapPin className="size-4 text-muted-foreground mt-0.5 shrink-0" />
               <Typography variant="p" className="text-sm">
                 {result.city}
               </Typography>
             </div>
 
             <div className="flex items-start gap-3">
-              <Hash className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <Hash className="size-4 text-muted-foreground mt-0.5 shrink-0" />
               <Typography variant="p" className="text-sm font-mono">
                 {result.reference}
               </Typography>

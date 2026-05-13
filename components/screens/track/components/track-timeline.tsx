@@ -93,15 +93,15 @@ function TimelineDesktop({ stepStates, status, reference }: { stepStates: StepSt
                 )}
               >
                 {isRejected ? (
-                  <Icon className="h-5 w-5 text-red-500" />
+                  <Icon className="size-5 text-red-500" />
                 ) : isCurrent ? (
-                  <Icon className="h-5 w-5 text-orange-500" />
+                  <Icon className="size-5 text-orange-500" />
                 ) : isCompleted ? (
-                  <Icon className="h-5 w-5 text-green-500" />
+                  <Icon className="size-5 text-green-500" />
                 ) : isEmpty ? (
                   <Empty />
                 ) : (
-                  <Icon className="h-5 w-5" />
+                  <Icon className="size-5" />
                 )}
               </div>
               <Typography
@@ -140,15 +140,15 @@ function TimelineMobile({ stepStates, status, reference }: { stepStates: StepSta
                 )}
               >
                 {isRejected ? (
-                  <Icon className="h-4 w-4 text-red-500" />
+                  <Icon className="size-4 text-red-500" />
                 ) : isCurrent ? (
-                  <Icon className="h-4 w-4 text-orange-500" />
+                  <Icon className="size-4 text-orange-500" />
                 ) : isCompleted ? (
-                  <Icon className="h-4 w-4 text-green-500" />
+                  <Icon className="size-4 text-green-500" />
                 ) : isEmpty ? (
                   <Empty size="small" />
                 ) : (
-                  <Icon className="h-4 w-4" />
+                  <Icon className="size-4" />
                 )}
               </div>
               {index < steps.length - 1 && (

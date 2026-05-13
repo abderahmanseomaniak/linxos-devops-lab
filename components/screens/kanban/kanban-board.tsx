@@ -102,7 +102,7 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
 
   if (!mounted) {
     return (
-      <div className="h-screen overflow-auto">
+      <div className="h-screen overflow-auto" suppressHydrationWarning>
         {STAGES.map((stage) => (
           <div key={stage} className="rounded-2xl border bg-muted/30 p-2" />
         ))}

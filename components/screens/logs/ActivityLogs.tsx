@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useMemo, useState } from "react"
+import React, { useId, useMemo, useState, Suspense } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -112,9 +112,8 @@ export function ActivityLogs() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers
-                  .filter((header) => header.column.getIsVisible())
-                  .map((header) => (
+                {headerGroup.headers.map((header) =>
+                  header.column.getIsVisible() ? (
                     <TableHead
                       key={header.id}
                       className="h-11"
@@ -124,6 +123,8 @@ export function ActivityLogs() {
                         <div
                           className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
                           onClick={header.column.getToggleSortingHandler()}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()(e) } }}
+                          role="button"
                           tabIndex={header.column.getCanSort() ? 0 : undefined}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -133,7 +134,8 @@ export function ActivityLogs() {
                         flexRender(header.column.columnDef.header, header.getContext())
                       )}
                     </TableHead>
-                  ))}
+                  ) : null
+                )}
               </TableRow>
             ))}
           </TableHeader>
@@ -159,7 +161,9 @@ export function ActivityLogs() {
         </Table>
       </div>
 
-      <LogsTablePagination table={table} />
+      <Suspense fallback={null}>
+        <LogsTablePagination table={table} />
+      </Suspense>
     </div>
   )
 }

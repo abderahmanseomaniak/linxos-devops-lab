@@ -123,7 +123,7 @@ export function ActivityLogs() {
                         <div
                           className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
                           onClick={header.column.getToggleSortingHandler()}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()(e) } }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()?.(e) } }}
                           role="button"
                           tabIndex={header.column.getCanSort() ? 0 : undefined}
                         >

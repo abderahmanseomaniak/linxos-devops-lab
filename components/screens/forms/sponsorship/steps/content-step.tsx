@@ -305,7 +305,7 @@ function PreviewTile({
     >
       {isImage ? (
         <Image
-          src={entry.preview}
+          src={entry.preview!}
           alt=""
           fill
           sizes="(max-width: 768px) 100vw, 36px"

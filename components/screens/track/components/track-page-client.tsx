@@ -12,7 +12,7 @@ import type { TrackResult } from "@/components/screens/track/types/track.types"
 import trackData from "@/data/track.json"
 import { Typography } from "@/components/ui/typography"
 
-
+type TrackDataNormalized = TrackResult
 
 const VALID_STATUSES = new Set(["confirmed", "pending", "cancelled", "approved", "ready"])
 

@@ -281,7 +281,7 @@ function FileUploadField({ type, onChange, invalid, error }: FileUploadFieldProp
         </div>
       )}
 
-      {invalid && error && <FieldDescription>{error}</FieldDescription>}
+      {invalid && !!error && <FieldDescription>{error}</FieldDescription>}
     </Field>
   )
 }

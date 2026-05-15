@@ -80,16 +80,17 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
 
   useEffect(() => {
     table.getColumn("name")?.setFilterValue(searchFilter.value || "")
-  }, [searchFilter.value, table])
+  }, [searchFilter.value])
 
   useEffect(() => {
     const statusValues = statusFilter.filterState
     table.getColumn("statusDisplay")?.setFilterValue(statusValues.length ? statusValues : undefined)
-  }, [statusFilter.filterState, table])
+  }, [statusFilter.filterState])
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
-    const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id))
+    const idSet = new Set(selectedRows.map((row) => row.original.id))
+    const updatedData = data.filter((item) => !idSet.has(item.id))
     setData(updatedData)
     table.resetRowSelection()
   }

@@ -121,9 +121,9 @@ export function EventDetailSheet({ open, onOpenChange, event }: EventDetailSheet
             <section>
               <Typography variant="h4" className="mb-3 text-sm font-semibold">Visibilité</Typography>
               <div className="grid gap-2">
-                {step6.visibilite && <InfoRow label="Visibilité" value={step6.visibilite} />}
-                {step6.mentions && <InfoRow label="Mentions" value={step6.mentions} />}
-                {step6.autresConditions && <InfoRow label="Autres" value={step6.autresConditions} />}
+                {!!step6.visibilite && <InfoRow label="Visibilité" value={step6.visibilite} />}
+                {!!step6.mentions && <InfoRow label="Mentions" value={step6.mentions} />}
+                {!!step6.autresConditions && <InfoRow label="Autres" value={step6.autresConditions} />}
               </div>
             </section>
           )}

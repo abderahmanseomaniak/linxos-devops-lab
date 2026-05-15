@@ -28,7 +28,7 @@ const KPISection = ({ kpi, stats }: { kpi: DashboardData["kpi"]; stats: Dashboar
               <Typography variant="small">{k.title}</Typography>
               <Typography variant="h4">{String(stats[k.key as keyof typeof stats])}</Typography>
             </div>
-            {k.trend && (
+            {!!k.trend && (
               <Badge variant={k.trendUp ? "default" : "destructive"} className="text-xs">
                 {k.trend}
               </Badge>

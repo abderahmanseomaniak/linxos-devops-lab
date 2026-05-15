@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -44,31 +43,16 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
   } = useForm<EditEventFormData>({
     resolver: zodResolver(editEventSchema),
     defaultValues: {
-      eventName: "",
-      organization: "",
-      date: "",
-      product: "",
-      quantity: 1,
-      priority: 1,
-      status: "Pending",
-      deliveryStatus: "Non livrée",
+      eventName: event?.eventName ?? "",
+      organization: event?.organization ?? "",
+      date: event?.date ?? "",
+      product: event?.product ?? "",
+      quantity: event?.quantity ?? 1,
+      priority: event?.priority ?? 1,
+      status: event?.status ?? "Pending",
+      deliveryStatus: event?.deliveryStatus ?? "Non livrée",
     },
   })
-
-  useEffect(() => {
-    if (open && event) {
-      reset({
-        eventName: event.eventName,
-        organization: event.organization,
-        date: event.date,
-        product: event.product || "",
-        quantity: event.quantity || 1,
-        priority: event.priority,
-        status: event.status,
-        deliveryStatus: event.deliveryStatus,
-      })
-    }
-  }, [open, event, reset])
 
   const handleClose = () => {
     onOpenChange(false)
@@ -89,7 +73,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
   if (!event) return null
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet key={event?.id} open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[500px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Modifier l'événement</SheetTitle>

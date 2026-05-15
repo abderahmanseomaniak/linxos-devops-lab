@@ -116,7 +116,8 @@ export function useEventTable({ data: initialData }: UseEventTableOptions): UseE
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const ids = selectedRows.map((row) => row.original.id)
-    setData((prev) => prev.filter((item) => !ids.includes(item.id)))
+    const idSet = new Set(ids)
+    setData((prev) => prev.filter((item) => !idSet.has(item.id)))
     table.resetRowSelection()
   }
 

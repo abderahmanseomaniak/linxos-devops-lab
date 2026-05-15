@@ -209,7 +209,7 @@ Proof
           size="sm"
           variant="ghost"
           className="h-7 text-xs px-2"
-          onClick={() => setShowNoteInput(!showNoteInput)}
+          onClick={() => setShowNoteInput((prev) => !prev)}
         >
           <IconUpload className="size-3 mr-1" />
           Note

@@ -294,7 +294,7 @@ export function PlatformConfig() {
               }
               min={0}
             />
-            {errors.minUgcCreators && (
+            {!!errors.minUgcCreators && (
               <Typography variant="small" className="text-red-600">{errors.minUgcCreators}</Typography>
             )}
             <Typography variant="muted">
@@ -317,7 +317,7 @@ export function PlatformConfig() {
               }))
             }
           />
-          {errors.stages && <Typography variant="small" className="text-red-600">{errors.stages}</Typography>}
+          {!!errors.stages && <Typography variant="small" className="text-red-600">{errors.stages}</Typography>}
         </ConfigSectionCard>
 
         <ConfigSectionCard
@@ -334,7 +334,7 @@ export function PlatformConfig() {
               }))
             }
           />
-          {errors.weights && <Typography variant="small" className="text-red-600">{errors.weights}</Typography>}
+          {!!errors.weights && <Typography variant="small" className="text-red-600">{errors.weights}</Typography>}
         </ConfigSectionCard>
 
         <ConfigSectionCard

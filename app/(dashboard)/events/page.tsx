@@ -13,13 +13,19 @@ export default function EventsPage() {
 
   const stats = {
     total: applications.length,
-    accepted: applications.filter((e) => e.status === "Accepted").length,
-    pending: applications.filter((e) => e.status === "Pending").length,
-    rejected: applications.filter((e) => e.status === "Rejected").length,
+    accepted: 0,
+    pending: 0,
+    rejected: 0,
+  }
+  for (const e of applications) {
+    if (e.status === "Accepted") stats.accepted++
+    else if (e.status === "Pending") stats.pending++
+    else if (e.status === "Rejected") stats.rejected++
   }
 
   const handleDeleteMultiple = (ids: number[]) => {
-    setApplications((prev) => prev.filter((e) => !ids.includes(e.id)))
+    const idSet = new Set(ids)
+    setApplications((prev) => prev.filter((e) => !idSet.has(e.id)))
   }
 
   return (

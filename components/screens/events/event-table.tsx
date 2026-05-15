@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useState, useEffect } from "react"
+import React, { useId, useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -114,16 +114,14 @@ const table = useReactTable({
 
   const isAllSelected = uniqueStatusValues.length > 0 && selectedStatuses.length === uniqueStatusValues.length
 
-  useEffect(() => {
-    table.getColumn("name")?.setFilterValue(searchValue || undefined)
-  }, [searchValue, table])
-
   const handleSearchChange = (value: string) => {
     setSearchValue(value)
+    table.getColumn("name")?.setFilterValue(value || undefined)
   }
 
   const handleSearchClear = () => {
     setSearchValue("")
+    table.getColumn("name")?.setFilterValue(undefined)
   }
 
   const handleStatusChange = (checked: boolean, value: string) => {
@@ -156,7 +154,8 @@ const table = useReactTable({
     if (onDeleteMultiple) {
       onDeleteMultiple(ids)
     } else {
-      setData((prev) => prev.filter((item) => !ids.includes(item.id)))
+      const idSet = new Set(ids)
+      setData((prev) => prev.filter((item) => !idSet.has(item.id)))
     }
     table.resetRowSelection()
   }

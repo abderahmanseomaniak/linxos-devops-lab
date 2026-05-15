@@ -51,7 +51,8 @@ export function useUsersTable({ data: initialData }: UseUsersTableProps) {
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
-    const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id))
+    const idSet = new Set(selectedRows.map((row) => row.original.id))
+    const updatedData = data.filter((item) => !idSet.has(item.id))
     setData(updatedData)
     table.resetRowSelection()
   }

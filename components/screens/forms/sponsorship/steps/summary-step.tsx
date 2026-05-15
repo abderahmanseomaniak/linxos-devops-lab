@@ -13,8 +13,15 @@ interface SummaryStepProps {
   onEdit?: (step: number) => void
 }
 
+const labelCache = new Map<{ id: string; label: string }[], Map<string, string>>()
+
 function labelFor(id: string, options: { id: string; label: string }[]) {
-  return options.find((o) => o.id === id)?.label ?? id
+  let map = labelCache.get(options)
+  if (!map) {
+    map = new Map(options.map((o) => [o.id, o.label]))
+    labelCache.set(options, map)
+  }
+  return map.get(id) ?? id
 }
 
 function formatFiles(files: SponsorshipFormValues["files"]) {

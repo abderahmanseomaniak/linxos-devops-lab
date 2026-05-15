@@ -106,7 +106,7 @@ export function EventTableToolbar<TData = unknown>({
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/80">
               <IconAdjustments size={14} />
             </div>
-            {searchValue && (
+            {!!searchValue && (
               <button
                 aria-label="Clear filter"
                 className="absolute inset-y-0 end-0 flex h-full w-7 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-colors hover:text-foreground"

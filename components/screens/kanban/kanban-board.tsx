@@ -67,7 +67,9 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
     return grouped
   })()
 
-  const activeEvent = activeId ? events.find((e) => e.id === activeId) : null
+  const eventsById = new Map(events.map((e) => [e.id, e]))
+
+  const activeEvent = activeId ? (eventsById.get(activeId) ?? null) : null
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as number)
@@ -80,7 +82,7 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const activeEvent = events.find((e) => e.id === active.id)
+      const activeEvent = eventsById.get(active.id as number)
       const overStage = over.id as KanbanStage
 
       if (activeEvent && STAGES.includes(overStage)) {

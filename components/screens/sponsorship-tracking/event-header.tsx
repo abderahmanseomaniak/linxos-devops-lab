@@ -17,7 +17,7 @@ export function EventHeader({
 
   return (
     <div className="text-center space-y-4 py-6">
-      {reference && (
+      {!!reference && (
         <Typography variant="small" className="font-medium uppercase tracking-wider">
           {reference}
         </Typography>
@@ -39,7 +39,7 @@ export function EventHeader({
             style={{ width: `${progress}%` }}
           />
         </div>
-        {activePhaseTitle && (
+        {!!activePhaseTitle && (
           <Typography variant="small" className="text-primary font-medium">
             Current: {activePhaseTitle}
           </Typography>

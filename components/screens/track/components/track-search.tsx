@@ -51,7 +51,7 @@ export function TrackSearch({ value, onChange, onSearch, loading, error, classNa
           )}
         </Button>
       </div>
-      {error && (
+      {!!error && (
         <p className="text-sm text-destructive animate-in slide-in-from-top-1" role="alert">
           {error}
         </p>

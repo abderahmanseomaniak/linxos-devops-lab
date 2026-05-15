@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Share2, Copy, Check, Mail, Link2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,11 +18,11 @@ interface TrackShareProps {
 
 export function TrackShare({ reference, className }: TrackShareProps) {
   const [copied, setCopied] = useState(false)
+  const [shareUrl, setShareUrl] = useState("")
 
-  const shareUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/track?ref=${reference}`
-      : ""
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/track?ref=${reference}`)
+  }, [reference])
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(shareUrl)

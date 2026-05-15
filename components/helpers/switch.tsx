@@ -47,8 +47,10 @@ function renderCase(component: CaseComponent): ReactNode {
  * ```
  */
 export function Switch({ value, cases, defaultCase, preserveState = true }: SwitchProps) {
-  const caseKeys = Object.keys(cases);
-  const activeKey = caseKeys.find((key) => key === String(value));
+  const caseKeys = Object.keys(cases)
+  const stringValue = String(value)
+  const activeCase = cases[stringValue as keyof typeof cases]
+  const activeKey = activeCase !== undefined ? stringValue : undefined
 
   // If not preserving state, only render the active case
   if (!preserveState) {

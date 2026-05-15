@@ -14,12 +14,16 @@ import logisticsData from "@/data/logistics.json"
 const initialDeliveries: Delivery[] = logisticsData as Delivery[]
 
 function getStatusCounts(deliveries: Delivery[]) {
-  return {
-    ready: deliveries.filter((d) => d.status === "Ready").length,
-    transit: deliveries.filter((d) => d.status === "Shipped").length,
-    delivered: deliveries.filter((d) => d.status === "Delivered").length,
-    issues: deliveries.filter((d) => d.status === "Issue").length,
-  }
+  return deliveries.reduce(
+    (counts, d) => {
+      if (d.status === "Ready") counts.ready++
+      else if (d.status === "Shipped") counts.transit++
+      else if (d.status === "Delivered") counts.delivered++
+      else if (d.status === "Issue") counts.issues++
+      return counts
+    },
+    { ready: 0, transit: 0, delivered: 0, issues: 0 }
+  )
 }
 
 export default function LogisticsPage() {

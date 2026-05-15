@@ -111,7 +111,7 @@ export function OtpDialog({
                 {groupIndex > 0 && <InputOTPSeparator className="mx-2" />}
                 <InputOTPGroup className={SLOT_CLASSES}>
                   {pair.map((index) => (
-                    <InputOTPSlot key={index} index={index} />
+                    <InputOTPSlot key={`otp-slot-${index}`} index={index} />
                   ))}
                 </InputOTPGroup>
               </Fragment>

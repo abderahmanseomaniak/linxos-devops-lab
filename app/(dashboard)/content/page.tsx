@@ -22,12 +22,16 @@ const statusTabs = [
 ]
 
 function getStatusCounts(events: UGCEvent[]) {
-  return {
-    waiting: events.filter((e) => e.contentStatus === "Waiting").length,
-    received: events.filter((e) => e.contentStatus === "Received").length,
-    editing: events.filter((e) => e.contentStatus === "Editing").length,
-    posted: events.filter((e) => e.contentStatus === "Posted").length,
-  }
+  return events.reduce(
+    (counts, e) => {
+      if (e.contentStatus === "Waiting") counts.waiting++
+      else if (e.contentStatus === "Received") counts.received++
+      else if (e.contentStatus === "Editing") counts.editing++
+      else if (e.contentStatus === "Posted") counts.posted++
+      return counts
+    },
+    { waiting: 0, received: 0, editing: 0, posted: 0 }
+  )
 }
 
 function canTransitionTo(newStatus: ContentStatus, currentStatus: ContentStatus): boolean {

@@ -9,7 +9,7 @@ import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
 
 const chartConfig = {
   value: {
-    label: "Value",
+    label: "Value",//
     color: "hsl(var(--primary))",
   },
 } satisfies ChartConfig;

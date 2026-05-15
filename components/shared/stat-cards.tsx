@@ -36,9 +36,9 @@ export default function StatsCards() {
       <dl className="grid w-full max-w-lg grid-cols-1 gap-4 lg:grid-cols-2">
         {data.map((item) => (
           <Card key={item.name} className="p-4 shadow-none">
-            <CardContent className="flex items-center space-x-4 p-0">
+            <CardContent className="flex items-center gap-x-4 p-0">
               <div className="relative flex items-center justify-center">
-                <ChartContainer config={chartConfig} className="h-[80px] w-[80px]">
+                <ChartContainer config={chartConfig} className="size-[80px]">
                   <RadialBarChart
                     data={[item]}
                     innerRadius={30}

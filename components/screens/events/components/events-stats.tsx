@@ -78,7 +78,7 @@ export function EventsStats({ data }: EventsStatsProps) {
             <div className="relative flex items-center justify-center">
               <ChartContainer
                 config={chartConfig}
-                className="h-[80px] w-[80px]"
+                className="size-[80px]"
               >
                 <RadialBarChart
                   data={[{ value: stat.percent }]}

@@ -8,6 +8,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetTitle,
   SheetClose,
 } from "@/components/ui/sheet";
 
@@ -163,6 +164,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                 side="right"
                 className="w-full sm:w-96 p-0"
               >
+                <SheetTitle className="sr-only">Menu de navigation</SheetTitle>
                 {/* MOBILE HEADER */}
                 <div className="flex items-center justify-between p-6">
                   <div>

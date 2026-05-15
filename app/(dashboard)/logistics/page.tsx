@@ -1,12 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DeliveryCard } from "@/components/screens/logistics/delivery-card"
-import { FiltersBar } from "@/components/screens/logistics/filters-bar"
 import { DeliveryDetailsModal } from "@/components/screens/logistics/delivery-details-modal"
 import { Typography } from "@/components/ui/typography"
 import { Delivery, LogisticsStatus, Note } from "@/types/logistics"
@@ -29,29 +27,23 @@ export default function LogisticsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [cityFilter, setCityFilter] = useState("all")
-  const [activeTab, setActiveTab] = useState("all")
+  const [activeTab, setActiveTab] = useState("ready")
   const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [noteCounter, setNoteCounter] = useState(100)
-  const [mounted, setMounted] = useState(true)
 
-  const cities = useMemo(() => {
-    const uniqueCities = [...new Set(deliveries.map((d) => d.city))]
-    return uniqueCities.sort()
-  }, [deliveries])
+  const cities = [...new Set(deliveries.map((d) => d.city))].toSorted()
 
-  const filteredDeliveries = useMemo(() => {
+  const filteredDeliveries = (() => {
     let filtered = deliveries
 
-    if (activeTab !== "all") {
-      const statusMap: Record<string, LogisticsStatus> = {
-        ready: "Ready",
-        transit: "Shipped",
-        delivered: "Delivered",
-        issues: "Issue",
-      }
-      filtered = filtered.filter((d) => d.status === statusMap[activeTab])
+    const statusMap: Record<string, LogisticsStatus> = {
+      ready: "Ready",
+      transit: "Shipped",
+      delivered: "Delivered",
+      issues: "Issue",
     }
+    filtered = filtered.filter((d) => d.status === statusMap[activeTab])
 
     if (searchQuery) {
       filtered = filtered.filter(
@@ -71,9 +63,9 @@ export default function LogisticsPage() {
     }
 
     return filtered
-  }, [deliveries, activeTab, searchQuery, statusFilter, cityFilter])
+  })()
 
-  const statusCounts = useMemo(() => getStatusCounts(deliveries), [deliveries])
+  const statusCounts = getStatusCounts(deliveries)
 
   const handleStatusChange = (
     id: number,
@@ -159,19 +151,6 @@ export default function LogisticsPage() {
     window.open(`https://wa.me/${cleanPhone}`, "_blank")
   }
 
-  if (!mounted) {
-    return (
-      <div className="h-full flex flex-col p-4 gap-4">
-        <div className="h-20 bg-muted/30 rounded-xl animate-pulse" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={`skeleton-${i}`} className="h-56 bg-muted/30 rounded-xl animate-pulse" />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="h-full flex flex-col p-4 gap-4">
       <div className="flex flex-col gap-1">
@@ -181,8 +160,9 @@ export default function LogisticsPage() {
         </Typography>
       </div>
 
+      
       <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
+        <div className="relative max-w-md">
           <Input
             className="h-9 pl-9 text-sm"
             placeholder="Rechercher un événement..."
@@ -193,27 +173,13 @@ export default function LogisticsPage() {
             <IconSearch size={16} />
           </div>
         </div>
-
         <div className="hidden sm:flex items-center gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-9 w-40 text-sm">
-              <SelectValue placeholder="Statut" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous</SelectItem>
-              <SelectItem value="Ready">Prêt</SelectItem>
-              <SelectItem value="Shipped">Expédié</SelectItem>
-              <SelectItem value="Delivered">Livré</SelectItem>
-              <SelectItem value="Issue">Problème</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Select value={cityFilter} onValueChange={setCityFilter}>
-            <SelectTrigger className="h-9 w-36 text-sm">
+            <SelectTrigger className="h-10-36 text-sm">
               <SelectValue placeholder="Ville" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Toutes</SelectItem>
+              <SelectItem value="all">Toutes les villes </SelectItem>
               {cities.map((city) => (
                 <SelectItem key={city} value={city}>
                   {city}
@@ -223,30 +189,12 @@ export default function LogisticsPage() {
           </Select>
         </div>
       </div>
+     
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-        <div className="sm:hidden">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toutes ({deliveries.length})</SelectItem>
-              <SelectItem value="ready">Prêt ({statusCounts.ready})</SelectItem>
-              <SelectItem value="transit">En transit ({statusCounts.transit})</SelectItem>
-              <SelectItem value="delivered">Livré ({statusCounts.delivered})</SelectItem>
-              <SelectItem value="issues">Problèmes ({statusCounts.issues})</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        
 
         <TabsList className="hidden sm:flex w-full justify-start h-auto p-0 bg-transparent gap-1">
-          <TabsTrigger
-            value="all"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
-          >
-           Toutes ({deliveries.length})
-          </TabsTrigger>
           <TabsTrigger
             value="ready"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
@@ -288,7 +236,6 @@ export default function LogisticsPage() {
                   onViewDetails={handleViewDetails}
                   onAddNote={handleAddNote}
                   onUploadReceipt={handleUploadReceipt}
-                  onContactWhatsApp={handleContactWhatsApp}
                 />
               ))}
             </div>

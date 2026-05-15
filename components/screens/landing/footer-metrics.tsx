@@ -17,13 +17,14 @@ export default function FooterMetrics() {
       <div className="mx-auto max-w-5xl px-6">
         {/* LOGO (replaced Logo component) */}
         <Link href="/" className="mx-auto block w-fit">
-          <div className="relative h-8 w-[140px]">
+          <div>
             <Image
               src="/assets/logos/logo-texte-noir.png"
               alt="LinxOS Logo"
-              fill
+              width={383}
+              height={95}
               sizes="140px"
-              className="object-contain"
+              className="h-8 w-auto"
               priority
             />
           </div>

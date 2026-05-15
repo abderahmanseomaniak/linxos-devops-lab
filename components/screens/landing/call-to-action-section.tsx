@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
-import { motion } from "motion/react";
+import { LazyMotion, domAnimation } from "motion/react"
+import * as m from "framer-motion/m";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { ArrowUpRight } from "lucide-react";
@@ -26,7 +27,8 @@ const CallToActionSection = ({ className }: CallToActionSectionProps) => {
             ref={ref}
             className="relative  bg-[#16213E] overflow-hidden min-h-96 flex items-center justify-center px-6 border border-white/10 rounded-3xl before:absolute before:w-full before:h-4/5 before:bg-linear-to-r before:from-sky-100 before:from-15% before:via-white before:via-55% before:to-amber-100 before:to-90% before:rounded-full before:top-24 before:blur-3xl before:-z-10 dark:before:from-sky-400/10 dark:before:from-40% dark:before:via-black dark:before:via-55% dark:before:to-amber-300/10 dark:before:to-60% dark:before:rounded-full dark:before:-z-10"
           >
-            <motion.div
+            <LazyMotion features={domAnimation}>
+            <m.div
               {...bottomAnimation}
               className="flex flex-col gap-6 items-center mx-auto"
             >
@@ -54,7 +56,8 @@ const CallToActionSection = ({ className }: CallToActionSectionProps) => {
   </div>
 
 </Button>
-            </motion.div>
+            </m.div>
+            </LazyMotion>
           </div>
         </div>
       </div>

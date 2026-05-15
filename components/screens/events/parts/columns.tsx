@@ -9,10 +9,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { IconStar } from "@tabler/icons-react"
 import type { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"
 import { multiColumnFilterFn, statusFilterFn } from "../lib/filter-fns"
-import { STATUS_LABELS, STATUS_VARIANTS, DELIVERY_LABELS, DELIVERY_VARIANTS, DELIVERY_OPTIONS } from "../lib/constants"
+import { STATUS_LABELS, STATUS_VARIANTS, DELIVERY_LABELS, DELIVERY_VARIANTS } from "../lib/constants"
 import { RowActions } from "./row-actions"
 
-const ROLE_OPTIONS = DELIVERY_OPTIONS
+
 
 export interface ColumnHandlers {
   onEdit?: (event: EventApplication) => void
@@ -52,7 +52,7 @@ export function createColumns(handlers: ColumnHandlers = {}): ColumnDef<EventApp
         const eventName = row.original.eventName
         return (
           <div className="flex items-center gap-3">
-            <Avatar size="lg">
+            <Avatar className="size-10">
               <AvatarFallback>{organization.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col line-clamp-2">

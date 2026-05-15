@@ -2,7 +2,8 @@
 import Image from "next/image";
 import { Marquee } from "@/components/screens/landing/header-section/animations/marquee";
 import { Typography } from "@/components/ui/typography";
-import { motion } from "motion/react";
+import { LazyMotion, domAnimation } from "motion/react"
+import * as m from "framer-motion/m";
 
 export interface BrandList {
   image: string;
@@ -15,7 +16,8 @@ function BrandSlider({ brandList }: { brandList: BrandList[] }) {
     <section>
       <div className="py-6 md:py-10">
         <div className="mx-auto max-w-6xl">
-          <motion.div
+          <LazyMotion features={domAnimation}>
+          <m.div
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -60,7 +62,8 @@ function BrandSlider({ brandList }: { brandList: BrandList[] }) {
                 </Marquee>
               </div>
             )}
-          </motion.div>
+          </m.div>
+          </LazyMotion>
         </div>
       </div>
     </section>

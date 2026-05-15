@@ -35,13 +35,7 @@ function StageManager({ stages, onChange }: StageManagerProps) {
     onChange(stages.filter((_, i) => i !== index))
   }
 
-  const moveStage = (from: number, to: number) => {
-    if (to < 0 || to >= stages.length) return
-    const newStages = [...stages]
-    const [moved] = newStages.splice(from, 1)
-    newStages.splice(to, 0, moved)
-    onChange(newStages)
-  }
+
 
   return (
     <div className="space-y-3">

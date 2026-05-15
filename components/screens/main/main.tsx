@@ -1,5 +1,4 @@
 "use client"
-import { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -177,10 +176,10 @@ const QuickActionsSection = () => {
     </Card>
   )
 }
-export function DashboardGlobal({ data: customData }: DashboardGlobalProps) {
-  const kpi = useMemo(() => customData?.kpi ?? data.kpi, [customData?.kpi])
-  const stats = useMemo(() => customData?.stats ?? data.stats, [customData?.stats])
-  const overview = useMemo(() => customData?.overview ?? data.overview, [customData?.overview])
+export function Main({ data: customData }: DashboardGlobalProps) {
+  const kpi = customData?.kpi ?? data.kpi
+  const stats = customData?.stats ?? data.stats
+  const overview = customData?.overview ?? data.overview
   return (
     <div className="flex flex-col gap-8">
       <div className="space-y-1">

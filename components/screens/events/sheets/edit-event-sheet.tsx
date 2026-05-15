@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useCallback } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -70,13 +70,12 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
     }
   }, [open, event, reset])
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     onOpenChange(false)
     reset()
-  }, [onOpenChange, reset])
+  }
 
-  const onSubmit = useCallback(
-    (data: EditEventFormData) => {
+  const onSubmit = (data: EditEventFormData) => {
       const updatedEvent: EventApplication = {
         ...data,
         id: event?.id || Date.now(),
@@ -85,9 +84,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
       }
       onSave(updatedEvent)
       handleClose()
-    },
-    [event, onSave, handleClose]
-  )
+    }
 
   if (!event) return null
 

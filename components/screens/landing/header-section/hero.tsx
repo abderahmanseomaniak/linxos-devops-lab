@@ -4,7 +4,8 @@ import { Instrument_Serif } from "next/font/google";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
-import { motion } from "motion/react";
+import { LazyMotion, domAnimation } from "motion/react"
+import * as m from "framer-motion/m";
 import { ArrowUpRight } from "lucide-react";
 
 const instrumentSerif = Instrument_Serif({
@@ -23,13 +24,14 @@ type HeroSectionProps = {
 
 function HeroSection({ avatarList }: HeroSectionProps) {
   return (
+    <LazyMotion features={domAnimation}>
     <section id="home">
       <div className="w-full h-full relative">
         <div className="relative w-full pt-0 md:pt-20 pb-6 md:pb-10 before:absolute before:w-full before:h-full before:bg-linear-to-r before:from-sky-100 before:via-white before:to-amber-100 before:rounded-full before:top-24 before:blur-3xl before:-z-10 dark:before:from-zinc-800 dark:before:via-black dark:before:to-stone-700 dark:before:rounded-full dark:before:blur-3xl dark:before:-z-10">
           <div className="container mx-auto relative z-10">
             <div className="flex flex-col max-w-5xl mx-auto gap-8">
               <div className="relative flex flex-col text-center items-center sm:gap-6 gap-4">
-                <motion.h1
+                <m.h1
                   initial={{ opacity: 0, y: 32 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, ease: "easeInOut" }}
@@ -41,8 +43,8 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                   >
                     through one unified workflow.
                   </span>
-                </motion.h1>
-                <motion.div
+                </m.h1>
+                <m.div
                   initial={{ opacity: 0, y: 32 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, delay: 0.1, ease: "easeInOut" }}
@@ -52,9 +54,9 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                     approvals, and operational tracking into one structured
                     system.
                   </Typography>
-                </motion.div>
+                </m.div>
               </div>
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 32 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeInOut" }}
@@ -88,12 +90,13 @@ function HeroSection({ avatarList }: HeroSectionProps) {
                     </Typography>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           </div>
         </div>
       </div>
     </section>
+    </LazyMotion>
   );
 }
 

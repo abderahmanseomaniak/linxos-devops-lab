@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import HeroSection from "@/components/screens/landing/header-section/hero";
 import Header, { type NavigationSection } from "@/components/screens/landing/header-section/header";
 import BrandSlider, { BrandList } from "@/components/screens/landing/header-section/brand-slider";
@@ -13,7 +13,7 @@ import FeatureHighlights from "@/components/screens/landing/feature-highlights";
 export default function LeadingPage() {
   const [activeSection, setActiveSection] = useState("home");
 
-  const handleScroll = useCallback(() => {
+  const handleScroll = () => {
     const sections = ["home", "workflow", "operations", "features", "contact"];
     
     for (const section of sections) {
@@ -26,7 +26,7 @@ export default function LeadingPage() {
         }
       }
     }
-  }, []);
+  };
 
   const handleScrollRef = useRef(handleScroll)
   handleScrollRef.current = handleScroll

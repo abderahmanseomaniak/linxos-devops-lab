@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useCallback } from "react"
+import { useState } from "react"
 import NextImage from "next/image"
 import { TrackSearch } from "@/components/screens/track/components/track-search"
 import { TrackCard } from "@/components/screens/track/components/track-card"
@@ -17,20 +17,22 @@ import { Typography } from "@/components/ui/typography"
 const VALID_STATUSES = new Set(["confirmed", "pending", "cancelled", "approved", "ready"])
 
 const LOGO_WRAPPER = (
-  <div className="mb-6 relative w-[140px] h-[32px]">
+  <div className="mb-6">
     <NextImage
       src="/assets/logos/logo-texte-noir.png"
       alt="LinxOS Logo"
-      fill
-      className="dark:hidden object-contain"
+      width={383}
+      height={95}
       sizes="140px"
+      className="h-8 w-auto dark:hidden"
     />
     <NextImage
       src="/assets/logos/logo-texte-blanc.png"
       alt="LinxOS Logo"
-      fill
-      className="hidden dark:block object-contain"
+      width={383}
+      height={95}
       sizes="140px"
+      className="hidden dark:block h-8 w-auto"
     />
   </div>
 )
@@ -56,9 +58,8 @@ const HINT_SECTION = (
 )
 
 export function TrackPageClient() {
-  const normalized = useMemo(
-    () => {
-      const result: TrackDataNormalized[] = []
+  const normalized = (() => {
+      const result: TrackResult[] = []
       for (const item of trackData) {
         if (VALID_STATUSES.has(item.status)) {
           result.push({
@@ -75,17 +76,15 @@ export function TrackPageClient() {
         }
       }
       return result
-    },
-    []
-  )
+    })()
 
   const { code, setCode, loading, error, result, searched, handleSearch } = useTrackSearch({
     data: normalized,
   })
 
-  const handleSearchFn = useCallback(() => {
+  const handleSearchFn = () => {
     handleSearch()
-  }, [handleSearch])
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-6">

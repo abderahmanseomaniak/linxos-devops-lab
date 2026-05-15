@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState } from "react"
 import type { Table } from "@tanstack/react-table"
 
 export interface UseTableFilterOptions<TData = unknown> {
@@ -47,56 +47,49 @@ export function useTableFilter<TData = unknown>(
 
   const globalSearch = getGlobalSearch()
 
-  const setGlobalSearch = useCallback((value: string) => {
+  const setGlobalSearch = (value: string) => {
     updateSearchOnTable(table, globalSearchColumn, value || undefined)
-  }, [table, globalSearchColumn])
+  }
 
-  const clearGlobalSearch = useCallback(() => {
+  const clearGlobalSearch = () => {
     updateSearchOnTable(table, globalSearchColumn, undefined)
-  }, [table, globalSearchColumn])
+  }
 
-  const handleSearchChange = useCallback((value: string) => {
+  const handleSearchChange = (value: string) => {
     updateSearchOnTable(table, globalSearchColumn, value || undefined)
-  }, [table, globalSearchColumn])
+  }
 
-  const handleSearchClear = useCallback(() => {
+  const handleSearchClear = () => {
     updateSearchOnTable(table, globalSearchColumn, undefined)
-  }, [table, globalSearchColumn])
+  }
 
-  const setColumnFilter = useCallback((columnId: string, values: unknown[] | undefined) => {
+  const setColumnFilter = (columnId: string, values: unknown[] | undefined) => {
     table.getColumn(columnId)?.setFilterValue(values?.length ? values : undefined)
-  }, [table])
+  }
 
-  const clearColumnFilter = useCallback((columnId: string) => {
+  const clearColumnFilter = (columnId: string) => {
     table.getColumn(columnId)?.setFilterValue(undefined)
-  }, [table])
+  }
 
-  const clearAllFilters = useCallback(() => {
+  const clearAllFilters = () => {
     updateSearchOnTable(table, globalSearchColumn, undefined)
     table.resetColumnFilters()
-  }, [table, globalSearchColumn])
+  }
 
-  const hasActiveFilters = useMemo(() => {
-    const hasGlobal = globalSearch !== "" && globalSearch !== undefined
-    const columnFilters = table.getState().columnFilters
-    const hasColumn = columnFilters && columnFilters.length > 0
-    return hasGlobal || hasColumn
-  }, [table, globalSearch])
+  const hasGlobal = globalSearch !== "" && globalSearch !== undefined
+  const columnFilters = table.getState().columnFilters
+  const hasActiveFilters = hasGlobal || (columnFilters && columnFilters.length > 0)
 
-  const activeFilterCount = useMemo(() => {
-    let count = (globalSearch !== "" && globalSearch !== undefined) ? 1 : 0
-    const columnFilters = table.getState().columnFilters
-    if (columnFilters) {
-      columnFilters.forEach((filter) => {
-        if (filter.value && Array.isArray(filter.value)) {
-          count += filter.value.length
-        } else if (filter.value !== undefined) {
-          count += 1
-        }
-      })
+  let activeFilterCount = (globalSearch !== "" && globalSearch !== undefined) ? 1 : 0
+  if (columnFilters) {
+    for (const filter of columnFilters) {
+      if (filter.value && Array.isArray(filter.value)) {
+        activeFilterCount += filter.value.length
+      } else if (filter.value !== undefined) {
+        activeFilterCount += 1
+      }
     }
-    return count
-  }, [table, globalSearch])
+  }
 
   return {
     globalSearch,
@@ -123,7 +116,7 @@ export interface UseTextFilterReturn {
 export function useTextFilter(initialValue?: string): UseTextFilterReturn {
   const [value, setValue] = useState(initialValue ?? "")
 
-  const clear = useCallback(() => setValue(""), [])
+  const clear = () => setValue("")
 
   return {
     value,
@@ -150,7 +143,7 @@ export interface UseArrayFilterReturn<T = string> {
 export function useArrayFilter<T = string>(defaultValues?: T[]): UseArrayFilterReturn<T> {
   const [filterState, setFilterState] = useState<T[]>(defaultValues ?? [])
 
-  const toggle = useCallback((value: T) => {
+  const toggle = (value: T) => {
     setFilterState((prev) => {
       const exists = prev.includes(value)
       if (exists) {
@@ -158,16 +151,13 @@ export function useArrayFilter<T = string>(defaultValues?: T[]): UseArrayFilterR
       }
       return [...prev, value]
     })
-  }, [])
+  }
 
-  const set = useCallback((values: T[]) => setFilterState(values), [])
-  const clear = useCallback(() => setFilterState([]), [])
-  const selectAll = useCallback((values: T[]) => setFilterState(values), [])
-  const isSelected = useCallback((value: T) => filterState.includes(value), [filterState])
-  const isAllSelected = useCallback(
-    (allValues: T[]) => allValues.length > 0 && filterState.length === allValues.length,
-    [filterState]
-  )
+  const set = (values: T[]) => setFilterState(values)
+  const clear = () => setFilterState([])
+  const selectAll = (values: T[]) => setFilterState(values)
+  const isSelected = (value: T) => filterState.includes(value)
+  const isAllSelected = (allValues: T[]) => allValues.length > 0 && filterState.length === allValues.length
 
   return {
     filterState,
@@ -208,7 +198,7 @@ export function useMultiSelectFilter<T>(options: UseMultiSelectFilterOptions<T>)
   const { items, keyExtractor = (item: T) => String(item) } = options
   const [selectedItems, setSelectedItems] = useState<T[]>([])
 
-  const toggleItem = useCallback((item: T) => {
+  const toggleItem = (item: T) => {
     const key = keyExtractor(item)
     setSelectedItems((prev) => {
       const exists = prev.some((i) => keyExtractor(i) === key)
@@ -217,15 +207,15 @@ export function useMultiSelectFilter<T>(options: UseMultiSelectFilterOptions<T>)
       }
       return [...prev, item]
     })
-  }, [keyExtractor])
+  }
 
-  const isSelected = useCallback((item: T) => {
+  const isSelected = (item: T) => {
     const key = keyExtractor(item)
     return selectedItems.some((i) => keyExtractor(i) === key)
-  }, [selectedItems, keyExtractor])
+  }
 
-  const selectAll = useCallback(() => setSelectedItems([...items]), [items])
-  const deselectAll = useCallback(() => setSelectedItems([]), [])
+  const selectAll = () => setSelectedItems([...items])
+  const deselectAll = () => setSelectedItems([])
 
   const isAllSelected = items.length > 0 && selectedItems.length === items.length
   const isEmpty = selectedItems.length === 0

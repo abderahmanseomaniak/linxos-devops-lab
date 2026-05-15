@@ -1,5 +1,5 @@
 import { Main } from "@/components/screens/main/main"
 
-export default function Home() {
+export default function DashboardPage() {
   return <Main />
 }

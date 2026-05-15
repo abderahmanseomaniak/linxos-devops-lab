@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useMemo, useState, useCallback, useEffect } from "react"
+import React, { useId, useState, useEffect } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -13,9 +13,7 @@ import {
   type VisibilityState,
   type PaginationState,
 } from "@tanstack/react-table"
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
-import { Typography } from "@/components/ui/typography"
 import {
   Table,
   TableBody,
@@ -27,17 +25,13 @@ import {
 import type { EventTableProps, EventApplication } from "@/types/events"
 import { createColumns } from "./parts/columns"
 import { EventTableToolbar } from "./parts/table-event-toolbar"
-import { EventTablePagination } from "./parts/table-event-pagination"
+import { TablePagination } from "@/components/shared/table-pagination"
 import { EventDetailSheet } from "./sheets/detail-event-sheet"
 import { EventAddSheet } from "./sheets/add-event-sheet"
 import { EventEditSheet } from "./sheets/edit-event-sheet"
 import { DeleteConfirmDialog } from "./dialogs/delete-confirm-dialog"
 import { DEFAULT_SORTING } from "./lib/constants"
-
-const SORT_ICONS = {
-  asc: <IconChevronUp aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-  desc: <IconChevronDown aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-}
+import { SORT_ICONS } from "@/components/shared/sort-icons"
 
 const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: 10 }
 
@@ -56,7 +50,6 @@ export function EventTable({ data: initialData, onAdd, onEdit, onDelete, onDelet
   const [showEditSheet, setShowEditSheet] = useState(false)
   const [editingEvent, setEditingEvent] = useState<EventApplication | null>(null)
   const [data, setData] = useState<EventApplication[]>(() => initialData)
-  const [loading, setLoading] = useState(false)
 
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
   const [detailEvent, setDetailEvent] = useState<EventApplication | null>(null)
@@ -67,30 +60,26 @@ export function EventTable({ data: initialData, onAdd, onEdit, onDelete, onDelet
   // Search state local pour le rerender
   const [searchValue, setSearchValue] = useState("")
 
-  const columnsWithActions = useMemo(() => {
-    return createColumns({
-      onEdit: onEdit
-        ? (event: EventApplication) => {
-            setEditingEvent(event)
-            setShowEditSheet(true)
-          }
-        : undefined,
-      onDelete: onDelete
-        ? (event: EventApplication) => {
-            setRowToDelete(event)
-            setDeleteOpen(true)
-          }
-        : undefined,
-      onDetail: (event: EventApplication) => {
-        if (onDetail) {
-          onDetail(event)
-        } else {
-          setDetailEvent(event)
-          setSheetOpen(true)
-        }
-      },
-    })
-  }, [onDetail, onDelete, onEdit])
+  const columnsWithActions = createColumns({
+    onEdit: (event: EventApplication) => {
+      setEditingEvent(event)
+      setShowEditSheet(true)
+      onEdit?.(event)
+    },
+    onDelete: (event: EventApplication) => {
+      setRowToDelete(event)
+      setDeleteOpen(true)
+      onDelete?.(event)
+    },
+    onDetail: (event: EventApplication) => {
+      if (onDetail) {
+        onDetail(event)
+      } else {
+        setDetailEvent(event)
+        setSheetOpen(true)
+      }
+    },
+  })
 
 const table = useReactTable({
     columns: columnsWithActions,
@@ -107,13 +96,13 @@ const table = useReactTable({
     state: { columnVisibility, pagination, sorting },
   })
 
-  const uniqueStatusValues = useMemo(() => {
+  const uniqueStatusValues = (() => {
     const statusColumn = table.getColumn("status")
     if (!statusColumn) return []
     return Array.from(statusColumn.getFacetedUniqueValues().keys()).sort()
-  }, [table])
+  })()
 
-  const statusCounts = useMemo(() => {
+  const statusCounts = (() => {
     const statusColumn = table.getColumn("status")
     if (!statusColumn) return {} as Record<string, number>
     const counts: Record<string, number> = {}
@@ -121,7 +110,7 @@ const table = useReactTable({
       counts[status] = count
     })
     return counts
-  }, [table])
+  })()
 
   const isAllSelected = uniqueStatusValues.length > 0 && selectedStatuses.length === uniqueStatusValues.length
 
@@ -129,15 +118,15 @@ const table = useReactTable({
     table.getColumn("name")?.setFilterValue(searchValue || undefined)
   }, [searchValue, table])
 
-  const handleSearchChange = useCallback((value: string) => {
+  const handleSearchChange = (value: string) => {
     setSearchValue(value)
-  }, [])
+  }
 
-  const handleSearchClear = useCallback(() => {
+  const handleSearchClear = () => {
     setSearchValue("")
-  }, [])
+  }
 
-  const handleStatusChange = useCallback((checked: boolean, value: string) => {
+  const handleStatusChange = (checked: boolean, value: string) => {
     setSelectedStatuses((prev) => {
       let newFilter: string[]
       if (checked) {
@@ -148,20 +137,20 @@ const table = useReactTable({
       table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
       return newFilter
     })
-  }, [table])
+  }
 
-  const handleStatusClear = useCallback(() => {
+  const handleStatusClear = () => {
     setSelectedStatuses([])
     table.getColumn("status")?.setFilterValue(undefined)
-  }, [table])
+  }
 
-  const handleSelectAllStatuses = useCallback((checked: boolean) => {
+  const handleSelectAllStatuses = (checked: boolean) => {
     const newFilter = checked ? uniqueStatusValues : []
     setSelectedStatuses(newFilter)
     table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
-  }, [table, uniqueStatusValues])
+  }
 
-  const handleDeleteRows = useCallback(() => {
+  const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const ids = selectedRows.map((row) => row.original.id)
     if (onDeleteMultiple) {
@@ -170,33 +159,26 @@ const table = useReactTable({
       setData((prev) => prev.filter((item) => !ids.includes(item.id)))
     }
     table.resetRowSelection()
-  }, [table, onDeleteMultiple])
+  }
 
-  const handleSaveEvent = useCallback((newEvent: EventApplication) => {
+  const handleSaveEvent = (newEvent: EventApplication) => {
     if (editingEvent) {
       setData((prev) => prev.map((e) => (e.id === newEvent.id ? newEvent : e)))
       setShowEditSheet(false)
       setEditingEvent(null)
-    } else if (onAdd) {
+    } else {
       setData((prev) => [...prev, newEvent])
       setShowAddSheet(false)
+      onAdd?.()
     }
-  }, [onAdd, editingEvent])
+  }
 
-  const handleDeleteSingleEvent = useCallback(() => {
+  const handleDeleteSingleEvent = () => {
     if (rowToDelete) {
       setData((prev) => prev.filter((e) => e.id !== rowToDelete.id))
       setRowToDelete(null)
       setDeleteOpen(false)
     }
-  }, [rowToDelete])
-
-  if (loading) {
-    return (
-      <div className="flex h-40 items-center justify-center">
-        <Typography>Loading...</Typography>
-      </div>
-    )
   }
 
   return (
@@ -230,13 +212,17 @@ const table = useReactTable({
                   const items: React.ReactNode[] = []
                   for (const header of headerGroup.headers) {
                     if (header.column.getIsVisible()) {
+                      const canSort = header.column.getCanSort()
+                      const sortHandler = header.column.getToggleSortingHandler()
                       items.push(
                   <TableHead className="h-8" key={header.id} style={{ width: `${header.getSize()}px` }}>
-                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    {header.isPlaceholder ? null : canSort ? (
                       <div
-                        className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
-                        onClick={header.column.getToggleSortingHandler()}
-                        tabIndex={header.column.getCanSort() ? 0 : undefined}
+                        role="button"
+                        className={cn(canSort && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
+                        onClick={sortHandler}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sortHandler?.(e as never) } }}
+                        tabIndex={canSort ? 0 : undefined}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {SORT_ICONS[header.column.getIsSorted() as keyof typeof SORT_ICONS] ?? null}
@@ -275,7 +261,7 @@ const table = useReactTable({
         </Table>
       </div>
 
-      <EventTablePagination table={table} />
+      <TablePagination table={table} />
 
       <EventAddSheet
         open={showAddSheet}

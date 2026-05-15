@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useRef, useMemo } from "react"
+import { useRef } from "react"
 import type { Table } from "@tanstack/react-table"
 import {
   IconAdjustments,
@@ -42,8 +42,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import type { EventApplication } from "@/types/events"
-import { DeleteConfirmDialog } from "../dialogs/delete-confirm-dialog"
-import { STATUS_LABELS, STATUS_OPTIONS } from "../lib/constants"
+import { STATUS_LABELS } from "../lib/constants"
 import type { EventStatus } from "@/types/events"
 
 export interface EventTableToolbarProps<TData = unknown> {
@@ -69,6 +68,7 @@ export interface EventTableToolbarProps<TData = unknown> {
 export function EventTableToolbar<TData = unknown>({
   table,
   onAdd,
+  onDeleteRows,
   searchValue,
   onSearchChange,
   onSearchClear,
@@ -78,18 +78,15 @@ export function EventTableToolbar<TData = unknown>({
   onStatusClear,
   onSelectAllStatuses,
   columnVisibility,
-  showAddSheet,
   setShowAddSheet,
-  onSave,
+  
   id,
   uniqueStatusValues,
 }: EventTableToolbarProps<TData>) {
   const inputRef = useRef<HTMLInputElement>(null)
   const selectedRowCount = table.getSelectedRowModel().rows.length
 
-  const isAllSelected = useMemo(() => {
-    return uniqueStatusValues.length > 0 && selectedStatuses.length === uniqueStatusValues.length
-  }, [uniqueStatusValues, selectedStatuses])
+  const isAllSelected = uniqueStatusValues.length > 0 && selectedStatuses.length === uniqueStatusValues.length
 
   return (
     <>
@@ -140,15 +137,13 @@ export function EventTableToolbar<TData = unknown>({
           {selectedRowCount > 0 && (
             <DeleteRowsAlert
               count={selectedRowCount}
-              onDelete={() => table.getSelectedRowModel().rows}
+              onDelete={onDeleteRows}
             />
           )}
-          {onAdd && (
-            <Button className="ml-auto h-8 text-xs" onClick={() => setShowAddSheet(true)}>
-              <IconPlus className="-ms-1 opacity-60" size={14} />
-              Ajouter
-            </Button>
-          )}
+          <Button className="ml-auto h-8 text-xs" onClick={() => setShowAddSheet(true)}>
+            <IconPlus className="-ms-1 opacity-60" size={14} />
+            Ajouter
+          </Button>
         </div>
       </div>
 

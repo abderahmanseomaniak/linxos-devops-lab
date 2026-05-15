@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useMemo, useState, Suspense } from "react"
+import React, { useId, useState, Suspense } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -12,7 +12,6 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
 import {
@@ -27,13 +26,9 @@ import type { ActivityLog } from "@/types/logs"
 import logsData from "@/data/logs.json"
 import { createLogsColumns } from "./parts/columns"
 import { LogsTableToolbar } from "./parts/table-logs-toolbar"
-import { LogsTablePagination } from "./parts/table-logs-pagination"
+import { TablePagination } from "@/components/shared/table-pagination"
 import { DEFAULT_SORTING } from "./lib/constants"
-
-const SORT_ICONS = {
-  asc: <IconChevronUp aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-  desc: <IconChevronDown aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-}
+import { SORT_ICONS } from "@/components/shared/sort-icons"
 
 export function ActivityLogs() {
   const id = useId()
@@ -44,8 +39,8 @@ export function ActivityLogs() {
   const [searchValue, setSearchValue] = useState("")
   const [selectedActions, setSelectedActions] = useState<string[]>([])
 
-  const columns = useMemo(() => createLogsColumns(), [])
-  const data = useMemo(() => logsData.logs as ActivityLog[], [])
+  const columns = createLogsColumns()
+  const data = logsData.logs as ActivityLog[]
 
   const table = useReactTable({
     columns,
@@ -62,11 +57,10 @@ export function ActivityLogs() {
     state: { columnVisibility, pagination, sorting },
   })
 
-  const actionCounts = useMemo(() => {
+  const actionCounts = (() => {
     const actionColumn = table.getColumn("action")
-    if (!actionColumn) return new Map<string, number>()
-    return actionColumn.getFacetedUniqueValues()
-  }, [table])
+    return actionColumn?.getFacetedUniqueValues() ?? new Map()
+  })()
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value)
@@ -123,7 +117,7 @@ export function ActivityLogs() {
                         <div
                           className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
                           onClick={header.column.getToggleSortingHandler()}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()(e) } }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()?.(e) } }}
                           role="button"
                           tabIndex={header.column.getCanSort() ? 0 : undefined}
                         >
@@ -162,7 +156,7 @@ export function ActivityLogs() {
       </div>
 
       <Suspense fallback={null}>
-        <LogsTablePagination table={table} />
+        <TablePagination table={table} />
       </Suspense>
     </div>
   )

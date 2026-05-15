@@ -89,7 +89,7 @@ export function OtpDialog({
             <Button
               type="button"
               variant="outline"
-              size="xs"
+              size="sm"
               onClick={onResend}
               disabled={loading || !onResend}
             >
@@ -111,7 +111,7 @@ export function OtpDialog({
                 {groupIndex > 0 && <InputOTPSeparator className="mx-2" />}
                 <InputOTPGroup className={SLOT_CLASSES}>
                   {pair.map((index) => (
-                    <InputOTPSlot key={`otp-slot-${index}`} index={index} />
+                    <InputOTPSlot key={index} index={index} />
                   ))}
                 </InputOTPGroup>
               </Fragment>

@@ -1,6 +1,5 @@
 "use client"
 
-import { useCallback } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -54,16 +53,12 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
     },
   })
 
-  const handleOpenChange = useCallback(
-    (next: boolean) => {
-      if (next) reset()
-      onOpenChange(next)
-    },
-    [onOpenChange, reset]
-  )
+  const handleOpenChange = (next: boolean) => {
+    if (next) reset()
+    onOpenChange(next)
+  }
 
-  const onSubmit = useCallback(
-    (data: AddEventFormData) => {
+  const onSubmit = (data: AddEventFormData) => {
       const newEvent: EventApplication = {
         ...data,
         id: Date.now(),
@@ -73,9 +68,7 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
       onSave(newEvent)
       onOpenChange(false)
       reset()
-    },
-    [onSave, onOpenChange, reset]
-  )
+    }
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>

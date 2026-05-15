@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import type { ColumnFiltersState, PaginationState, SortingState, VisibilityState } from "@tanstack/react-table"
 import {
   getCoreRowModel,
@@ -24,8 +24,8 @@ export function useLogsTable({ data }: UseLogsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState<SortingState>([DEFAULT_SORTING])
 
-  const columns = useMemo(() => createLogsColumns(), [])
-  const memoData = useMemo(() => data, [data])
+  const columns = createLogsColumns()
+  const memoData = data
 
   const table = useReactTable({
     columns,

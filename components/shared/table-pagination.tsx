@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useCallback } from "react"
+import { useId, useEffect, Suspense } from "react"
 import type { Table } from "@tanstack/react-table"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import {
@@ -12,59 +12,62 @@ import {
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { PAGE_SIZES } from "../lib/constants"
+import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const VALID_PAGE_SIZES: number[] = [5, 10, 25, 50]
+const DEFAULT_PAGE_SIZES: number[] = [5, 10, 25, 50]
 
-interface UsersTablePaginationProps<TData = unknown> {
+interface TablePaginationProps<TData = unknown> {
   table: Table<TData>
+  pageSizes?: number[]
 }
 
-export function UsersTablePagination<TData = unknown>({ table }: UsersTablePaginationProps<TData>) {
+export function TablePagination<TData = unknown>(props: TablePaginationProps<TData>) {
+  return (
+    <Suspense fallback={null}>
+      <TablePaginationInner {...props} />
+    </Suspense>
+  )
+}
+
+function TablePaginationInner<TData = unknown>({
+  table,
+  pageSizes = DEFAULT_PAGE_SIZES,
+}: TablePaginationProps<TData>) {
   const id = useId()
   const { push: routerPush } = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const pageIndex = Number(searchParams.get("page")) || 0
-  const pageSize = Number(searchParams.get("pageSize")) || 10
+  const get = searchParams.get.bind(searchParams)
+  const pageIndex = Number(get("page")) || 0
+  const pageSize = Number(get("pageSize")) || 10
   const totalPages = table.getPageCount()
 
   const canPreviousPage = pageIndex > 0
   const canNextPage = pageIndex < totalPages - 1
 
-  const handlePageChange = useCallback((newPageIndex: number) => {
+  const handlePageChange = (newPageIndex: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", newPageIndex.toString())
     routerPush(`${pathname}?${params.toString()}`, { scroll: false })
-  }, [pathname, searchParams])
+  }
 
-  const handlePageSizeChange = useCallback((newPageSize: string) => {
+  const handlePageSizeChange = (newPageSize: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("pageSize", newPageSize)
     params.set("page", "0")
     routerPush(`${pathname}?${params.toString()}`, { scroll: false })
-  }, [pathname, searchParams])
+  }
 
   const handleFirstPage = () => handlePageChange(0)
   const handlePreviousPage = () => handlePageChange(pageIndex - 1)
   const handleNextPage = () => handlePageChange(pageIndex + 1)
   const handleLastPage = () => handlePageChange(totalPages - 1)
 
-  React.useEffect(() => {
-    const urlPage = Number(searchParams.get("page")) || 0
-    const urlPageSize = Number(searchParams.get("pageSize")) || 10
+  useEffect(() => {
+    const urlPage = Number(get("page")) || 0
+    const urlPageSize = Number(get("pageSize")) || 10
 
     if (table.getState().pagination.pageIndex !== urlPage) {
       table.setPageIndex(urlPage)
@@ -84,16 +87,15 @@ export function UsersTablePagination<TData = unknown>({ table }: UsersTablePagin
     <div className="flex items-center justify-between gap-8 shrink-0">
       <div className="flex items-center gap-3">
         <Label className="max-sm:sr-only text-xs" htmlFor={id}>Lignes</Label>
-        <Select
-          onValueChange={handlePageSizeChange}
-          value={pageSize.toString()}
-        >
+        <Select onValueChange={handlePageSizeChange} value={pageSize.toString()}>
           <SelectTrigger className="w-fit h-8 text-xs" id={id}>
             <SelectValue placeholder="Sélectionner" />
           </SelectTrigger>
           <SelectContent>
-            {PAGE_SIZES.map((size) => (
-              <SelectItem key={size} value={size.toString()}>{size}</SelectItem>
+            {pageSizes.map((size) => (
+              <SelectItem key={size} value={size.toString()}>
+                {size}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

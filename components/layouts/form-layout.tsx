@@ -13,20 +13,20 @@ export default function FormLayout({ children }: { children: ReactNode }) {
                     <Link href="/forms/sponsorship" className="flex items-center transition-opacity hover:opacity-80">
                         {/* Light mode */}
                         <Image
-                            src="/assets/logos/logo-texte-noir.svg"
+                            src="/assets/logos/logo-texte-noir.png"
                             alt="Lynxos"
-                            width={160}
-                            height={40}
-                            className="block dark:hidden"
+                            width={383}
+                            height={95}
+                            className="block dark:hidden h-10 w-auto"
                         />
 
                         {/* Dark mode */}
                         <Image
-                            src="/assets/logos/logo-texte-blanc.svg"
+                            src="/assets/logos/logo-texte-blanc.png"
                             alt="Lynxos"
-                            width={160}
-                            height={40}
-                            className="hidden dark:block"
+                            width={385}
+                            height={97}
+                            className="hidden dark:block h-10 w-auto"
                         />
                     </Link>
                     <Separator orientation="vertical" className="h-6 mt-2" />

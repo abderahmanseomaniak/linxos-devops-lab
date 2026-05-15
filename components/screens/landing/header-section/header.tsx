@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,7 +8,6 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  SheetTitle,
   SheetClose,
 } from "@/components/ui/sheet";
 
@@ -25,7 +24,8 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "motion/react";
+import { LazyMotion, domAnimation } from "motion/react"
+import * as m from "framer-motion/m";
 
 export type NavigationSection = {
   title: string;
@@ -60,13 +60,13 @@ const Header = ({ navigationData, className }: HeaderProps) => {
   const [sticky, setSticky] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleScroll = useCallback(() => {
+  const handleScroll = () => {
     setSticky(window.scrollY >= 50);
-  }, []);
+  };
 
-  const handleResize = useCallback(() => {
+  const handleResize = () => {
     if (window.innerWidth >= 768) setIsOpen(false);
-  }, []);
+  };
 
   const handleScrollRef = useRef(handleScroll)
   handleScrollRef.current = handleScroll
@@ -88,7 +88,8 @@ const Header = ({ navigationData, className }: HeaderProps) => {
   }, []);
 
   return (
-    <motion.header
+    <LazyMotion features={domAnimation}>
+    <m.header
       initial={{ opacity: 0, y: -32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -109,14 +110,15 @@ const Header = ({ navigationData, className }: HeaderProps) => {
         {/* LOGO (NO COMPONENT) */}
         <div>
           <Link href="/">
-            <div className="relative h-10 w-[140px]">
+            <div>
               <Image
                 src="/assets/logos/logo-texte-noir.png"
                 alt="LinxOS"
-                fill
+                width={383}
+                height={95}
                 sizes="140px"
                 priority
-                className="object-contain"
+                className="h-10 w-auto"
               />
             </div>
           </Link>
@@ -163,13 +165,14 @@ const Header = ({ navigationData, className }: HeaderProps) => {
               >
                 {/* MOBILE HEADER */}
                 <div className="flex items-center justify-between p-6">
-                  <div className="relative h-8 w-[120px]">
+                  <div>
                     <Image
-                      src="/assets/logos/logo-texte-noir.svg"
+                      src="/assets/logos/logo-texte-noir.png"
                       alt="LinxOS"
-                      fill
+                      width={383}
+                      height={95}
                       sizes="120px"
-                      className="object-contain"
+                      className="h-8 w-auto"
                     />
                   </div>
 
@@ -233,7 +236,8 @@ const Header = ({ navigationData, className }: HeaderProps) => {
           </div>
         </div>
       </div>
-    </motion.header>
+    </m.header>
+    </LazyMotion>
   );
 };
 

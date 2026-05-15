@@ -22,6 +22,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@tailark": "https://tailark.com/r/{name}.json"
+    "@tailark": "https://tailark.com/r/{name}.json",
+    "@bundui": "https://bundui.io/r/{name}.json"
   }
 }

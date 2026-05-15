@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { Upload, CheckCircle, X } from "lucide-react"
 import { User } from "@/types/users"
-import { cn } from "@/lib/utils"
+
 
 interface ProfileAvatarCardProps {
   user: User

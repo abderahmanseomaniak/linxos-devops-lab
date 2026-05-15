@@ -1,6 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
 import { FileText, Search, Package, Truck, CheckCircle2, Circle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
@@ -67,7 +66,7 @@ function Empty({ size = "default" }: { size?: "default" | "small" }) {
 }
 
 function TimelineDesktop({ stepStates, status, reference }: { stepStates: StepState[]; status: TrackStatus; reference?: string }) {
-  const progress = useMemo(() => getProgress(status, reference), [status, reference])
+  const progress = getProgress(status, reference)
 
   return (
     <div className="relative">
@@ -122,7 +121,7 @@ function TimelineDesktop({ stepStates, status, reference }: { stepStates: StepSt
 }
 
 function TimelineMobile({ stepStates, status, reference }: { stepStates: StepState[]; status: TrackStatus; reference?: string }) {
-  const progress = useMemo(() => getProgress(status, reference), [status, reference])
+  const progress = getProgress(status, reference)
 
   return (
     <div className="space-y-0">
@@ -179,12 +178,9 @@ function TimelineMobile({ stepStates, status, reference }: { stepStates: StepSta
 export function TrackTimeline({ status, reference, className }: TrackTimelineProps) {
   const isMobile = useIsMobile()
 
-  const progress = useMemo(() => getProgress(status, reference), [status, reference])
+  const progress = getProgress(status, reference)
 
-  const stepStates = useMemo(() =>
-    steps.map((_, index) => getStepState(progress, index, status)),
-    [progress, status]
-  )
+  const stepStates = steps.map((_, index) => getStepState(progress, index, status))
 
   return (
     <div className={cn("w-full mt-4", className)}>

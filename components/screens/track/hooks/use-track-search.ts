@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import type { TrackResult } from "@/components/screens/track/types/track.types"
 
 interface UseTrackSearchOptions {
@@ -24,7 +24,7 @@ export function useTrackSearch({ data }: UseTrackSearchOptions): UseTrackSearchR
   const [result, setResult] = useState<TrackResult | null>(null)
   const [searched, setSearched] = useState(false)
 
-  const handleSearch = useCallback(() => {
+  const handleSearch = () => {
     const trimmed = code.trim()
     if (!trimmed) {
       setError("Please enter a reference code")
@@ -47,7 +47,7 @@ export function useTrackSearch({ data }: UseTrackSearchOptions): UseTrackSearchR
 
     setLoading(false)
     setSearched(true)
-  }, [code, data])
+  }
 
   return { code, setCode, loading, error, result, searched, handleSearch }
 }

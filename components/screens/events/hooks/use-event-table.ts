@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState } from "react"
 import type { Table, SortingState, VisibilityState, PaginationState } from "@tanstack/react-table"
 import {
   getCoreRowModel,
@@ -70,13 +70,13 @@ export function useEventTable({ data: initialData }: UseEventTableOptions): UseE
     globalSearchColumn: "name",
   })
 
-  const uniqueStatusValues = useMemo(() => {
+  const uniqueStatusValues = (() => {
     const statusColumn = table.getColumn("status")
     if (!statusColumn) return []
     return Array.from(statusColumn.getFacetedUniqueValues().keys()).sort()
-  }, [table])
+  })()
 
-  const statusCounts = useMemo(() => {
+  const statusCounts = (() => {
     const statusColumn = table.getColumn("status")
     if (!statusColumn) return {} as Record<string, number>
     const counts: Record<string, number> = {}
@@ -84,61 +84,49 @@ export function useEventTable({ data: initialData }: UseEventTableOptions): UseE
       counts[status] = count
     })
     return counts
-  }, [table])
+  })()
 
-  const handleSearchChange = useCallback(
-    (value: string) => filters.handleSearchChange(value),
-    [filters]
-  )
+  const handleSearchChange = (value: string) => filters.handleSearchChange(value)
 
-  const handleSearchClear = useCallback(
-    () => filters.handleSearchClear(),
-    [filters]
-  )
+  const handleSearchClear = () => filters.handleSearchClear()
 
-  const handleStatusChange = useCallback(
-    (checked: boolean, value: string) => {
-      setSelectedStatuses((prev) => {
-        const newFilter = checked
-          ? (prev.includes(value) ? prev : [...prev, value])
-          : prev.filter((v) => v !== value)
-        table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
-        return newFilter
-      })
-    },
-    [table]
-  )
+  const handleStatusChange = (checked: boolean, value: string) => {
+    setSelectedStatuses((prev) => {
+      const newFilter = checked
+        ? (prev.includes(value) ? prev : [...prev, value])
+        : prev.filter((v) => v !== value)
+      table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
+      return newFilter
+    })
+  }
 
-  const handleStatusClear = useCallback(() => {
+  const handleStatusClear = () => {
     setSelectedStatuses([])
     statusFilter.clear()
     table.getColumn("status")?.setFilterValue(undefined)
-  }, [table, statusFilter])
+  }
 
-  const handleSelectAllStatuses = useCallback(
-    (checked: boolean) => {
-      const newFilter = checked ? uniqueStatusValues : []
-      setSelectedStatuses(newFilter)
-      statusFilter.set(newFilter)
-      table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
-    },
-    [table, uniqueStatusValues, statusFilter]
-  )
+  const handleSelectAllStatuses = (checked: boolean) => {
+    const newFilter = checked ? uniqueStatusValues : []
+    setSelectedStatuses(newFilter)
+    statusFilter.set(newFilter)
+    table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
+  }
 
-  const handleDeleteRows = useCallback(() => {
+  const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const ids = selectedRows.map((row) => row.original.id)
     setData((prev) => prev.filter((item) => !ids.includes(item.id)))
     table.resetRowSelection()
-  }, [table])
+  }
 
-  const handleSaveEvent = useCallback((newEvent: EventApplication) => {
+  const handleSaveEvent = (newEvent: EventApplication) => {
     setData((prev) => [...prev, newEvent])
-  }, [])
+  }
 
-  const resetRowSelection = useCallback(() => {
+  const resetRowSelection = () => {
     table.resetRowSelection()
-  }, [table])
+  }
 
   return {
     table,

@@ -1,6 +1,5 @@
 "use client"
 
-import { useCallback } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,10 +20,10 @@ export function DeleteConfirmDialog({
   onConfirm,
   eventName,
 }: DeleteConfirmDialogProps) {
-  const handleConfirm = useCallback(() => {
+  const handleConfirm = () => {
     onConfirm?.()
     onOpenChange?.(false)
-  }, [onConfirm, onOpenChange])
+  }
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

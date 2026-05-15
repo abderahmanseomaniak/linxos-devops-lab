@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { Delivery, StatusLabels, IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
+import {  IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
 import { StatusBadge } from "./status-badge"
 import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconPhone, IconClock, IconFileText, IconMessageCircle } from "@tabler/icons-react"
 

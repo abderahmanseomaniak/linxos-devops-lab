@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -48,14 +48,10 @@ export default function ContentDashboardPage() {
   const [selectedEvent, setSelectedEvent] = useState<UGCEvent | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [noteCounter, setNoteCounter] = useState(100)
-  const [mounted, setMounted] = useState(true)
 
-  const cities = useMemo(() => {
-    const uniqueCities = [...new Set(events.map((e) => e.city))]
-    return uniqueCities.sort()
-  }, [events])
+  const cities = [...new Set(events.map((e) => e.city))].toSorted()
 
-  const filteredEvents = useMemo(() => {
+  const filteredEvents = (() => {
     let filtered = events
 
     if (activeTab !== "all") {
@@ -82,9 +78,9 @@ export default function ContentDashboardPage() {
     }
 
     return filtered
-  }, [events, activeTab, searchQuery, cityFilter])
+  })()
 
-  const statusCounts = useMemo(() => getStatusCounts(events), [events])
+  const statusCounts = getStatusCounts(events)
 
   const handleStatusChange = (id: number, newStatus: ContentStatus) => {
     setEvents((prev) =>
@@ -145,23 +141,6 @@ export default function ContentDashboardPage() {
     if (link) {
       window.open(link, "_blank")
     }
-  }
-
-  if (!mounted) {
-    return (
-      <div className="h-full flex flex-col gap-6 p-6">
-        <div className="h-12 w-48 bg-muted/30 rounded animate-pulse" />
-        <div className="flex gap-4">
-          <div className="h-10 w-64 bg-muted/30 rounded animate-pulse" />
-          <div className="h-10 w-32 bg-muted/30 rounded animate-pulse" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={`skeleton-${i}`} className="h-40 bg-muted/30 rounded-lg animate-pulse" />
-          ))}
-        </div>
-      </div>
-    )
   }
 
   return (

@@ -6,8 +6,6 @@ export const STATUS_VARIANTS = uiConstants.eventStatus.variants as Record<EventS
 export const DELIVERY_LABELS = uiConstants.deliveryStatus.labels as Record<DeliveryStatus, string>
 export const DELIVERY_VARIANTS = uiConstants.deliveryStatus.variants as Record<DeliveryStatus, "secondary" | "default" | "destructive" | "outline">
 
-export const STATUS_OPTIONS = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }))
-export const DELIVERY_OPTIONS = Object.entries(DELIVERY_LABELS).map(([value, label]) => ({ value, label }))
 
 export const PAGE_SIZES = [5, 10, 25, 50] as const
 export const DEFAULT_PAGE_SIZE = 10

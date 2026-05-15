@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { Typography } from "@/components/ui/typography"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"

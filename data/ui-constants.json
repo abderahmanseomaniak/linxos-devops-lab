@@ -30,6 +30,9 @@
   },
   "sidebar": {
     
+    "general": [
+      { "title": "dashboard", "href": "/", "icon": "LayoutDashboard" }
+    ],
    
     "management": [
       { "title": "Events", "href": "/events", "icon": "Calendar" },

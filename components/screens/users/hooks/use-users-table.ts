@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import type { ColumnFiltersState, PaginationState, SortingState, VisibilityState } from "@tanstack/react-table"
 import {
   getCoreRowModel,
@@ -30,8 +30,8 @@ export function useUsersTable({ data: initialData }: UseUsersTableProps) {
     }))
   )
 
-  const memoData = useMemo(() => data, [data])
-  const memoColumns = useMemo(() => columns, [])
+  const memoData = data
+  const memoColumns = columns
 
   const table = useReactTable({
     columns: memoColumns,

@@ -3,6 +3,7 @@
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import * as React from "react";
+import { useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -48,39 +49,30 @@ function DropdownMenuContent({
   onCloseAutoFocus,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
-  const isCloseFromMouse = React.useRef<boolean>(false);
+  const isCloseFromMouse = useRef<boolean>(false);
 
-  const handlePointerDown = React.useCallback(
-    (e: PointerDownEvent) => {
-      isCloseFromMouse.current = true;
-      onPointerDown?.(e);
-    },
-    [onPointerDown],
-  );
+  const handlePointerDown = (e: PointerDownEvent) => {
+    isCloseFromMouse.current = true;
+    onPointerDown?.(e);
+  };
 
-  const handlePointerDownOutside = React.useCallback(
-    (e: PointerDownOutsideEvent) => {
-      isCloseFromMouse.current = true;
-      onPointerDownOutside?.(e);
-    },
-    [onPointerDownOutside],
-  );
+  const handlePointerDownOutside = (e: PointerDownOutsideEvent) => {
+    isCloseFromMouse.current = true;
+    onPointerDownOutside?.(e);
+  };
 
-  const handleCloseAutoFocus = React.useCallback(
-    (e: Event) => {
-      if (onCloseAutoFocus) {
-        return onCloseAutoFocus(e);
-      }
+  const handleCloseAutoFocus = (e: Event) => {
+    if (onCloseAutoFocus) {
+      return onCloseAutoFocus(e);
+    }
 
-      if (!isCloseFromMouse.current) {
-        return;
-      }
+    if (!isCloseFromMouse.current) {
+      return;
+    }
 
-      e.preventDefault();
-      isCloseFromMouse.current = false;
-    },
-    [onCloseAutoFocus],
-  );
+    e.preventDefault();
+    isCloseFromMouse.current = false;
+  };
 
   return (
     <DropdownMenuPrimitive.Portal>

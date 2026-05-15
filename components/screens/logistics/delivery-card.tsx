@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { StatusBadge } from "./status-badge"
-import { Delivery, LogisticsStatus, StatusLabels, DeliveryCardProps } from "@/types/logistics"
+import { Delivery,  DeliveryCardProps } from "@/types/logistics"
 import { IconMapPin, IconUser, IconPackage, IconTruck, IconMessageCircle, IconFileText, IconUpload, IconCalendar, IconEye, IconAlertTriangle, IconCircleCheck } from "@tabler/icons-react"
 
 export function DeliveryCard({
@@ -13,7 +13,6 @@ export function DeliveryCard({
   onViewDetails,
   onAddNote,
   onUploadReceipt,
-  onContactWhatsApp,
 }: DeliveryCardProps) {
   const [showNoteInput, setShowNoteInput] = useState(false)
   const [noteContent, setNoteContent] = useState("")

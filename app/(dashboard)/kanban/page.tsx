@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { KanbanBoard } from "@/components/screens/kanban/kanban-board"
 import { KanbanHeader } from "@/components/screens/kanban/kanban-header"
 import { KanbanEvent, KanbanStage } from "@/types/kanban"
@@ -12,12 +12,8 @@ export default function KanbanPage() {
   const [events, setEvents] = useState<KanbanEvent[]>(initialEvents)
   const [searchQuery, setSearchQuery] = useState("")
   const [cityFilter, setCityFilter] = useState("all")
-  const [mounted, setMounted] = useState(true)
 
-  const cities = useMemo(() => {
-    const uniqueCities = [...new Set(events.map((e) => e.city))]
-    return uniqueCities.sort()
-  }, [events])
+  const cities = [...new Set(events.map((e) => e.city))].toSorted()
 
   const handleEventMove = (eventId: number, newStage: KanbanStage) => {
     setEvents((prev) =>

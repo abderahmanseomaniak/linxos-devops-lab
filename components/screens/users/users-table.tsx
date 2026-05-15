@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useMemo, useState, useCallback, useEffect, Suspense } from "react"
+import { useId, useState, useEffect, useRef, Suspense } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -11,10 +11,6 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table"
-import {
-  IconChevronDown,
-  IconChevronUp,
-} from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,20 +26,16 @@ import { Typography } from "@/components/ui/typography"
 import type { UserRole, UsersTableProps, UserItem } from "@/types/users"
 import { columns } from "./parts/columns"
 import { UsersTableToolbar } from "./parts/table-users-toolbar"
-import { UsersTablePagination } from "./parts/table-users-pagination"
+import { TablePagination } from "@/components/shared/table-pagination"
 import { DEFAULT_SORTING } from "./lib/constants"
 import { useFilter, useTextFilter } from "@/hooks/use-filter"
-
-const SORT_ICONS = {
-  asc: <IconChevronUp aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-  desc: <IconChevronDown aria-hidden="true" className="shrink-0 opacity-60" size={16} />,
-}
+import { SORT_ICONS } from "@/components/shared/sort-icons"
 
 export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: UsersTableProps) {
   const id = useId()
-  const [columnVisibility, setColumnVisibility] = React.useState({})
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
-  const [sorting, setSorting] = React.useState<import("@tanstack/react-table").SortingState>([DEFAULT_SORTING])
+  const [columnVisibility, setColumnVisibility] = useState({})
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [sorting, setSorting] = useState<import("@tanstack/react-table").SortingState>([DEFAULT_SORTING])
 
   const [showAddSheet, setShowAddSheet] = useState(false)
   const [addFormData, setAddFormData] = useState({
@@ -62,14 +54,10 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
       performance: 0,
     }))
   )
-  const [loading, setLoading] = useState(false)
-
-  const memoData = useMemo(() => data, [data])
-  const memoColumns = useMemo(() => columns, [])
 
   const table = useReactTable({
-    columns: memoColumns,
-    data: memoData,
+    columns,
+    data,
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
@@ -85,11 +73,10 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
   const searchFilter = useTextFilter("")
   const statusFilter = useFilter<"Active" | "Inactive">()
 
-  const statusCounts = useMemo(() => {
+  const statusCounts = (() => {
     const statusColumn = table.getColumn("statusDisplay")
-    if (!statusColumn) return new Map<string, number>()
-    return statusColumn.getFacetedUniqueValues()
-  }, [table])
+    return statusColumn?.getFacetedUniqueValues() ?? new Map<unknown, number>()
+  })()
 
   useEffect(() => {
     table.getColumn("name")?.setFilterValue(searchFilter.value || "")
@@ -100,22 +87,14 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
     table.getColumn("statusDisplay")?.setFilterValue(statusValues.length ? statusValues : undefined)
   }, [statusFilter.filterState, table])
 
-  const handleDeleteRows = useCallback(() => {
+  const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id))
     setData(updatedData)
     table.resetRowSelection()
-  }, [data, table])
-
-  const inputRef = React.useRef<HTMLInputElement>(null)
-
-  if (loading) {
-    return (
-      <div className="flex h-40 items-center justify-center">
-        <Typography>Loading…</Typography>
-      </div>
-    )
   }
+
+  const inputRef = useRef<HTMLInputElement>(null)
 
   return (
     <div className="space-y-4">
@@ -149,7 +128,7 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
                       <div
                         className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
                         onClick={header.column.getToggleSortingHandler()}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()(e) } }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()?.(e) } }}
                         role="button"
                         tabIndex={header.column.getCanSort() ? 0 : undefined}
                       >
@@ -188,7 +167,7 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
       </div>
 
       <Suspense fallback={null}>
-        <UsersTablePagination table={table} />
+        <TablePagination table={table} />
       </Suspense>
     </div>
   )

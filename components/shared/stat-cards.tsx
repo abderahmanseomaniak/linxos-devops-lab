@@ -2,8 +2,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { ExternalLink } from "lucide-react";
-import Link from "next/link";
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 
 const data = [

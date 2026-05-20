@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Share2, Copy, Check, Mail, Link2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,21 +18,21 @@ interface TrackShareProps {
 
 export function TrackShare({ reference, className }: TrackShareProps) {
   const [copied, setCopied] = useState(false)
-  const [shareUrl, setShareUrl] = useState("")
+  const shareUrlRef = useRef("")
 
   useEffect(() => {
-    setShareUrl(`${window.location.origin}/track?ref=${reference}`)
+    shareUrlRef.current = `${window.location.origin}/track?ref=${reference}`
   }, [reference])
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(shareUrl)
+    await navigator.clipboard.writeText(shareUrlRef.current)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
   const handleEmail = () => {
     const subject = `Track Request: ${reference}`
-    const body = `Check the status of your request ${reference} here: ${shareUrl}`
+    const body = `Check the status of your request ${reference} here: ${shareUrlRef.current}`
     window.location.href = `mailto:?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`

@@ -33,7 +33,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -44,7 +43,6 @@ import {
 import type { UserRole } from "@/types/users"
 import { AddUserSheet } from "../sheet/add-user-sheet"
 import type { UseFilterReturn } from "@/hooks/use-filter"
-import { Show } from "@/components/helpers/show"
 import { RenderIf } from "@/components/helpers/render-if"
 
 interface UsersTableToolbarProps<TData = unknown> {

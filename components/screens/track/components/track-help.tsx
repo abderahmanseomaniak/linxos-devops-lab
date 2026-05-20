@@ -43,8 +43,8 @@ export function TrackHelp({ className }: { className?: string }) {
                   From confirmation email
                 </Typography>
                 <Typography variant="small" className="text-muted-foreground">
-                  Check your email inbox for the subject "Request Confirmed" or
-                  "Your Reference Number"
+                  Check your email inbox for the subject &quot;Request Confirmed&quot; or
+                  &quot;Your Reference Number&quot;
                 </Typography>
               </div>
 
@@ -53,7 +53,7 @@ export function TrackHelp({ className }: { className?: string }) {
                   From your club dashboard
                 </Typography>
                 <Typography variant="small" className="text-muted-foreground">
-                  Log in to your club portal and check the "My Requests" section
+                  Log in to your club portal and check the &quot;My Requests&quot; section
                 </Typography>
               </div>
 

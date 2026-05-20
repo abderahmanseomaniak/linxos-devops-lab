@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import { Separator } from "@/components/ui/separator"
-import { EventApplication, type EventDetailSheetProps } from "@/types/events"
+import { type EventDetailSheetProps } from "@/types/events"
 
 function InfoRow({ label, value, isBadge }: { label: string; value: string | React.ReactNode; isBadge?: boolean }) {
   return (

@@ -4,12 +4,12 @@ import { useState } from "react"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus, ContentDetailsModalProps } from "@/types/content"
-import { IconMapPin, IconUsers, IconCalendar, IconExternalLink, IconWorld, IconClock, IconCircleCheck, IconAlertTriangle, IconPlus, IconMessageCircle } from "@tabler/icons-react"
+import { ContentStatus, ContentDetailsModalProps } from "@/types/content"
+import { IconMapPin, IconUsers, IconCalendar, IconExternalLink, IconWorld, IconClock, IconCircleCheck, IconAlertTriangle, IconPlus } from "@tabler/icons-react"
 
 const statusColors: Record<ContentStatus, string> = {
   Waiting: "bg-slate-100 text-slate-700",

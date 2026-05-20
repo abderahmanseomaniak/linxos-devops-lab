@@ -70,10 +70,12 @@ const Header = ({ navigationData, className }: HeaderProps) => {
   };
 
   const handleScrollRef = useRef(handleScroll)
-  handleScrollRef.current = handleScroll
-
   const handleResizeRef = useRef(handleResize)
-  handleResizeRef.current = handleResize
+
+  useEffect(() => {
+    handleScrollRef.current = handleScroll
+    handleResizeRef.current = handleResize
+  })
 
   useEffect(() => {
     const onScroll = () => handleScrollRef.current()

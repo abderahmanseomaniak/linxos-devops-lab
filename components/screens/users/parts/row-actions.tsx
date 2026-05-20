@@ -13,7 +13,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { UserItem, UserRole } from "@/types/users"
+import type { UserItem } from "@/types/users"
 import { EditUserSheet } from "../sheet/edit-user-sheet"
 import { UserDetailsSheet } from "../sheet/details-users-sheet"
 

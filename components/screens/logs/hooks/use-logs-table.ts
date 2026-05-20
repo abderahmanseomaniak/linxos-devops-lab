@@ -27,6 +27,7 @@ export function useLogsTable({ data }: UseLogsTableProps) {
   const columns = createLogsColumns()
   const memoData = data
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
     data: memoData,

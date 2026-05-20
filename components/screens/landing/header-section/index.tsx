@@ -1,10 +1,8 @@
-import HeroSection from "@/components/screens/landing/header-section/hero";
 import type { NavigationSection } from "@/components/screens/landing/header-section/header";
 import Header from "@/components/screens/landing/header-section/header";
 import BrandSlider, {
   BrandList,
 } from "@/components/screens/landing/header-section/brand-slider";
-import type { AvatarList } from "@/components/screens/landing/header-section/hero";
 
 export default function AgencyHeroSection() {
   const navigationData: NavigationSection[] = [

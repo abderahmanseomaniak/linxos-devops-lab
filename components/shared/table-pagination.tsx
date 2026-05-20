@@ -78,7 +78,7 @@ function TablePaginationInner<TData = unknown>({
         table.setPageSize(urlPageSize)
       }
     }
-  }, [searchParams, table])
+  }, [searchParams, table, get])
 
   const startRow = pageIndex * pageSize + 1
   const endRow = Math.min((pageIndex + 1) * pageSize, table.getRowCount())

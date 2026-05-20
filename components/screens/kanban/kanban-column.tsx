@@ -1,7 +1,7 @@
 "use client"
 
 import { useDroppable } from "@dnd-kit/core"
-import { KanbanEvent, KanbanStage, KanbanStageLabels, KanbanStageColors, KanbanColumnProps } from "@/types/kanban"
+import { KanbanStageLabels, KanbanStageColors, KanbanColumnProps } from "@/types/kanban"
 import { EventCard } from "./event-card"
 import { Typography } from "@/components/ui/typography"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, use, createContext } from "react"
+import { useState, useEffect, useMemo, useCallback, use, createContext } from "react"
 import type { ComponentProps, CSSProperties } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
@@ -73,7 +73,7 @@ function SidebarProvider({
   // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = useState(() => defaultOpen)
   const open = openProp ?? _open
-  const setOpen = (
+  const setOpen = useCallback((
     value: boolean | ((value: boolean) => boolean)
   ) => {
     const openState = typeof value === "function" ? value(open) : value
@@ -84,11 +84,11 @@ function SidebarProvider({
     }
 
     document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
-  }
+  }, [open, setOpenProp])
 
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
-  }
+  }, [isMobile, setOpen])
 
   // Adds a keyboard shortcut to toggle the sidebar.
   useEffect(() => {

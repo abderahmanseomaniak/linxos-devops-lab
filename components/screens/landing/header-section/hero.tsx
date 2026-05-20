@@ -18,11 +18,7 @@ export type AvatarList = {
   image: string;
 };
 
-type HeroSectionProps = {
-  avatarList: AvatarList[];
-};
-
-function HeroSection({ avatarList }: HeroSectionProps) {
+function HeroSection() {
   return (
     <LazyMotion features={domAnimation}>
     <section id="home">

@@ -81,7 +81,8 @@ export function EventTable({ data: initialData, onAdd, onEdit, onDelete, onDelet
     },
   })
 
-const table = useReactTable({
+// eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
     columns: columnsWithActions,
     data,
     enableSortingRemoval: false,
@@ -111,8 +112,6 @@ const table = useReactTable({
     })
     return counts
   })()
-
-  const isAllSelected = uniqueStatusValues.length > 0 && selectedStatuses.length === uniqueStatusValues.length
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value)

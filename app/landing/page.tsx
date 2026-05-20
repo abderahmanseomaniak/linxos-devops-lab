@@ -29,7 +29,10 @@ export default function LeadingPage() {
   };
 
   const handleScrollRef = useRef(handleScroll)
-  handleScrollRef.current = handleScroll
+
+  useEffect(() => {
+    handleScrollRef.current = handleScroll
+  })
 
   useEffect(() => {
     const onScroll = () => handleScrollRef.current()
@@ -37,13 +40,6 @@ export default function LeadingPage() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const avatarList = [
-    { image: "https://images.shadcnspace.com/assets/profiles/user-1.jpg" },
-    { image: "https://images.shadcnspace.com/assets/profiles/user-2.jpg" },
-    { image: "https://images.shadcnspace.com/assets/profiles/user-3.jpg" },
-    { image: "https://images.shadcnspace.com/assets/profiles/user-5.jpg" },
-  ];
 
   const navigationData: NavigationSection[] = [
     { title: "Home", href: "#home", isActive: activeSection === "home" },
@@ -63,7 +59,7 @@ export default function LeadingPage() {
   return (
     <>
       <Header navigationData={navigationData} />
-      <HeroSection avatarList={avatarList} />
+      <HeroSection />
       <BrandSlider brandList={brandList} />
       <FeatureHighlights />
       <PerformanceMetrics />

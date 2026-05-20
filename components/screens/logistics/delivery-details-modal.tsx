@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import {  IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
 import { StatusBadge } from "./status-badge"
-import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconPhone, IconClock, IconFileText, IconMessageCircle } from "@tabler/icons-react"
+import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconPhone, IconFileText, IconMessageCircle } from "@tabler/icons-react"
 
-export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWhatsApp }: DeliveryDetailsModalProps) {
+export function DeliveryDetailsModal({ delivery, open, onOpenChange }: DeliveryDetailsModalProps) {
   if (!delivery) return null
 
   const formattedDate = new Date(delivery.date).toLocaleDateString("fr-FR", {

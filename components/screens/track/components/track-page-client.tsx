@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import NextImage from "next/image"
 import { TrackSearch } from "@/components/screens/track/components/track-search"
 import { TrackCard } from "@/components/screens/track/components/track-card"
@@ -51,8 +50,8 @@ const TITLE_SECTION = (
 const HINT_SECTION = (
   <div className="mt-6 text-center">
     <Typography variant="small" className="text-muted-foreground">
-      Try: <code className="bg-muted px-1.5 py-0.5 rounded text-xs">SPO-2026-001</code> or{" "}
-      <code className="bg-muted px-1.5 py-0.5 rounded text-xs">SPO-2026-002</code>
+      Try: <Typography variant="code" className="text-xs">SPO-2026-001</Typography> or{" "}
+      <Typography variant="code" className="text-xs">SPO-2026-002</Typography>
     </Typography>
   </div>
 )

@@ -11,7 +11,6 @@ import {
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
-  type DragOverEvent,
   type PointerSensorOptions,
 } from "@dnd-kit/core"
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable"
@@ -75,7 +74,7 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
     setActiveId(event.active.id as number)
   }
 
-  const handleDragOver = (_event: DragOverEvent) => {
+  const handleDragOver = () => {
   }
 
   const handleDragEnd = (event: DragEndEvent) => {

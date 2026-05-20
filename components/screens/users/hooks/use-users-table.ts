@@ -14,7 +14,7 @@ import type { UserItem, UsersTableProps } from "@/types/users"
 import { columns } from "../parts/columns"
 import { DEFAULT_SORTING } from "../lib/constants"
 
-interface UseUsersTableProps extends UsersTableProps {}
+type UseUsersTableProps = UsersTableProps
 
 export function useUsersTable({ data: initialData }: UseUsersTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -33,6 +33,7 @@ export function useUsersTable({ data: initialData }: UseUsersTableProps) {
   const memoData = data
   const memoColumns = columns
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns: memoColumns,
     data: memoData,

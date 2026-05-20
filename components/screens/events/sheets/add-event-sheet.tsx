@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Typography } from "@/components/ui/typography"
 import type { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"
 
 const addEventSchema = z.object({
@@ -31,6 +33,8 @@ interface EventAddSheetProps {
   onOpenChange: (open: boolean) => void
   onSave: (event: EventApplication) => void
 }
+
+let nextId = 0
 
 export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps) {
   const {
@@ -58,17 +62,17 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
     onOpenChange(next)
   }
 
-  const onSubmit = (data: AddEventFormData) => {
+  const onSubmit = useCallback((data: AddEventFormData) => {
       const newEvent: EventApplication = {
         ...data,
-        id: Date.now(),
+        id: ++nextId,
         status: data.status,
         deliveryStatus: data.deliveryStatus,
       }
       onSave(newEvent)
       onOpenChange(false)
       reset()
-    }
+    }, [onSave, onOpenChange, reset])
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -85,14 +89,14 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
               <Label htmlFor="eventName">Nom</Label>
               <Input id="eventName" {...register("eventName")} />
               {errors.eventName && (
-                <p className="text-xs text-destructive">{errors.eventName.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.eventName.message}</Typography>
               )}
             </div>
             <div className="space-y-4">
               <Label htmlFor="organization">Organisation</Label>
               <Input id="organization" {...register("organization")} />
               {errors.organization && (
-                <p className="text-xs text-destructive">{errors.organization.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.organization.message}</Typography>
               )}
             </div>
 
@@ -100,7 +104,7 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
               <Label htmlFor="date">Date</Label>
               <Input id="date" type="date" {...register("date")} />
               {errors.date && (
-                <p className="text-xs text-destructive">{errors.date.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.date.message}</Typography>
               )}
             </div>
             <div className="space-y-2">
@@ -116,7 +120,7 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
                 {...register("quantity", { valueAsNumber: true })}
               />
               {errors.quantity && (
-                <p className="text-xs text-destructive">{errors.quantity.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.quantity.message}</Typography>
               )}
             </div>
               <Label htmlFor="priority">Priorité</Label>
@@ -126,7 +130,7 @@ export function EventAddSheet({ open, onOpenChange, onSave }: EventAddSheetProps
                 {...register("priority", { valueAsNumber: true })}
               />
               {errors.priority && (
-                <p className="text-xs text-destructive">{errors.priority.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.priority.message}</Typography>
               )}
 
           <div className="grid grid-cols-2 gap-4">

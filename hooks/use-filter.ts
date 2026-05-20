@@ -8,7 +8,7 @@ export interface UseTableFilterOptions<TData = unknown> {
   globalSearchColumn?: string
 }
 
-export interface UseTableFilterReturn<TData = unknown> {
+export interface UseTableFilterReturn {
   globalSearch: string
   setGlobalSearch: (value: string) => void
   clearGlobalSearch: () => void
@@ -35,7 +35,7 @@ function updateSearchOnTable<TData>(
 
 export function useTableFilter<TData = unknown>(
   options: UseTableFilterOptions<TData>
-): UseTableFilterReturn<TData> {
+): UseTableFilterReturn {
   const { table, globalSearchColumn = "name" } = options
 
   const getGlobalSearch = (): string => {

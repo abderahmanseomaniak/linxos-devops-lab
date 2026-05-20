@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef, useId } from "react";
  
 import { cn } from "@/lib/utils";
  
@@ -39,6 +39,7 @@ export function Marquee({
   repeat = 4,
   ...props
 }: MarqueeProps) {
+  const id = useId();
   return (
     <>
       <style>
@@ -105,7 +106,7 @@ export function Marquee({
           .fill(0)
           .map((_, i) => (
             <div
-              key={i}
+              key={`${id}-${i}`}
               className={cn("flex shrink-0 justify-around gap-(--gap)", {
                 "animate-marquee flex-row": !vertical,
                 "animate-marquee-vertical flex-col": vertical,

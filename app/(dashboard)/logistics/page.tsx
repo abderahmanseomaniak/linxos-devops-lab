@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -29,12 +29,11 @@ function getStatusCounts(deliveries: Delivery[]) {
 export default function LogisticsPage() {
   const [deliveries, setDeliveries] = useState<Delivery[]>(initialDeliveries)
   const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
   const [cityFilter, setCityFilter] = useState("all")
   const [activeTab, setActiveTab] = useState("ready")
   const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const [noteCounter, setNoteCounter] = useState(100)
+  const noteCounterRef = useRef(100)
 
   const cities = [...new Set(deliveries.map((d) => d.city))].toSorted()
 
@@ -56,10 +55,6 @@ export default function LogisticsPage() {
           d.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
           d.clubName.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    }
-
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((d) => d.status === statusFilter)
     }
 
     if (cityFilter !== "all") {
@@ -113,12 +108,12 @@ export default function LogisticsPage() {
 
   const handleAddNote = (id: number, content: string) => {
     const newNote: Note = {
-      id: noteCounter,
+      id: noteCounterRef.current,
       content,
       createdAt: new Date().toISOString(),
       author: "Logistics Manager",
     }
-    setNoteCounter((prev) => prev + 1)
+    noteCounterRef.current += 1
 
     setDeliveries((prev) =>
       prev.map((delivery) =>

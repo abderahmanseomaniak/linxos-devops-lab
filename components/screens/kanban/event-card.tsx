@@ -3,7 +3,7 @@
 import { useDraggable } from "@dnd-kit/core"
 import { CSS } from "@dnd-kit/utilities"
 import { Badge } from "@/components/ui/badge"
-import { KanbanEvent, EventCardProps } from "@/types/kanban"
+import { EventCardProps } from "@/types/kanban"
 import { Typography } from "@/components/ui/typography"
 
 export function EventCard({ event }: EventCardProps) {

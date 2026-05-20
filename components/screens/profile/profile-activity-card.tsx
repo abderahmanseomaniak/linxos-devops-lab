@@ -33,7 +33,7 @@ export function ProfileActivityCard() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {activities.map((activity, index) => {
+          {activities.map((activity) => {
             const Icon = activity.icon
             return (
               <div key={activity.title} className="flex gap-3">

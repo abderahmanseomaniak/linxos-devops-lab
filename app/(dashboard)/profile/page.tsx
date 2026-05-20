@@ -12,7 +12,6 @@ import { User } from "@/types/users"
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User>(() => usersData[0] as User)
-  const [avatar, setAvatar] = useState(user.avatar || "")
 
   const handleAvatarUpdate = (newAvatar: string) => {
     setUser((prev) => ({ ...prev, avatar: newAvatar }))
@@ -30,7 +29,7 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
-          <ProfileAvatarCard user={{ ...user, avatar }} onUpdate={handleAvatarUpdate} />
+          <ProfileAvatarCard user={user} onUpdate={handleAvatarUpdate} />
           <ProfileActivityCard />
         </div>
 

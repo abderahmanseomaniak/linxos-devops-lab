@@ -21,14 +21,6 @@ function CaseRenderer({ component }: { component: CaseComponent }) {
   return <>{component}</>;
 }
 
-function renderCase(component: CaseComponent): ReactNode {
-  if (typeof component === 'function') {
-    const Component = component as ComponentType;
-    return <Component />;
-  }
-  return <>{component}</>;
-}
-
 /**
  * Switch component for rendering different content based on a value.
  * Uses React 19's Activity to preserve state of all cases.

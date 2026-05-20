@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
 import type { UserItem, UserRole } from "@/types/users"
 import { ROLE_LABELS } from "../lib/constants"
 import { multiColumnFilterFn, statusFilterFn } from "../lib/filter-fns"

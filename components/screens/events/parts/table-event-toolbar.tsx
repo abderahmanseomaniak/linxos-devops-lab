@@ -9,7 +9,6 @@ import {
   IconFilter,
   IconPlus,
   IconTrash,
-  IconAlertCircle,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -33,7 +32,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -67,7 +65,6 @@ export interface EventTableToolbarProps<TData = unknown> {
 
 export function EventTableToolbar<TData = unknown>({
   table,
-  onAdd,
   onDeleteRows,
   searchValue,
   onSearchChange,

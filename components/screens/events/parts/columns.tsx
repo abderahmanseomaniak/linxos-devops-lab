@@ -1,10 +1,9 @@
 "use client"
 
-import React, { memo } from "react"
+import React from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { IconStar } from "@tabler/icons-react"
 import type { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"

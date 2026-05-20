@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconCalendar, IconLayoutBoardSplit, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList, IconList } from "@tabler/icons-react"
+import { IconCalendar, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList, IconList } from "@tabler/icons-react"
 
 import uiConstants from "@/data/ui-constants.json"
 

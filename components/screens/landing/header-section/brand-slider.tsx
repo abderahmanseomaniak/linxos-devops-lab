@@ -39,7 +39,7 @@ function BrandSlider({ brandList }: { brandList: BrandList[] }) {
             {brandList && brandList.length > 0 && (
               <div className="py-4">
                 <Marquee pauseOnHover className="[--duration:20s] p-0">
-                  {brandList.map((brand, index) => (
+                  {brandList.map((brand) => (
                     <div key={brand.name}>
                       <Image
                         src={brand.image}

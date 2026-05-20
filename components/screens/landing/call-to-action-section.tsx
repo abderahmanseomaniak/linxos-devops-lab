@@ -10,7 +10,7 @@ type CallToActionSectionProps = {
   className?: string;
 };
 
-const CallToActionSection = ({ className }: CallToActionSectionProps) => {
+const CallToActionSection = ({}: CallToActionSectionProps) => {
   const ref = useRef(null);
 
   const bottomAnimation = {

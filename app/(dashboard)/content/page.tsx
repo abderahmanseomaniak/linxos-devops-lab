@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -51,7 +51,7 @@ export default function ContentDashboardPage() {
   const [activeTab, setActiveTab] = useState("all")
   const [selectedEvent, setSelectedEvent] = useState<UGCEvent | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const [noteCounter, setNoteCounter] = useState(100)
+  const noteCounterRef = useRef(100)
 
   const cities = [...new Set(events.map((e) => e.city))].toSorted()
 
@@ -121,12 +121,12 @@ export default function ContentDashboardPage() {
 
   const handleAddNote = (id: number, content: string) => {
     const newNote = {
-      id: noteCounter,
+      id: noteCounterRef.current,
       content,
       createdAt: new Date().toISOString(),
       author: "UGC Manager",
     }
-    setNoteCounter((prev) => prev + 1)
+    noteCounterRef.current += 1
 
     setEvents((prev) =>
       prev.map((event) =>

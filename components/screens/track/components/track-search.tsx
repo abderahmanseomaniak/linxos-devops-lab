@@ -4,6 +4,7 @@ import { Search, X, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Typography } from "@/components/ui/typography"
 
 interface TrackSearchProps {
   value: string
@@ -52,9 +53,9 @@ export function TrackSearch({ value, onChange, onSearch, loading, error, classNa
         </Button>
       </div>
       {!!error && (
-        <p className="text-sm text-destructive animate-in slide-in-from-top-1" role="alert">
+        <Typography variant="small" className="text-destructive animate-in slide-in-from-top-1" role="alert">
           {error}
-        </p>
+        </Typography>
       )}
     </div>
   )

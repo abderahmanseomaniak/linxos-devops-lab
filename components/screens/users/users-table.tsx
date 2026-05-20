@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState, useEffect, useRef, Suspense } from "react"
+import { useId, useState, useEffect, useRef } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -9,11 +9,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  type SortingState,
 } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -22,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Typography } from "@/components/ui/typography"
 import type { UserRole, UsersTableProps, UserItem } from "@/types/users"
 import { columns } from "./parts/columns"
 import { UsersTableToolbar } from "./parts/table-users-toolbar"
@@ -31,7 +27,7 @@ import { DEFAULT_SORTING } from "./lib/constants"
 import { useFilter, useTextFilter } from "@/hooks/use-filter"
 import { SORT_ICONS } from "@/components/shared/sort-icons"
 
-export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: UsersTableProps) {
+export function UsersTable({ data: initialData, onAdd }: UsersTableProps) {
   const id = useId()
   const [columnVisibility, setColumnVisibility] = useState({})
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
@@ -55,6 +51,7 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
     }))
   )
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
     data,
@@ -80,12 +77,12 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
 
   useEffect(() => {
     table.getColumn("name")?.setFilterValue(searchFilter.value || "")
-  }, [searchFilter.value])
+  }, [searchFilter.value, table])
 
   useEffect(() => {
     const statusValues = statusFilter.filterState
     table.getColumn("statusDisplay")?.setFilterValue(statusValues.length ? statusValues : undefined)
-  }, [statusFilter.filterState])
+  }, [statusFilter.filterState, table])
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
@@ -167,9 +164,7 @@ export function UsersTable({ data: initialData, onEdit, onDelete, onAdd }: Users
         </Table>
       </div>
 
-      <Suspense fallback={null}>
-        <TablePagination table={table} />
-      </Suspense>
+      <TablePagination table={table} />
     </div>
   )
 }

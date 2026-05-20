@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Typography } from "@/components/ui/typography"
 import type { EventApplication, EventStatus, DeliveryStatus } from "@/types/events"
 
 const editEventSchema = z.object({
@@ -33,6 +35,8 @@ interface EventEditSheetProps {
   onSave: (event: EventApplication) => void
 }
 
+let nextId = 0
+
 export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditSheetProps) {
   const {
     register,
@@ -54,21 +58,21 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
     },
   })
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     onOpenChange(false)
     reset()
-  }
+  }, [onOpenChange, reset])
 
-  const onSubmit = (data: EditEventFormData) => {
+  const onSubmit = useCallback((data: EditEventFormData) => {
       const updatedEvent: EventApplication = {
         ...data,
-        id: event?.id || Date.now(),
+        id: event?.id ?? ++nextId,
         status: data.status,
         deliveryStatus: data.deliveryStatus,
       }
       onSave(updatedEvent)
       handleClose()
-    }
+    }, [event?.id, onSave, handleClose])
 
   if (!event) return null
 
@@ -76,9 +80,9 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
     <Sheet key={event?.id} open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[500px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Modifier l'événement</SheetTitle>
+          <SheetTitle>Modifier l&apos;événement</SheetTitle>
           <SheetDescription>
-            Modifiez les informations de l'événement.
+            Modifiez les informations de l&apos;événement.
           </SheetDescription>
         </SheetHeader>
 
@@ -87,14 +91,14 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
               <Label htmlFor="eventName">Nom</Label>
               <Input id="eventName" {...register("eventName")} />
               {errors.eventName && (
-                <p className="text-xs text-destructive">{errors.eventName.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.eventName.message}</Typography>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="organization">Organisation</Label>
               <Input id="organization" {...register("organization")} />
               {errors.organization && (
-                <p className="text-xs text-destructive">{errors.organization.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.organization.message}</Typography>
               )}
             </div>
 
@@ -102,7 +106,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
               <Label htmlFor="date">Date</Label>
               <Input id="date" type="date" {...register("date")} />
               {errors.date && (
-                <p className="text-xs text-destructive">{errors.date.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.date.message}</Typography>
               )}
             </div>
             <div className="space-y-2">
@@ -118,7 +122,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
                 {...register("quantity", { valueAsNumber: true })}
               />
               {errors.quantity && (
-                <p className="text-xs text-destructive">{errors.quantity.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.quantity.message}</Typography>
               )}
             </div>
             <div className="space-y-2">
@@ -129,7 +133,7 @@ export function EventEditSheet({ open, onOpenChange, event, onSave }: EventEditS
                 {...register("priority", { valueAsNumber: true })}
               />
               {errors.priority && (
-                <p className="text-xs text-destructive">{errors.priority.message}</p>
+                <Typography variant="small" className="text-destructive">{errors.priority.message}</Typography>
               )}
             </div>
 

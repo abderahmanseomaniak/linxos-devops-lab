@@ -120,9 +120,7 @@ function TimelineDesktop({ stepStates, status, reference }: { stepStates: StepSt
   )
 }
 
-function TimelineMobile({ stepStates, status, reference }: { stepStates: StepState[]; status: TrackStatus; reference?: string }) {
-  const progress = getProgress(status, reference)
-
+function TimelineMobile({ stepStates }: { stepStates: StepState[] }) {
   return (
     <div className="space-y-0">
       {steps.map((step, index) => {
@@ -185,7 +183,7 @@ export function TrackTimeline({ status, reference, className }: TrackTimelinePro
   return (
     <div className={cn("w-full mt-4", className)}>
       {isMobile ? (
-        <TimelineMobile stepStates={stepStates} status={status} reference={reference} />
+        <TimelineMobile stepStates={stepStates} />
       ) : (
         <TimelineDesktop stepStates={stepStates} status={status} reference={reference} />
       )}

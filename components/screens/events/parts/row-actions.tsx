@@ -15,7 +15,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import type { EventApplication } from "@/types/events"
@@ -28,7 +27,6 @@ interface RowActionsProps {
 }
 
 const RowActionsComponent = function RowActions({
-  row,
   onEdit,
   onDelete,
   onDetail,

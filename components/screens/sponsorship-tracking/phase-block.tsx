@@ -19,8 +19,8 @@ function MiniStepItem({ step }: { step: TrackingStep }) {
           !isCompleted && !isCurrent && "border-muted-foreground/30"
         )}
       >
-        {isCompleted && <IconCheck className="h-3 w-3 text-primary-foreground" />}
-        {isCurrent && <IconClock className="h-3 w-3 text-primary animate-pulse" />}
+        {isCompleted && <IconCheck className="size-3 text-primary-foreground" />}
+        {isCurrent && <IconClock className="size-3 text-primary animate-pulse" />}
       </div>
       <span
         className={cn(

@@ -29,8 +29,9 @@
     }
   },
   "sidebar": {
+    
     "general": [
-      { "title": "dashboard-global", "href": "/dashboard-global", "icon": "LayoutDashboard" }
+      { "title": "dashboard", "href": "/", "icon": "LayoutDashboard" }
     ],
    
     "management": [
@@ -44,6 +45,8 @@
     ],
     "test": [
       { "title": "tracking", "href": "/tracking", "icon": "MapPin" },
+      { "title": "track", "href": "/track", "icon": "ClipboardList" },
+      { "title": "landing", "href": "/landing", "icon": "ClipboardList" },
       { "title": "forms", "href": "/forms/sponsorship", "icon": "ClipboardList" }
     ]
   },

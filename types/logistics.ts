@@ -51,7 +51,6 @@ export interface DeliveryCardProps {
   onViewDetails: (delivery: Delivery) => void
   onAddNote: (id: number, note: string) => void
   onUploadReceipt: (id: number, file: File) => void
-  onContactWhatsApp: (phone: string) => void
 }
 
 export interface DeliveryDetailsModalProps {

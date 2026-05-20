@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState } from "react"
 import {
   DndContext,
   DragOverlay,
@@ -29,11 +29,6 @@ const defaultPointerSensorOptions: PointerSensorOptions = {
 
 export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<number | null>(null)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const sensors = useSensors(
     useSensor(PointerSensor, defaultPointerSensorOptions),
@@ -42,21 +37,19 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
     })
   )
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      const matchesSearch = searchQuery
-        ? event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.clubName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          event.city.toLowerCase().includes(searchQuery.toLowerCase())
-        : true
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch = searchQuery
+      ? event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.clubName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.city.toLowerCase().includes(searchQuery.toLowerCase())
+      : true
 
-      const matchesCity = cityFilter && cityFilter !== "all" ? event.city === cityFilter : true
+    const matchesCity = cityFilter && cityFilter !== "all" ? event.city === cityFilter : true
 
-      return matchesSearch && matchesCity
-    })
-  }, [events, searchQuery, cityFilter])
+    return matchesSearch && matchesCity
+  })
 
-  const eventsByStage = useMemo(() => {
+  const eventsByStage = (() => {
     const grouped: Record<KanbanStage, KanbanEvent[]> = {
       Validée: [],
       Préparation: [],
@@ -65,18 +58,18 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
       Terminé: [],
     }
 
-    filteredEvents.forEach((event) => {
+    for (const event of filteredEvents) {
       if (grouped[event.stage]) {
         grouped[event.stage].push(event)
       }
-    })
+    }
 
     return grouped
-  }, [filteredEvents])
+  })()
 
-  const activeEvent = useMemo(() => {
-    return activeId ? events.find((e) => e.id === activeId) : null
-  }, [activeId, events])
+  const eventsById = new Map(events.map((e) => [e.id, e]))
+
+  const activeEvent = activeId ? (eventsById.get(activeId) ?? null) : null
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as number)
@@ -89,7 +82,7 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const activeEvent = events.find((e) => e.id === active.id)
+      const activeEvent = eventsById.get(active.id as number)
       const overStage = over.id as KanbanStage
 
       if (activeEvent && STAGES.includes(overStage)) {
@@ -98,16 +91,6 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
     }
 
     setActiveId(null)
-  }
-
-  if (!mounted) {
-    return (
-      <div className="h-screen overflow-auto">
-        {STAGES.map((stage) => (
-          <div key={stage} className="rounded-2xl border bg-muted/30 p-2" />
-        ))}
-      </div>
-    )
   }
 
   return (
@@ -120,8 +103,16 @@ export function KanbanBoard({ events, onEventMove, searchQuery, cityFilter }: Ka
         autoScroll={false}
 
     >
-      <div className="grid grid-cols-5 h-full gap-2 p-1 overflow-hidden min-h-0">
-        {STAGES.map((stage) => (
+<div
+  className="
+    flex md:grid md:grid-cols-5
+    overflow-x-auto md:overflow-visible
+    snap-x snap-mandatory
+    md:snap-none
+    gap-3 p-2 min-h-0 h-full
+    scroll-smooth
+  "
+>        {STAGES.map((stage) => (
           <KanbanColumn key={stage} stage={stage} events={eventsByStage[stage]} />
         ))}
       </div>

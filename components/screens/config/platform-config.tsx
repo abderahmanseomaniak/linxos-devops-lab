@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
@@ -35,13 +35,7 @@ function StageManager({ stages, onChange }: StageManagerProps) {
     onChange(stages.filter((_, i) => i !== index))
   }
 
-  const moveStage = (from: number, to: number) => {
-    if (to < 0 || to >= stages.length) return
-    const newStages = [...stages]
-    const [moved] = newStages.splice(from, 1)
-    newStages.splice(to, 0, moved)
-    onChange(newStages)
-  }
+
 
   return (
     <div className="space-y-3">
@@ -59,7 +53,7 @@ function StageManager({ stages, onChange }: StageManagerProps) {
       <div className="space-y-2 max-h-48 overflow-y-auto">
         {stages.map((stage, index) => (
           <div
-            key={index}
+            key={stage}
             className="flex items-center gap-2 p-2 bg-muted/50 rounded-md"
           >
             <IconGripVertical className="size-4 text-muted-foreground cursor-grab" />
@@ -235,10 +229,6 @@ export function PlatformConfig() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saved, setSaved] = useState(false)
 
-  useEffect(() => {
-    setConfig(configData as ConfigData)
-  }, [])
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {}
 
@@ -294,17 +284,17 @@ export function PlatformConfig() {
               type="number"
               value={config.ugcSettings.minUgcCreators}
               onChange={(e) =>
-                setConfig({
-                  ...config,
+                setConfig((prev) => ({
+                  ...prev,
                   ugcSettings: {
-                    ...config.ugcSettings,
+                    ...prev.ugcSettings,
                     minUgcCreators: parseInt(e.target.value) || 0,
                   },
-                })
+                }))
               }
               min={0}
             />
-            {errors.minUgcCreators && (
+            {!!errors.minUgcCreators && (
               <Typography variant="small" className="text-red-600">{errors.minUgcCreators}</Typography>
             )}
             <Typography variant="muted">
@@ -321,13 +311,13 @@ export function PlatformConfig() {
           <StageManager
             stages={config.eventPipeline.defaultEventStages}
             onChange={(stages) =>
-              setConfig({
-                ...config,
-                eventPipeline: { ...config.eventPipeline, defaultEventStages: stages },
-              })
+              setConfig((prev) => ({
+                ...prev,
+                eventPipeline: { ...prev.eventPipeline, defaultEventStages: stages },
+              }))
             }
           />
-          {errors.stages && <Typography variant="small" className="text-red-600">{errors.stages}</Typography>}
+          {!!errors.stages && <Typography variant="small" className="text-red-600">{errors.stages}</Typography>}
         </ConfigSectionCard>
 
         <ConfigSectionCard
@@ -338,13 +328,13 @@ export function PlatformConfig() {
           <ScoringInputs
             weights={config.scoringSystem.scoringWeights}
             onChange={(weights) =>
-              setConfig({
-                ...config,
-                scoringSystem: { ...config.scoringSystem, scoringWeights: weights },
-              })
+              setConfig((prev) => ({
+                ...prev,
+                scoringSystem: { ...prev.scoringSystem, scoringWeights: weights },
+              }))
             }
           />
-          {errors.weights && <Typography variant="small" className="text-red-600">{errors.weights}</Typography>}
+          {!!errors.weights && <Typography variant="small" className="text-red-600">{errors.weights}</Typography>}
         </ConfigSectionCard>
 
         <ConfigSectionCard
@@ -355,10 +345,10 @@ export function PlatformConfig() {
           <NotificationSwitches
             settings={config.notificationSettings}
             onChange={(settings) =>
-              setConfig({
-                ...config,
+              setConfig((prev) => ({
+                ...prev,
                 notificationSettings: settings,
-              })
+              }))
             }
           />
         </ConfigSectionCard>

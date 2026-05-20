@@ -1,4 +1,4 @@
-import { Switch } from "@/components/helpers"
+import { Switch } from "@/components/helpers/switch"
 import { ClubStep } from "../steps/club-step"
 import { CommitmentStep } from "../steps/commitment-step"
 import { ContentStep } from "../steps/content-step"

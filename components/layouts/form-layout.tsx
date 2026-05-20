@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { ReactNode } from "react"
 
@@ -9,23 +10,23 @@ export default function FormLayout({ children }: { children: ReactNode }) {
         <div className="min-h-screen bg-muted">
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 md:px-8">
                 <header className="flex items-center justify-center gap-4 pt-4">
-                    <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
+                    <Link href="/forms/sponsorship" className="flex items-center transition-opacity hover:opacity-80">
                         {/* Light mode */}
-                        <img
-                            src="/assets/logos/logo-texte-noir.svg"
+                        <Image
+                            src="/assets/logos/logo-texte-noir.png"
                             alt="Lynxos"
-                            width={160}
-                            height={40}
-                            className="block h-10 w-auto dark:hidden"
+                            width={383}
+                            height={95}
+                            className="block dark:hidden h-10 w-auto"
                         />
 
                         {/* Dark mode */}
-                        <img
-                            src="/assets/logos/logo-texte-blanc.svg"
+                        <Image
+                            src="/assets/logos/logo-texte-blanc.png"
                             alt="Lynxos"
-                            width={160}
-                            height={40}
-                            className="hidden h-10 w-auto dark:block"
+                            width={385}
+                            height={97}
+                            className="hidden dark:block h-10 w-auto"
                         />
                     </Link>
                     <Separator orientation="vertical" className="h-6 mt-2" />

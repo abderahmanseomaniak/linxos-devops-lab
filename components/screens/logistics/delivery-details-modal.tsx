@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { Delivery, StatusLabels, IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
+import {  IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
 import { StatusBadge } from "./status-badge"
 import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconPhone, IconClock, IconFileText, IconMessageCircle } from "@tabler/icons-react"
 
@@ -111,7 +111,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
                   <Typography variant="small">Shipped:</Typography>
                   <span className="font-medium">{formatTimestamp(delivery.deliveryStartedAt)}</span>
                 </div>
-                {delivery.deliveredAt && (
+                {!!delivery.deliveredAt && (
                   <div className="flex items-center gap-2">
                     <IconPackage className="size-4 text-muted-foreground" />
                     <Typography variant="small">Delivered:</Typography>
@@ -130,7 +130,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
                   <Typography variant="small">Type:</Typography>
                   {delivery.issueType ? IssueTypeLabels[delivery.issueType] : "-"}
                 </Typography>
-                {delivery.issueDescription && (
+                {!!delivery.issueDescription && (
                   <Typography className="text-muted-foreground">
                     <Typography variant="small">Description:</Typography>
                     {delivery.issueDescription}
@@ -156,7 +156,7 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange, onContactWh
             </div>
           )}
 
-          {delivery.receiptUrl && (
+          {!!delivery.receiptUrl && (
             <div className="p-3 bg-muted/30 rounded-lg">
               <Typography variant="small" className="mb-2">Delivery proof</Typography>
               <Button

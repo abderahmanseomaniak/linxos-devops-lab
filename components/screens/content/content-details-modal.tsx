@@ -98,7 +98,7 @@ export function ContentDetailsModal({
               </Badge>
             </div>
             <div className="flex items-center gap-2">
-              {event.driveLink && (
+              {!!event.driveLink && (
                 <Button size="sm" onClick={() => onOpenDrive(event.driveLink)}>
                   <IconExternalLink size={14} className="mr-2" />
                   Drive
@@ -164,7 +164,7 @@ export function ContentDetailsModal({
                     return (
                       <div key={step.key} className="flex items-center gap-3">
                         {isPast ? (
-                          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                          <div className="size-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                             <IconCircleCheck size={14} className="text-green-600" />
                           </div>
                         ) : isActive ? (
@@ -172,7 +172,7 @@ export function ContentDetailsModal({
                             <IconClock size={14} />
                           </div>
                         ) : (
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0" />
+                          <div className="size-6 rounded-full bg-muted flex items-center justify-center shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
                           <Typography className={isActive ? "font-medium" : isPast ? "" : "text-muted-foreground"}>
@@ -248,7 +248,7 @@ export function ContentDetailsModal({
                   <Card key={creator.id} className="hover:border-primary/50 transition-colors">
                     <CardContent className="p-3">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                           <Typography variant="small" className="font-medium">{creator.name.charAt(0)}</Typography>
                         </div>
                         <div className="min-w-0">
@@ -257,12 +257,12 @@ export function ContentDetailsModal({
                         </div>
                       </div>
                       <div className="flex gap-1">
-                        {creator.instagram && (
+                        {!!creator.instagram && (
                           <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                             <IconWorld size={12} />
                           </Button>
                         )}
-                        {creator.tiktok && (
+                        {!!creator.tiktok && (
                           <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.59 2.59 0 01-5.2 1.74 2.59 2.59 0 012.59-2.86 11.15 11.15 0 001.69.08V6.52a10.93 10.93 0 01-7.38-1.47 2.6 2.6 0 01-1.87-2.61 2.6 2.6 0 012.6-2.6 2.59 2.59 0 011.87 1.07 2.59 2.59 0 01-1.08 3.33 2.59 2.59 0 01-1.52-2.14 2.59 2.59 0 012.59-2.6h.13a10.9 10.9 0 007.36 2.51 2.59 2.59 0 012.59-2.6 2.59 2.59 0 012.59 2.6 2.59 2.59 0 01-2.17 2.72v-2.64z"/>

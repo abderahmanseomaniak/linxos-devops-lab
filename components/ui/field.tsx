@@ -1,11 +1,11 @@
 "use client"
 
-import { useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { Typography } from "@/components/ui/typography"
 
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
@@ -130,10 +130,11 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
 
 function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
-    <p
+    <Typography
+      variant="small"
       data-slot="field-description"
       className={cn(
-        "text-left text-sm leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
+        "leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
         "last:mt-0 nth-last-2:-mt-1",
         "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
         className
@@ -181,35 +182,38 @@ function FieldError({
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>
 }) {
-  const content = useMemo(() => {
-    if (children) {
-      return children
-    }
-
-    if (!errors?.length) {
-      return null
-    }
-
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
-    ]
-
-    if (uniqueErrors?.length == 1) {
-      return uniqueErrors[0]?.message
-    }
-
-    return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
-        )}
-      </ul>
-    )
-  }, [children, errors])
-
-  if (!content) {
+  if (!children && !errors?.length) {
     return null
+  }
+
+  if (children) {
+    return (
+      <div
+        role="alert"
+        data-slot="field-error"
+        className={cn("text-sm font-normal text-destructive", className)}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
+  const uniqueErrors = [
+    ...new Map(errors!.map((error) => [error?.message, error])).values(),
+  ]
+
+  if (uniqueErrors?.length === 1) {
+    return (
+      <div
+        role="alert"
+        data-slot="field-error"
+        className={cn("text-sm font-normal text-destructive", className)}
+        {...props}
+      >
+        {uniqueErrors[0]?.message}
+      </div>
+    )
   }
 
   return (
@@ -219,7 +223,12 @@ function FieldError({
       className={cn("text-sm font-normal text-destructive", className)}
       {...props}
     >
-      {content}
+      <ul className="ml-4 flex list-disc flex-col gap-1">
+        {uniqueErrors.map(
+          (error) =>
+            error?.message && <li key={error.message}>{error.message}</li>
+        )}
+      </ul>
     </div>
   )
 }

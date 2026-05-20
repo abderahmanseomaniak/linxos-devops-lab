@@ -22,7 +22,7 @@ export function CommitmentStep() {
     <Card>
       <CardHeader>
         <CardTitle>Engagement légal</CardTitle>
-        <CardDescription>Dernière étape — veuillez lire et signer ci-dessous</CardDescription>
+        <CardDescription>Dernière étape, veuillez lire et signer ci-dessous</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Controller

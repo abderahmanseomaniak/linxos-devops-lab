@@ -6,7 +6,7 @@ import { PhaseBlock } from "./phase-block";
 import {
   calculateProgress,
   getActivePhase,
-  type SponsorshipTrackingData,
+
   type SponsorshipTrackingPageProps,
 } from "@/types/sponsorship-tracking";
 

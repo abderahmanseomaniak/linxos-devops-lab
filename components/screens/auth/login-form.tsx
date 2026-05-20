@@ -30,12 +30,12 @@ export function LoginForm({
         <Field>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <a
-              href="#"
+            <button
+              type="button"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?
-            </a>
+            </button>
           </div>
           <Input id="password" type="password" required />
         </Field>
@@ -47,9 +47,9 @@ export function LoginForm({
         <Field>
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}
-            <a href="#" className="underline text-foreground underline-offset-4">
+            <button type="button" className="underline text-foreground underline-offset-4">
               Sign up
-            </a>
+            </button>
           </FieldDescription>
         </Field>
       </FieldGroup>

@@ -17,7 +17,7 @@ export function EventHeader({
 
   return (
     <div className="text-center space-y-4 py-6">
-      {reference && (
+      {!!reference && (
         <Typography variant="small" className="font-medium uppercase tracking-wider">
           {reference}
         </Typography>
@@ -25,7 +25,7 @@ export function EventHeader({
       <Typography variant="h1">{eventName}</Typography>
       <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
         <Typography variant="p">{formattedDate}</Typography>
-        <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+        <span className="size-1 rounded-full bg-muted-foreground/40" />
         <Typography variant="p">{city}</Typography>
       </div>
       <div className="mx-auto max-w-xs space-y-2">
@@ -39,7 +39,7 @@ export function EventHeader({
             style={{ width: `${progress}%` }}
           />
         </div>
-        {activePhaseTitle && (
+        {!!activePhaseTitle && (
           <Typography variant="small" className="text-primary font-medium">
             Current: {activePhaseTitle}
           </Typography>

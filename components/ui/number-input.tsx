@@ -26,20 +26,17 @@ function NumberInput({
   disabled,
   ...props
 }: NumberInputProps) {
-  const clamp = React.useCallback(
-    (v: number) => {
-      let clamped = v
-      if (min !== undefined) clamped = Math.max(min, clamped)
-      if (max !== undefined) clamped = Math.min(max, clamped)
-      return clamped
-    },
-    [min, max]
-  )
+  const clamp = (v: number) => {
+    let clamped = v
+    if (min !== undefined) clamped = Math.max(min, clamped)
+    if (max !== undefined) clamped = Math.min(max, clamped)
+    return clamped
+  }
 
   const decrement = () => onValueChange?.(clamp(value - step))
   const increment = () => onValueChange?.(clamp(value + step))
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value
     if (raw === "" || raw === "-") return
     const parsed = Number(raw)
@@ -51,7 +48,7 @@ function NumberInput({
       <Button
         type="button"
         variant="outline"
-        size="icon-sm"
+        size="icon"
         disabled={disabled || (min !== undefined && value <= min)}
         onClick={decrement}
         aria-label="Diminuer"
@@ -62,7 +59,7 @@ function NumberInput({
         inputMode="numeric"
         className="text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
         value={value}
-        onChange={handleChange}
+        onChange={handleInputChange}
         disabled={disabled}
         min={min}
         max={max}
@@ -71,7 +68,7 @@ function NumberInput({
       <Button
         type="button"
         variant="outline"
-        size="icon-sm"
+        size="icon"
         disabled={disabled || (max !== undefined && value >= max)}
         onClick={increment}
         aria-label="Augmenter"

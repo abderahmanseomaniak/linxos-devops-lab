@@ -13,7 +13,7 @@ export interface SwitchProps {
   preserveState?: boolean;
 }
 
-function renderCase(component: CaseComponent): ReactNode {
+function CaseRenderer({ component }: { component: CaseComponent }) {
   if (typeof component === 'function') {
     const Component = component as ComponentType;
     return <Component />;
@@ -39,23 +39,25 @@ function renderCase(component: CaseComponent): ReactNode {
  * ```
  */
 export function Switch({ value, cases, defaultCase, preserveState = true }: SwitchProps) {
-  const caseKeys = Object.keys(cases);
-  const activeKey = caseKeys.find((key) => key === String(value));
+  const caseKeys = Object.keys(cases)
+  const stringValue = String(value)
+  const activeCase = cases[stringValue as keyof typeof cases]
+  const activeKey = activeCase !== undefined ? stringValue : undefined
 
   // If not preserving state, only render the active case
   if (!preserveState) {
-    return <>{renderCase(activeKey ? cases[activeKey] : defaultCase)}</>;
+    return <CaseRenderer component={activeKey ? cases[activeKey] : defaultCase} />;
   }
 
   return (
     <>
       {caseKeys.map((key) => (
         <Activity key={key} mode={key === activeKey ? 'visible' : 'hidden'}>
-          {renderCase(cases[key])}
+          <CaseRenderer component={cases[key]} />
         </Activity>
       ))}
       <Activity mode={activeKey === undefined ? 'visible' : 'hidden'}>
-        {renderCase(defaultCase)}
+        <CaseRenderer component={defaultCase} />
       </Activity>
     </>
   );

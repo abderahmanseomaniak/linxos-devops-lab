@@ -45,7 +45,7 @@ export interface PipelineStage {
 }
 
 export interface UpcomingEvent {
-  id: number
+  id: number  
   name: string
   date: string
   daysUntil: number

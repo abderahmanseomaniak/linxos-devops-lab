@@ -560,5 +560,60 @@
       "mentions": "@sponsor",
       "autresConditions": "1 thread LinkedIn"
     }
+  },
+  {
+    "id": 12,
+    "reference": "SPO-2024-001",
+    "priority": 1,
+    "eventName": "Tech Meetup",
+    "organization": "TechHub",
+    "date": "2024-05-20",
+    "product": "Stickers",
+    "quantity": 1000,
+    "status": "Pending",
+    "deliveryStatus": "Non livrée",
+    "step1": {
+      "nomClub": "Montpellier HSC",
+      "sport": "Football",
+      "ville": "Montpellier",
+      "email": "contact@mhsc.com",
+      "telephone": "+33 4 67 50 00 00"
+    },
+    "step2": {
+      "nomResponsable": "Laurent Roux",
+      "fonction": "Responsable technique",
+      "emailResponsable": "l.roux@mhsc.com",
+      "telephoneResponsable": "+33 6 55 77 88 99"
+    },
+    "step3": {
+      "nomEvenement": "Meetup tech",
+      "dateDebut": "2024-05-20",
+      "dateFin": "2024-05-20",
+      "lieu": "Stade de la Mosson, Montpellier",
+      "description": "Rencontre entre développeurs et passionnés de tech",
+      "hasUGC": true
+    },
+    "step4": {
+      "creators": [
+        {
+          "id": "1",
+          "nom": "Kevin Nguyen",
+          "instagram": "@kevinng",
+          "tiktok": "@kevinnguyen",
+          "followersInstagram": "75K",
+          "followersTikTok": "90K",
+          "available": true
+        }
+      ]
+    },
+    "step5": {
+      "selectedContentTypes": ["Twitter", "LinkedIn"],
+      "files": {}
+    },
+    "step6": {
+      "visibilite": "Affiches + story Twitter",
+      "mentions": "@sponsor",
+      "autresConditions": "1 thread LinkedIn"
+    }
   }
 ]

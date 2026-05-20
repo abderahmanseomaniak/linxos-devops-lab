@@ -28,7 +28,7 @@ export function ContentCard({
   })
 
   return (
-    <div className="flex flex-col p-5 border rounded-lg bg-white hover:border-gray-300 transition-colors">
+    <div className="flex flex-col p-5 border rounded-lg bg-white hover:border-zinc-300 transition-colors">
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex-1 min-w-0">
           <Typography variant="h4">{event.eventName}</Typography>
@@ -42,7 +42,7 @@ export function ContentCard({
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
         <IconMapPin size={14} />
         <Typography variant="muted">{event.city}</Typography>
-        <span className="text-gray-300">•</span>
+        <span className="text-zinc-300">•</span>
         <Typography variant="muted">{formattedDate}</Typography>
       </div>
 
@@ -56,7 +56,7 @@ export function ContentCard({
           <Typography variant="small" className="ml-1">creators</Typography>
         </div>
 
-        <span className="text-gray-200">|</span>
+        <span className="text-zinc-200">|</span>
 
         <div className="flex items-center gap-1.5">
           {hasDriveLink ? (

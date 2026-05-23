@@ -18,8 +18,8 @@ export function ProfileInformationForm({ user, onSave }: ProfileInformationFormP
     firstName: user.name.split(' ')[0] || '',
     lastName: user.name.split(' ').slice(1).join(' ') || '',
     email: user.email,
-    phone: user.phone,
-    cin: user.cin,
+    phone: user.phone ?? "",
+    cin: user.cin ?? "",
   })
 
   const handleSave = () => {

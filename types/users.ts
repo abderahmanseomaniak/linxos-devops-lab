@@ -1,14 +1,16 @@
-export type UserRole = "admin" | "moderator" | "user";
+export type UserRole = "ADMIN" | "SPONSORSHIP_MANAGER" | "LOGISTICS_MANAGER" | "UGC_MANAGER";
 
 export interface User {
-  id: number;
-  name: string;
+  id: string;
   email: string;
-  phone: string;
-  cin: string;
+  name: string;
+  phone: string | null;
+  cin: string | null;
   role: UserRole;
   status: boolean;
-  avatar?: string;
+  avatar: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UsersTableProps {

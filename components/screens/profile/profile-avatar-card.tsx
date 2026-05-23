@@ -134,11 +134,11 @@ export function ProfileAvatarCard({ user, onUpdate }: ProfileAvatarCardProps) {
             </div>
             <div className="flex items-center justify-between">
               <Typography variant="small" className="text-muted-foreground">Phone</Typography>
-              <Typography variant="small" className="font-medium">{user.phone}</Typography>
+              <Typography variant="small" className="font-medium">{user.phone ?? "—"}</Typography>
             </div>
             <div className="flex items-center justify-between">
               <Typography variant="small" className="text-muted-foreground">CIN</Typography>
-              <Typography variant="small" className="font-medium">{user.cin}</Typography>
+              <Typography variant="small" className="font-medium">{user.cin ?? "—"}</Typography>
             </div>
           </div>
         </div>

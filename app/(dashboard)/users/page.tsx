@@ -1,17 +1,8 @@
-"use client"
-
 import { UsersTable } from "@/components/screens/users/users-table"
-import { User } from "@/types/users"
-import usersData from "@/data/users.json"
+import { getUsers } from "@/supabase/queries/users"
 
-const initialUsers: User[] = usersData as User[]
+export default async function UsersPage() {
+  const users = await getUsers()
 
-export default function UsersPage() {
-  const handleAdd = () => {
-    console.log("Add user")
-  }
-
-  return (
-    <UsersTable data={initialUsers} onAdd={handleAdd} />
-  )
+  return <UsersTable data={users} />
 }

@@ -23,9 +23,10 @@
   },
   "userRole": {
     "labels": {
-      "admin": "Admin",
-      "moderator": "Moderator",
-      "user": "User"
+      "ADMIN": "Admin",
+      "SPONSORSHIP_MANAGER": "Sponsorship Manager",
+      "LOGISTICS_MANAGER": "Logistics Manager",
+      "UGC_MANAGER": "UGC Manager"
     }
   },
   "sidebar": {

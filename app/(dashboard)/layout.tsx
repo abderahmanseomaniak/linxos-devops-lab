@@ -6,6 +6,7 @@ import Notifications from "@/components/ui/notifications"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { type ReactNode } from "react"
+import { Toaster } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -16,6 +17,8 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
+            <Toaster richColors position="top-right" />
+
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 " suppressHydrationWarning>
           <SidebarTrigger className="-ml-1" />

@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Typography } from "@/components/ui/typography"
-import { detectPlatform, PlatformIcon } from "@/components/screens/forms/sponsorship/lib/platforms"
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+import { detectPlatform, PlatformIcon } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/platforms"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
 export function ClubStep() {
   const { control } = useFormContext<SponsorshipFormValues>()

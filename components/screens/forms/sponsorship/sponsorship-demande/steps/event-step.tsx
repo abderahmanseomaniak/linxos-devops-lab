@@ -45,7 +45,7 @@ import {
   MAX_UGC_LINKS,
   REQUIRED_UGC_LINKS,
   type SponsorshipFormValues,
-} from "@/components/screens/forms/sponsorship/lib/schema"
+} from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
 /** Convert an ISO date string (yyyy-MM-dd) to a Date, or undefined. */
 function toDate(value: string | undefined): Date | undefined {

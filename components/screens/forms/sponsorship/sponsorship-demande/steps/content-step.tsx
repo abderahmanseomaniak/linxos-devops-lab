@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import formOptions from "@/data/form-options.json"
 import { useFileUpload, type FileWithPreview } from "@/hooks/use-file-upload"
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 import { type ContentTypeOption } from "@/types/sponsorship-form"
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>

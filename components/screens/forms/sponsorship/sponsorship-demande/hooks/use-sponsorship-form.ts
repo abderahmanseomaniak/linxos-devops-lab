@@ -9,7 +9,7 @@ import {
   defaultSponsorshipValues,
   sponsorshipSchema,
   type SponsorshipFormValues,
-} from "@/components/screens/forms/sponsorship/lib/schema"
+} from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
 const OTP_CODE = "123456"
 const OTP_LENGTH = 6

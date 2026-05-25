@@ -5,7 +5,7 @@ import { Fragment } from "react"
 import { IconLoader2, IconRefresh } from "@tabler/icons-react"
 import { useFormContext } from "react-hook-form"
 
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

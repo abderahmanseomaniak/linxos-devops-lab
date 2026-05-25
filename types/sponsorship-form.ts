@@ -22,4 +22,4 @@ export interface FormOptionsData {
   userAvatarColors?: string[]
 }
 
-export type { SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+export type { SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"

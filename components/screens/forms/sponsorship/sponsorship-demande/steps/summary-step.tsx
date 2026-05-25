@@ -3,7 +3,7 @@
 import { IconBuilding, IconCalendarEvent, IconEdit, IconEye, IconFileText, IconUser } from "@tabler/icons-react"
 import { useFormContext, useWatch } from "react-hook-form"
 
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

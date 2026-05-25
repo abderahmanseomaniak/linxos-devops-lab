@@ -13,7 +13,7 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Typography } from "@/components/ui/typography"
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
 export function CommitmentStep() {
   const { control } = useFormContext<SponsorshipFormValues>()

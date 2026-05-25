@@ -27,7 +27,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import formOptions from "@/data/form-options.json"
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/lib/schema"
+import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 

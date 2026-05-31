@@ -1,11 +1,13 @@
 global:
-  scrap_interval: 5s
-scrap_configs:
-  - job_name: 'prometheus'
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['prometheuse:9090']
-  - job_name: 'linxos-app'
-    metrics_path: '/api/metrics'
+      - targets: ["prometheus:9090"]
+
+  - job_name: "linxos-app"
+    metrics_path: "/api/metrics"
     scheme: https
     static_configs:
-      - targets: ['linxos-ci.vercel.app']
+      - targets: ["linxos-ci.vercel.app"]

@@ -6,7 +6,7 @@ import {
   LogOutIcon,
   PinIcon,
   UserIcon,
-  UserPenIcon,
+  PencilIcon,
 } from "lucide-react";
 
 import {
@@ -79,7 +79,7 @@ export default function DropdownProfile() {
             <span>Option 5</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <UserPenIcon aria-hidden="true" className="opacity-60" size={16} />
+            <PencilIcon aria-hidden="true" className="opacity-60" size={16} />
             <span>Option 6</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>

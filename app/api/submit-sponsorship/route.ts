@@ -71,7 +71,7 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
       visibility_counterparts: (formData.visibiliteContreparties as string) || null,
       image_authorization: (formData.imageConsent as boolean) || false,
       comment: ((formData.logistiqueOptions as string[]) || []).join(", ") || null,
-      first_collaboration: (formData.premiereCollaboration as string) || null,
+      first_collaboration: (formData.premiereCollaboration as string) === "yes",
     });
 
   if (appError) {

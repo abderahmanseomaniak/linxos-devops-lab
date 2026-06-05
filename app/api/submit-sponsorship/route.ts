@@ -14,7 +14,7 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
   const { data: club, error: clubError } = await supabase
     .from("clubs")
     .insert({
-      name: formData.nomClub as string,
+      name: formData.nomEtablissement as string,
       city: formData.ville as string,
       university: (formData.universite as string) || null,
     })
@@ -65,13 +65,13 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
       event_id: event.id,
       event_type: (formData.eventType as string) || null,
       expected_attendance: parseInt(formData.participants as string, 10) || 0,
-      target_audience: (formData.targetAudience as string) || null,
-      has_ugc: (formData.ugcAccepted as boolean) || false,
-      ugc_content_types: ((formData.selectedContentTypes as string[]) || []).join(", ") || null,
-      visibility_counterparts: (formData.visibilite as string) || null,
+      target_audience: (formData.publicCible as string) || null,
+      has_ugc: (formData.hasInfluencers as string) === "yes",
+      ugc_content_types: ((formData.ugcContentTypes as string[]) || []).join(", ") || null,
+      visibility_counterparts: (formData.visibiliteContreparties as string) || null,
       image_authorization: (formData.imageConsent as boolean) || false,
-      comment: ((formData.logistique as string[]) || []).join(", ") || null,
-      first_collaboration: null,
+      comment: ((formData.logistiqueOptions as string[]) || []).join(", ") || null,
+      first_collaboration: (formData.premiereCollaboration as string) || null,
     });
 
   if (appError) {
@@ -111,41 +111,47 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
 export async function POST(req: Request) {
   try {
     const formData = await req.json();
-    const { email, formType } = formData;
+    const { formType } = formData;
 
-    if (!email) {
-      return NextResponse.json({ error: "Email requis" }, { status: 400 });
+    // Valider la session Supabase (l'utilisateur a vérifié son OTP)
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Non authentifié. Veuillez d'abord vérifier votre email." },
+        { status: 401 }
+      );
     }
 
-    const supabase = createClient(
+    const anon = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+
+    const { data: { user }, error: authError } = await anon.auth.getUser(token);
+
+    if (authError || !user?.email) {
+      return NextResponse.json(
+        { error: "Session invalide. Veuillez vérifier votre email à nouveau." },
+        { status: 401 }
+      );
+    }
+
+    const email = user.email;
+    formData.email = email;
+
+    const admin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       { auth: { persistSession: false } }
     );
 
-    // Vérifier que l'email a été vérifié via OTP
-    const { data: verifications } = await supabase
-      .from("email_verifications")
-      .select("*")
-      .eq("email", email as string)
-      .not("verified_at", "is", null)
-      .order("created_at", { ascending: false })
-      .limit(1);
-
-    const verification = (verifications as Array<Record<string, unknown>> | null)?.[0];
-
-    if (!verification) {
-      return NextResponse.json(
-        { error: "Email non vérifié. Veuillez d'abord vérifier votre code." },
-        { status: 403 }
-      );
-    }
-
     let result: { tracking_code: string; event_id: string };
 
     switch (formType) {
       case "demande":
-        result = await handleSponsorshipDemande(supabase, formData);
+        result = await handleSponsorshipDemande(admin, formData);
         break;
       default:
         return NextResponse.json(
@@ -155,17 +161,11 @@ export async function POST(req: Request) {
     }
 
     // Nettoyer l'utilisateur OTP (pas de compte permanent pour les demandeurs)
-    const { data: users } = await supabase.auth.admin.listUsers();
+    const { data: users } = await admin.auth.admin.listUsers();
     const otpUser = users?.users?.find((u) => u.email === email);
     if (otpUser) {
-      await supabase.auth.admin.deleteUser(otpUser.id);
+      await admin.auth.admin.deleteUser(otpUser.id);
     }
-
-    // Nettoyer le code de vérification
-    await supabase
-      .from("email_verifications")
-      .delete()
-      .eq("id", (verification as Record<string, unknown>).id as string);
 
     return NextResponse.json({ success: true, ...result });
   } catch (err) {

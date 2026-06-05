@@ -5,6 +5,7 @@ import { useForm, type UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 
+import { supabase } from "@/services/supabase/client"
 import { useStep } from "@/hooks/use-step"
 import {
   defaultSponsorshipDemande1Values,
@@ -69,14 +70,12 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
   const sendOtpToEmail = useCallback(async (email: string) => {
     setOtpLoading(true)
     try {
-      const res = await fetch("/api/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true },
       })
-      const data = await res.json()
-      if (!res.ok) {
-        toast.error("Erreur d'envoi", { description: data.error })
+      if (error) {
+        toast.error("Erreur d'envoi", { description: error.message })
         return false
       }
       toast.success("Code envoyé", {
@@ -95,10 +94,14 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
     setSubmitting(true)
     setSubmissionError(null)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch("/api/submit-sponsorship", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, formType: "demande1" }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token ?? ""}`,
+        },
+        body: JSON.stringify({ ...values, formType: "demande" }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -137,17 +140,16 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
     setOtpError(false)
     const values = form.getValues()
     try {
-      const res = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: values.email, code: otpValue }),
+      const { error } = await supabase.auth.verifyOtp({
+        email: values.email,
+        token: otpValue,
+        type: "email",
       })
-      const data = await res.json()
       setOtpLoading(false)
-      if (!res.ok) {
+      if (error) {
         setOtpError(true)
         setOtpValue("")
-        toast.error("Code invalide", { description: data.error })
+        toast.error("Code invalide", { description: error.message })
         return
       }
       setOtpVerified(true)

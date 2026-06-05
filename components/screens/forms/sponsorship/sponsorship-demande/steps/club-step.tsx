@@ -1,9 +1,8 @@
 "use client"
 
-import { IconPlus, IconX } from "@tabler/icons-react"
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form"
+import { IconPlus, IconX } from "@tabler/icons-react"
 
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Field,
@@ -15,12 +14,13 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { detectPlatform, PlatformIcon } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/platforms"
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
+import type { SponsorshipDemande1Values } from "../lib/schema"
 
 export function ClubStep() {
-  const { control } = useFormContext<SponsorshipFormValues>()
+  const { control } = useFormContext<SponsorshipDemande1Values>()
   const { fields, append, remove } = useFieldArray({ control, name: "reseaux" })
   const reseauxValues = useWatch({ control, name: "reseaux" }) ?? []
 
@@ -37,24 +37,24 @@ export function ClubStep() {
           <FieldGroup className="gap-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Controller
-                name="nomClub"
                 control={control}
+                name="nomEtablissement"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>Nom du club</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Nom de l&apos;établissement / club / association</FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
-                      placeholder="Nom du club"
+                      placeholder="Nom de l'établissement"
                     />
                     {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                   </Field>
                 )}
               />
               <Controller
-                name="ville"
                 control={control}
+                name="ville"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Ville</FieldLabel>
@@ -69,25 +69,22 @@ export function ClubStep() {
                 )}
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Controller
-                name="universite"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>Université</FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Optionnel"
-                    />
-                    <FieldDescription>Facultatif</FieldDescription>
-                  </Field>
-                )}
-              />
-            </div>
+            <Controller
+              control={control}
+              name="universite"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Université / École de rattachement</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Université ou école"
+                  />
+                  {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
+                </Field>
+              )}
+            />
 
             <FieldSet className="gap-4">
               <FieldLegend variant="label">Réseaux sociaux</FieldLegend>
@@ -104,10 +101,7 @@ export function ClubStep() {
                       name={`reseaux.${index}.url` as const}
                       control={control}
                       render={({ field: controllerField, fieldState }) => (
-                        <Field
-                          orientation="horizontal"
-                          data-invalid={fieldState.invalid}
-                        >
+                        <Field orientation="horizontal" data-invalid={fieldState.invalid}>
                           <FieldContent>
                             <div className="relative">
                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -163,25 +157,24 @@ export function ClubStep() {
             <FieldGroup className="gap-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Controller
-                  name="nomResponsable"
                   control={control}
+                  name="nomResponsable"
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>Nom complet</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Nom du responsable / représentant</FieldLabel>
                       <Input
                         {...field}
                         id={field.name}
                         aria-invalid={fieldState.invalid}
                         placeholder="Nom complet"
-                        autoComplete="name"
                       />
                       {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
                     </Field>
                   )}
                 />
                 <Controller
-                  name="fonction"
                   control={control}
+                  name="fonction"
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>Fonction</FieldLabel>
@@ -196,11 +189,10 @@ export function ClubStep() {
                   )}
                 />
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Controller
-                  name="telephone"
                   control={control}
+                  name="telephone"
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>Téléphone</FieldLabel>
@@ -208,7 +200,6 @@ export function ClubStep() {
                         {...field}
                         id={field.name}
                         type="tel"
-                        autoComplete="tel"
                         aria-invalid={fieldState.invalid}
                         placeholder="Téléphone"
                       />
@@ -217,8 +208,8 @@ export function ClubStep() {
                   )}
                 />
                 <Controller
-                  name="email"
                   control={control}
+                  name="email"
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>Email</FieldLabel>
@@ -226,7 +217,6 @@ export function ClubStep() {
                         {...field}
                         id={field.name}
                         type="email"
-                        autoComplete="email"
                         aria-invalid={fieldState.invalid}
                         placeholder="Email"
                       />

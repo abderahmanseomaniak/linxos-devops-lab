@@ -8,10 +8,19 @@ export const metadata: Metadata = {
     "Confirmez les détails de votre événement et le sponsoring Linx Energy.",
 }
 
-export default function SponsorshipConfirmationPage() {
+type SearchParams = Promise<{ code?: string }>
+
+export default async function SponsorshipConfirmationPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams
+}) {
+  const params = (await searchParams) ?? {}
+  const trackingCode = typeof params.code === "string" ? params.code : ""
+
   return (
     <FormLayout>
-      <SponsorshipConfirmationForm />
+      <SponsorshipConfirmationForm trackingCode={trackingCode} />
     </FormLayout>
   )
 }

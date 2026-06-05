@@ -1,11 +1,7 @@
 "use client"
 
-import { Fragment } from "react"
-
 import { IconLoader2, IconRefresh } from "@tabler/icons-react"
-import { useFormContext } from "react-hook-form"
 
-import { type ConfirmationFormValues } from "@/components/screens/forms/sponsorship/sponsorship-confirmation/lib/schema"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -19,7 +15,6 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 
@@ -29,6 +24,7 @@ type Props = {
   error: boolean
   loading: boolean
   length: number
+  email: string
   onValueChange: (value: string) => void
   onVerify: () => void
   onClose: () => void
@@ -43,25 +39,23 @@ export function OtpDialog({
   value,
   loading,
   length,
+  email,
   onValueChange,
   onVerify,
   onClose,
   onResend,
 }: Props) {
-  const { watch } = useFormContext<ConfirmationFormValues>()
-  const email = watch("email")
-
   const handleOpenChange = (next: boolean) => {
     if (!next) onClose()
   }
 
-  const PAIR_SIZE = 2
-  const pairs = Array.from(
-    { length: Math.ceil(length / PAIR_SIZE) },
+  const ROW_SIZE = 4
+  const rows = Array.from(
+    { length: Math.ceil(length / ROW_SIZE) },
     (_, groupIndex) =>
       Array.from(
-        { length: Math.min(PAIR_SIZE, length - groupIndex * PAIR_SIZE) },
-        (_, i) => groupIndex * PAIR_SIZE + i
+        { length: Math.min(ROW_SIZE, length - groupIndex * ROW_SIZE) },
+        (_, i) => groupIndex * ROW_SIZE + i
       )
   )
 
@@ -104,17 +98,14 @@ export function OtpDialog({
             onChange={onValueChange}
             maxLength={length}
             aria-label={`Code de vérification à ${length} chiffres`}
-            containerClassName="justify-center"
+            containerClassName="flex flex-col items-center gap-3"
           >
-            {pairs.map((pair, groupIndex) => (
-              <Fragment key={`otp-pair-${groupIndex}`}>
-                {groupIndex > 0 && <InputOTPSeparator className="mx-2" />}
-                <InputOTPGroup className={SLOT_CLASSES}>
-                  {pair.map((slotIndex) => (
-                    <InputOTPSlot key={`otp-slot-${slotIndex}`} index={slotIndex} />
-                  ))}
-                </InputOTPGroup>
-              </Fragment>
+            {rows.map((row, groupIndex) => (
+              <InputOTPGroup key={`otp-row-${groupIndex}`} className={SLOT_CLASSES}>
+                {row.map((slotIndex) => (
+                  <InputOTPSlot key={`otp-slot-${slotIndex}`} index={slotIndex} />
+                ))}
+              </InputOTPGroup>
             ))}
           </InputOTP>
         </Field>

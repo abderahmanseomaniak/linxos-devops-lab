@@ -1,8 +1,10 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
+import { AuthProvider } from "@/providers/auth-provider";
 import "./globals.css";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -24,6 +26,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen overflow-auto" suppressHydrationWarning>
+          <Script id="chromane-cleanup" strategy="beforeInteractive">
+            {`(function(){var e=document.querySelectorAll('[id="chromane-theme-root"],[data-listener-added]');for(var i=0;i<e.length;i++){var r=e[i];if(r.id==='chromane-theme-root'&&r.parentNode){var p=r.parentNode;while(r.firstChild)p.insertBefore(r.firstChild,r);p.removeChild(r)}else{for(var a=r.attributes,j=a.length-1;j>=0;j--){if(a[j].name.startsWith('data-listener-added')){r.removeAttribute(a[j].name)}}}}})()`}
+          </Script>
           <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -31,7 +36,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

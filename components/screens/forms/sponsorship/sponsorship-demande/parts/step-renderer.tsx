@@ -1,10 +1,11 @@
 import { Switch } from "@/components/helpers/switch"
 import { ClubStep } from "../steps/club-step"
-import { CommitmentStep } from "../steps/commitment-step"
-import { ContentStep } from "../steps/content-step"
-import { EventStep } from "../steps/event-step"
+import { PartenariatEventStep } from "../steps/partenariat-event-step"
+import { VisibiliteStep } from "../steps/visibilite-step"
+import { UgcStep } from "../steps/ugc-step"
+import { LogistiqueFichiersStep } from "../steps/logistique-fichiers-step"
 import { SummaryStep } from "../steps/summary-step"
-import { VisibilityStep } from "../steps/visibility-step"
+import { CommitmentStep } from "../steps/commitment-step"
 
 type Props = {
   step: number
@@ -17,11 +18,12 @@ export function StepRenderer({ step, onEdit }: Props) {
       value={step}
       cases={{
         1: <ClubStep />,
-        2: <EventStep />,
-        3: <ContentStep />,
-        4: <VisibilityStep />,
-        5: <SummaryStep onEdit={onEdit} />,
-        6: <CommitmentStep />,
+        2: <PartenariatEventStep />,
+        3: <VisibiliteStep />,
+        4: <UgcStep />,
+        5: <LogistiqueFichiersStep />,
+        6: <SummaryStep onEdit={onEdit} />,
+        7: <CommitmentStep />,
       }}
       defaultCase={null}
     />

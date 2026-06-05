@@ -1,194 +1,135 @@
 "use client"
 
-import { IconBuilding, IconCalendarEvent, IconEdit, IconEye, IconFileText, IconUser } from "@tabler/icons-react"
-import { useFormContext, useWatch } from "react-hook-form"
-
-import { type SponsorshipFormValues } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
-import { Badge } from "@/components/ui/badge"
+import { useFormContext } from "react-hook-form"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import formOptions from "@/data/form-options.json"
+import { Typography } from "@/components/ui/typography"
+import { partenariatTypes, eventTypeOptions, ugcContentOptions, logistiqueOptions } from "../lib/schema"
+import type { SponsorshipDemande1Values } from "../lib/schema"
 
-interface SummaryStepProps {
-  onEdit?: (step: number) => void
+type Props = {
+  onEdit: (step: number) => void
 }
 
-const labelCache = new Map<{ id: string; label: string }[], Map<string, string>>()
-
-function labelFor(id: string, options: { id: string; label: string }[]) {
-  let map = labelCache.get(options)
-  if (!map) {
-    map = new Map(options.map((o) => [o.id, o.label]))
-    labelCache.set(options, map)
-  }
-  return map.get(id) ?? id
-}
-
-function formatFiles(files: SponsorshipFormValues["files"]) {
-  if (!files) return "—"
-  const entries = Object.entries(files).filter(([, v]) => !!v)
-  if (entries.length === 0) return "Aucun fichier"
-  return entries
-    .flatMap(([key, value]) => {
-      if (Array.isArray(value)) return [`${labelFor(key, formOptions.contentTypes)} (${value.length})`]
-      const name = (value as File | null)?.name
-      return name ? [`${labelFor(key, formOptions.contentTypes)} : ${name}`] : []
-    })
-    .join(" · ")
-}
-
-export function SummaryStep({ onEdit }: SummaryStepProps) {
-  const { control } = useFormContext<SponsorshipFormValues>()
-  const values = useWatch({ control })
-
-  const reseaux = (values.reseaux ?? []).flatMap((r) => {
-    const url = r?.url?.trim()
-    return url ? [url] : []
-  })
-
-  const eventTypeLabel = values.eventType
-    ? labelFor(values.eventType, formOptions.eventTypes)
-    : "—"
-
-  const logistiqueLabel =
-    (values.logistique ?? [])
-      .map((id) => labelFor(id, formOptions.logisticOptions))
-      .join(", ") || "—"
-
-  const contentLabel =
-    (values.selectedContentTypes ?? [])
-      .map((id) => labelFor(id, formOptions.contentTypes))
-      .join(", ") || "—"
-
+function SummaryLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="space-y-3">
-      <SummaryCard
-        icon={<IconBuilding className="size-5" />}
-        title="Club"
-        onEdit={() => onEdit?.(1)}
-      >
-        <Row label="Nom du club" value={values.nomClub} />
-        <Row label="Ville" value={values.ville} />
-        <Row label="Université" value={values.universite || "—"} />
-        <Row
-          label="Réseaux sociaux"
-          count={reseaux.length}
-          value={reseaux.length > 0 ? reseaux.join(", ") : "—"}
-        />
-      </SummaryCard>
-
-      <SummaryCard
-        icon={<IconUser className="size-5" />}
-        title="Responsable"
-        onEdit={() => onEdit?.(1)}
-      >
-        <Row label="Nom" value={values.nomResponsable} />
-        <Row label="Fonction" value={values.fonction} />
-        <Row label="Téléphone" value={values.telephone} />
-        <Row label="Email" value={values.email} />
-      </SummaryCard>
-
-      <SummaryCard
-        icon={<IconCalendarEvent className="size-5" />}
-        title="Événement"
-        onEdit={() => onEdit?.(2)}
-      >
-        <Row label="Nom" value={values.nomEvenement} />
-        <Row label="Type" value={eventTypeLabel} />
-        <Row
-          label="Dates"
-          value={
-            values.dateDebut && values.dateFin
-              ? `${values.dateDebut} → ${values.dateFin}`
-              : "—"
-          }
-        />
-        <Row label="Lieu" value={values.lieu} />
-        <Row label="Participants" value={values.participants} />
-      </SummaryCard>
-
-      <SummaryCard
-        icon={<IconFileText className="size-5" />}
-        title="Contenus"
-        onEdit={() => onEdit?.(3)}
-      >
-        <Row label="Types" count={values.selectedContentTypes?.length} value={contentLabel} />
-        <Row label="Fichiers" value={formatFiles(values.files)} />
-      </SummaryCard>
-
-      <SummaryCard
-        icon={<IconEye className="size-5" />}
-        title="Visibilité et logistique"
-        onEdit={() => onEdit?.(4)}
-      >
-        <Row label="Visibilité" value={values.visibilite || "—"} />
-        <Row label="Logistique" count={values.logistique?.length} value={logistiqueLabel} />
-      </SummaryCard>
+    <div className="flex items-start justify-between gap-4 py-2">
+      <div className="space-y-0.5">
+        <Typography variant="muted">{label}</Typography>
+        <Typography>{value || "—"}</Typography>
+      </div>
     </div>
   )
 }
 
-function SummaryCard({
-  icon,
-  title,
-  children,
-  onEdit,
-}: {
-  icon: React.ReactNode
-  title: string
-  children: React.ReactNode
-  onEdit: () => void
-}) {
+function SummarySection({ title, step, children, onEdit }: { title: string; step: number; children: React.ReactNode; onEdit: (step: number) => void }) {
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="text-muted-foreground">{icon}</div>
-            <CardTitle className="text-base">{title}</CardTitle>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            type="button"
-            onClick={onEdit}
-            className="h-8 px-2"
-          >
-            <IconEdit className="size-4" />
-          </Button>
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>{title}</CardTitle>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onEdit(step)}
+        >
+          Modifier
+        </Button>
       </CardHeader>
-      <CardContent className="pt-2">
-        <div className="space-y-2 text-sm">{children}</div>
-      </CardContent>
+      <CardContent className="divide-y divide-border">{children}</CardContent>
     </Card>
   )
 }
 
-function Row({
-  label,
-  value,
-  count
-}: {
-  label: string
-  value?: string | null
-  count?: number
-}) {
-  const isEmpty = !value || value === "—"
+function findLabel<T extends readonly { id: string; label: string }[]>(options: T, value: string): string {
+  return options.find((o) => o.id === value)?.label ?? value
+}
+
+function findLabels<T extends readonly { id: string; label: string }[]>(options: T, values: string[]): string {
+  return values.map((v) => findLabel(options, v)).join(", ") || "—"
+}
+
+function InternalSummaryStep({ onEdit }: Props) {
+  const { watch } = useFormContext<SponsorshipDemande1Values>()
+  const values = watch()
 
   return (
-    <div className="flex items-center justify-between gap-4 py-1">
-      <span className="text-muted-foreground text-sm">{label}</span>
-      <div className="flex items-center gap-2">
-        {count !== undefined && count > 0 && (
-          <Badge variant="outline" className="h-5 px-1.5 text-xs font-medium">
-            {count}
-          </Badge>
-        )}
-        <span className={`text-right wrap-break-word max-w-xs text-sm ${isEmpty ? "text-muted-foreground" : "font-medium"}`}>
-          {value || "—"}
-        </span>
-      </div>
+    <div className="space-y-3">
+
+      <SummarySection title="Club / Association" step={1} onEdit={onEdit}>
+        <SummaryLine label="Établissement" value={values.nomEtablissement} />
+        <SummaryLine label="Ville" value={values.ville} />
+        <SummaryLine label="Université / École" value={values.universite} />
+        <SummaryLine label="Responsable" value={values.nomResponsable} />
+        <SummaryLine label="Fonction" value={values.fonction} />
+        <SummaryLine label="Téléphone" value={values.telephone} />
+        <SummaryLine label="Email" value={values.email} />
+        <SummaryLine
+          label="Pages officielles"
+          value={(values.reseaux ?? []).map((r) => r.url).filter(Boolean).join(", ") || "—"}
+        />
+      </SummarySection>
+
+      <SummarySection title="Partenariat & Événement" step={2} onEdit={onEdit}>
+        <SummaryLine label="Type(s) de partenariat" value={findLabels(partenariatTypes, values.partenariatTypes)} />
+        <SummaryLine label="Nom de l'événement" value={values.nomEvenement} />
+        <SummaryLine label="Type d'événement" value={findLabel(eventTypeOptions, values.eventType)} />
+        <SummaryLine label="Date début" value={values.dateDebut} />
+        <SummaryLine label="Date fin" value={values.dateFin} />
+        <SummaryLine label="Lieu" value={values.lieu} />
+        <SummaryLine label="Participants" value={String(values.participants)} />
+        <SummaryLine label="Public cible" value={values.publicCible} />
+      </SummarySection>
+
+      <SummarySection title="Visibilité & contreparties" step={3} onEdit={onEdit}>
+        <SummaryLine label="Visibilité proposée" value={values.visibiliteContreparties} />
+      </SummarySection>
+
+      <SummarySection title="UGC / Influenceurs" step={4} onEdit={onEdit}>
+        <SummaryLine label="Créateurs UGC" value={values.hasInfluencers === "yes" ? "Oui" : "Non"} />
+        <SummaryLine
+          label="Types de contenu UGC"
+          value={findLabels(ugcContentOptions, values.ugcContentTypes)}
+        />
+        <SummaryLine
+          label="Confirmation créateurs UGC"
+          value={values.confirmInfluencers ? "Confirmé" : "Non confirmé"}
+        />
+        <SummaryLine
+          label="Ambassadeurs"
+          value={
+            (values.ambassadeurs ?? [])
+              .filter((a) => a.url)
+              .map((a) => a.url)
+              .join(", ") || "Aucun lien"
+          }
+        />
+      </SummarySection>
+
+      <SummarySection title="Logistique, autorisations & fichiers" step={5} onEdit={onEdit}>
+        <SummaryLine label="Logistique" value={findLabels(logistiqueOptions, values.logistiqueOptions ?? [])} />
+        <SummaryLine label="Droit à l'image" value={values.imageConsent ? "Autorisé" : "Non autorisé"} />
+        <SummaryLine label="Affiche" value={values.afficheEvenement ? "Fournie" : "Non fournie"} />
+        <SummaryLine label="Dossier sponsoring" value={values.dossierSponsoring ? "Fourni" : "Non fourni"} />
+        <SummaryLine label="Photos éditions précédentes" value={values.photosPrecedentes ? "Fournies" : "Non fournies"} />
+      </SummarySection>
+
+      <SummarySection title="Signature" step={7} onEdit={onEdit}>
+        <SummaryLine label="Première collaboration" value={values.premiereCollaboration === "yes" ? "Oui" : "Non"} />
+        <SummaryLine label="Signataire" value={values.signataireNom} />
+        <SummaryLine label="Date" value={values.signatureDate} />
+        <SummaryLine label="Cachet" value={values.cachet ? "Fourni" : "Non fourni"} />
+        <SummaryLine label="Commentaire" value={values.commentaire || "—"} />
+      </SummarySection>
     </div>
   )
+}
+
+export function SummaryStep(props: Props) {
+  return <InternalSummaryStep {...props} />
 }

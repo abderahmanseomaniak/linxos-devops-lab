@@ -19,8 +19,8 @@ const STEPS: readonly Step[] = [
   { id: 6, title: "Engagement" },
 ]
 
-export function SponsorshipConfirmationForm() {
-  const { form, step, otp, submit } = useConfirmationForm(STEPS.length)
+export function SponsorshipConfirmationForm({ trackingCode = "" }: { trackingCode?: string } = {}) {
+  const { form, step, otp, submit } = useConfirmationForm(STEPS.length, trackingCode)
 
   const handleStepPillClick = (stepId: number) => {
     if (stepId < step.current) step.goTo(stepId)
@@ -41,9 +41,11 @@ export function SponsorshipConfirmationForm() {
           error={otp.error}
           loading={otp.loading}
           length={otp.length}
+          email={form.getValues("email")}
           onValueChange={otp.setValue}
           onVerify={otp.verify}
           onClose={otp.close}
+          onResend={otp.resend}
         />
 
         <StepRenderer step={step.current} onEdit={step.goTo} />

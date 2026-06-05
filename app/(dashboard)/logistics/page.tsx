@@ -1,148 +1,99 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { DeliveryCard } from "@/components/screens/logistics/delivery-card"
 import { DeliveryDetailsModal } from "@/components/screens/logistics/delivery-details-modal"
 import { Typography } from "@/components/ui/typography"
-import { Delivery, LogisticsStatus, Note } from "@/types/logistics"
-import { IconSearch, IconPackage, IconTruck, IconCircleCheck, IconAlertTriangle } from "@tabler/icons-react"
-import logisticsData from "@/data/logistics.json"
+import type { Delivery, LogisticsStatus } from "@/types/logistics"
+import {
+  IconSearch,
+  IconPackage,
+  IconTruck,
+  IconCircleCheck,
+  IconAlertTriangle,
+} from "@tabler/icons-react"
+import { useShipmentsStore } from "@/stores/shipments.store"
+import {
+  shipmentsToDeliveries,
+  deliveryStatusToShipmentStatus,
+} from "@/components/screens/logistics/logistics-adapter"
+import { Spinner } from "@/components/ui/spinner"
 
-const initialDeliveries: Delivery[] = logisticsData as Delivery[]
-
-function getStatusCounts(deliveries: Delivery[]) {
-  return deliveries.reduce(
-    (counts, d) => {
-      if (d.status === "Ready") counts.ready++
-      else if (d.status === "Shipped") counts.transit++
-      else if (d.status === "Delivered") counts.delivered++
-      else if (d.status === "Issue") counts.issues++
-      return counts
-    },
-    { ready: 0, transit: 0, delivered: 0, issues: 0 }
-  )
+const TAB_TO_STATUS: Record<string, LogisticsStatus> = {
+  ready: "Ready",
+  transit: "Shipped",
+  delivered: "Delivered",
+  issues: "Issue",
 }
 
 export default function LogisticsPage() {
-  const [deliveries, setDeliveries] = useState<Delivery[]>(initialDeliveries)
+  const { shipments, loading, fetchShipments, updateShipmentStatus } =
+    useShipmentsStore()
   const [searchQuery, setSearchQuery] = useState("")
   const [cityFilter, setCityFilter] = useState("all")
   const [activeTab, setActiveTab] = useState("ready")
   const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const noteCounterRef = useRef(100)
 
-  const cities = [...new Set(deliveries.map((d) => d.city))].toSorted()
+  useEffect(() => {
+    fetchShipments()
+  }, [fetchShipments])
 
-  const filteredDeliveries = (() => {
+  const deliveries: Delivery[] = useMemo(
+    () => shipmentsToDeliveries(shipments),
+    [shipments]
+  )
+
+  const cities = useMemo(
+    () => Array.from(new Set(deliveries.map((d) => d.city))).sort(),
+    [deliveries]
+  )
+
+  const filteredDeliveries = useMemo(() => {
     let filtered = deliveries
-
-    const statusMap: Record<string, LogisticsStatus> = {
-      ready: "Ready",
-      transit: "Shipped",
-      delivered: "Delivered",
-      issues: "Issue",
-    }
-    filtered = filtered.filter((d) => d.status === statusMap[activeTab])
-
+    filtered = filtered.filter((d) => d.status === TAB_TO_STATUS[activeTab])
     if (searchQuery) {
+      const q = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (d) =>
-          d.eventName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          d.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          d.clubName.toLowerCase().includes(searchQuery.toLowerCase())
+          d.eventName.toLowerCase().includes(q) ||
+          d.city.toLowerCase().includes(q) ||
+          d.clubName.toLowerCase().includes(q)
       )
     }
-
     if (cityFilter !== "all") {
       filtered = filtered.filter((d) => d.city === cityFilter)
     }
-
     return filtered
-  })()
+  }, [deliveries, searchQuery, cityFilter, activeTab])
 
-  const statusCounts = getStatusCounts(deliveries)
-
-  const handleStatusChange = (
-    id: number,
-    newStatus: LogisticsStatus,
-    issueType?: Delivery["issueType"],
-    issueDescription?: string
-  ) => {
-    setDeliveries((prev) =>
-      prev.map((delivery) => {
-        if (delivery.id !== id) return delivery
-
-        const updates: Partial<Delivery> = { status: newStatus }
-
-        if (newStatus === "Shipped" && !delivery.deliveryStartedAt) {
-          updates.deliveryStartedAt = new Date().toISOString()
-        }
-
-        if (newStatus === "Delivered" && !delivery.deliveredAt) {
-          updates.deliveredAt = new Date().toISOString()
-        }
-
-        if (newStatus === "Issue") {
-          updates.issueType = issueType
-          updates.issueDescription = issueDescription
-        }
-
-        if (newStatus === "Shipped" && delivery.status === "Issue") {
-          updates.issueType = undefined
-          updates.issueDescription = undefined
-        }
-
-        return { ...delivery, ...updates }
-      })
-    )
-  }
-
-  const handleViewDetails = (delivery: Delivery) => {
-    setSelectedDelivery(delivery)
-    setModalOpen(true)
-  }
-
-  const handleAddNote = (id: number, content: string) => {
-    const newNote: Note = {
-      id: noteCounterRef.current,
-      content,
-      createdAt: new Date().toISOString(),
-      author: "Logistics Manager",
+  const statusCounts = useMemo(() => {
+    const counts = { ready: 0, transit: 0, delivered: 0, issues: 0 }
+    for (const d of deliveries) {
+      if (d.status === "Ready") counts.ready++
+      else if (d.status === "Shipped") counts.transit++
+      else if (d.status === "Delivered") counts.delivered++
+      else if (d.status === "Issue") counts.issues++
     }
-    noteCounterRef.current += 1
+    return counts
+  }, [deliveries])
 
-    setDeliveries((prev) =>
-      prev.map((delivery) =>
-        delivery.id === id
-          ? { ...delivery, notes: [...delivery.notes, newNote] }
-          : delivery
-      )
-    )
-
-    if (selectedDelivery?.id === id) {
-      setSelectedDelivery((prev) =>
-        prev ? { ...prev, notes: [...prev.notes, newNote] } : null
-      )
-    }
+  const handleAddNote = (id: number, note: string) => {
+    toast.success("Note ajoutée", { description: `Livraison #${id}: ${note}` })
   }
 
   const handleUploadReceipt = (id: number, file: File) => {
-    const receiptUrl = URL.createObjectURL(file)
-    setDeliveries((prev) =>
-      prev.map((delivery) =>
-        delivery.id === id ? { ...delivery, receiptUrl, receiptFile: file } : delivery
-      )
-    )
-
-    if (selectedDelivery?.id === id) {
-      setSelectedDelivery((prev) =>
-        prev ? { ...prev, receiptUrl, receiptFile: file } : null
-      )
-    }
+    toast.success("Reçu téléchargé", { description: `Livraison #${id}: ${file.name}` })
   }
 
   const handleContactWhatsApp = (phone: string) => {
@@ -150,16 +101,57 @@ export default function LogisticsPage() {
     window.open(`https://wa.me/${cleanPhone}`, "_blank")
   }
 
+  const handleStatusChange = async (
+    id: number,
+    newStatus: LogisticsStatus,
+    issueType?: Delivery["issueType"],
+    issueDescription?: string
+  ) => {
+    const shipment = shipments[id - 1]
+    if (!shipment) return
+    const newShipmentStatus = deliveryStatusToShipmentStatus(newStatus)
+    const updates: Record<string, unknown> = { status: newShipmentStatus }
+    if (newStatus === "Issue") {
+      updates.problem_description = issueDescription ?? null
+    }
+    if (newStatus === "Shipped" && !shipment.shipped_at) {
+      updates.shipped_at = new Date().toISOString()
+    }
+    if (newStatus === "Delivered" && !shipment.delivered_at) {
+      updates.delivered_at = new Date().toISOString()
+    }
+    try {
+      await updateShipmentStatus(shipment.id, newShipmentStatus as "PREPARING" | "IN_DELIVERY" | "DELIVERED" | "PROBLEM" | "CANCELLED", updates as { shipped_at?: string; delivered_at?: string; problem_description?: string })
+      toast.success("Statut mis à jour")
+    } catch (err) {
+      toast.error("Erreur", {
+        description: err instanceof Error ? err.message : "Erreur",
+      })
+    }
+  }
+
+  const handleViewDetails = (delivery: Delivery) => {
+    setSelectedDelivery(delivery)
+    setModalOpen(true)
+  }
+
+  if (loading && shipments.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Spinner className="size-6" />
+      </div>
+    )
+  }
+
   return (
     <div className="h-full flex flex-col p-4 gap-4">
       <div className="flex flex-col gap-1">
         <Typography variant="h3">Delivery Operations</Typography>
-<Typography variant="muted">
+        <Typography variant="muted">
           Gérez les livraisons et suivez le statut des expéditions
         </Typography>
       </div>
 
-      
       <div className="flex items-center gap-4">
         <div className="relative max-w-md">
           <Input
@@ -188,37 +180,22 @@ export default function LogisticsPage() {
           </Select>
         </div>
       </div>
-     
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-        
-
         <TabsList className="hidden sm:flex w-full justify-start h-auto p-0 bg-transparent gap-1">
-          <TabsTrigger
-            value="ready"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
-          >
+          <TabsTrigger value="ready" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4">
             <IconPackage className="size-4 mr-1.5" />
             Prêt ({statusCounts.ready})
           </TabsTrigger>
-          <TabsTrigger
-            value="transit"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
-          >
+          <TabsTrigger value="transit" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4">
             <IconTruck className="size-4 mr-1.5" />
             En transit ({statusCounts.transit})
           </TabsTrigger>
-          <TabsTrigger
-            value="delivered"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
-          >
+          <TabsTrigger value="delivered" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4">
             <IconCircleCheck className="size-4 mr-1.5" />
             Livré ({statusCounts.delivered})
           </TabsTrigger>
-          <TabsTrigger
-            value="issues"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4"
-          >
+          <TabsTrigger value="issues" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-9 px-4">
             <IconAlertTriangle className="size-4 mr-1.5" />
             Problèmes ({statusCounts.issues})
           </TabsTrigger>
@@ -238,13 +215,12 @@ export default function LogisticsPage() {
                 />
               ))}
             </div>
-
             {filteredDeliveries.length === 0 && (
               <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
                 <div className="text-center">
                   <IconPackage className="size-12 mx-auto mb-3 opacity-30" />
                   <Typography>Aucune livraison trouvée</Typography>
-                  <Typography variant="small" className="mt-1">Essayez avec d&apos;autres filtres</Typography>
+                  <Typography variant="small" className="mt-1">Essayez d&apos;autres filtres</Typography>
                 </div>
               </div>
             )}

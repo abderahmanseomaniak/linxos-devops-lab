@@ -3,7 +3,7 @@
 import { IconCheck } from "@tabler/icons-react"
 
 import { Typography } from "@/components/ui/typography"
-import { type Step } from "@/types/sponsorship-form"
+import type { Step } from "@/types/sponsorship-form"
 
 type Props = {
   steps: readonly Step[]

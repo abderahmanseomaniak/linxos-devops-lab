@@ -5,7 +5,6 @@ import { Typography } from "@/components/ui/typography"
 export function ContactFooter() {
   return (
     <footer className="mt-16 flex flex-col md:flex-row justify-between gap-12 border-t border-border pt-12 pb-8">
-      {/* Left Column: Contact */}
       <div className="flex flex-col gap-2">
         <Typography variant="large">
           +212 (537) 040-923
@@ -15,9 +14,7 @@ export function ContactFooter() {
         </Typography>
       </div>
 
-      {/* Right Columns Container */}
       <div className="flex flex-col sm:flex-row gap-16 md:gap-24">
-        {/* Navigate Column */}
         <div className="flex flex-col gap-4">
           <Typography variant="muted">
             Navigate
@@ -33,7 +30,6 @@ export function ContactFooter() {
           </Link>
         </div>
 
-        {/* Social Column */}
         <div className="flex flex-col gap-4">
           <Typography variant="muted">
             Social

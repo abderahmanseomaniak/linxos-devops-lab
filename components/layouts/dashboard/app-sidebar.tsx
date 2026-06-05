@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconCalendar, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList, IconList } from "@tabler/icons-react"
+import { IconCalendar, IconHome, IconLayoutDashboard, IconLogin, IconSearch, IconSettings, IconUsers, IconLayoutGrid, IconTruck, IconFileText, IconMapPin, IconClipboardList, IconList, IconPackage } from "@tabler/icons-react"
 
 import uiConstants from "@/data/ui-constants.json"
 
@@ -31,7 +31,9 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   MapPin: IconMapPin,
   ClipboardList: IconClipboardList,
   Scroll: IconList,
+  Package: IconPackage,
 }
+
 
 const generalItems = uiConstants.sidebar.general.map(item => ({
   ...item,

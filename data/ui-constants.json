@@ -37,6 +37,7 @@
     "management": [
       { "title": "Events", "href": "/events", "icon": "Calendar" },
       { "title": "Users", "href": "/users", "icon": "Users" },
+      { "title": "Inventory", "href": "/inventory", "icon": "Package" },
       { "title": "kanban", "href": "/kanban", "icon": "LayoutGrid" },
       { "title": "logistics", "href": "/logistics", "icon": "Truck" },
       { "title": "content", "href": "/content", "icon": "FileText" },

@@ -14,8 +14,6 @@ interface AuthContextValue {
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   isAdmin: boolean
-  isMarketing: boolean
-  isLogistics: boolean
   isSponsoringManager: boolean
   hasRole: (...roles: string[]) => boolean
 }
@@ -127,8 +125,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, fetchProfile])
 
   const isAdmin = profile?.role === "ADMIN"
-  const isMarketing = profile?.role === "MARKETING"
-  const isLogistics = profile?.role === "LOGISTICS"
   const isSponsoringManager = profile?.role === "SPONSORING_MANAGER"
 
   const hasRole = (...roles: string[]) => roles.includes(profile?.role ?? "")
@@ -144,8 +140,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signOut,
         refreshProfile,
         isAdmin,
-        isMarketing,
-        isLogistics,
         isSponsoringManager,
         hasRole,
       }}

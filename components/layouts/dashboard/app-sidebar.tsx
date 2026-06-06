@@ -70,28 +70,6 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
     { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
     { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
-  LOGISTICS_MANAGER: [
-    { title: "Dashboard Livraison", href: "/", icon: IconLayoutDashboard, group: "Général" },
-    { title: "Livraisons", href: "/logistics", icon: IconTruckDelivery, group: "Gestion" },
-    { title: "Preuves Livraison", href: "/delivery-proofs", icon: IconCertificate, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
-  ],
-  CONTENT_MANAGER: [
-    { title: "Dashboard UGC", href: "/", icon: IconLayoutDashboard, group: "Général" },
-    { title: "Contenus UGC", href: "/content", icon: IconPhoto, group: "Gestion" },
-    { title: "Vérifications", href: "/verifications", icon: IconChecklist, group: "Gestion" },
-    { title: "Reporting UGC", href: "/reporting", icon: IconChartBar, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
-  ],
-  MARKETING: [
-    { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
-    { title: "Événements", href: "/events", icon: IconCalendar, group: "Gestion" },
-    { title: "Campagnes", href: "/campaigns", icon: IconGift, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
-  ],
   VIEWER: [
     { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
     { title: "Événements", href: "/events", icon: IconCalendar, group: "Gestion" },

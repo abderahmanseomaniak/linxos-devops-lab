@@ -1,121 +1,46 @@
 "use client"
 
-import React from "react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import type { UserItem, UserRole } from "@/types/users"
-import { ROLE_LABELS } from "../lib/constants"
-import { multiColumnFilterFn, statusFilterFn } from "../lib/filter-fns"
+import type { Profile } from "@/types/profiles.types"
+import { USER_ROLE_LABELS } from "@/types/profiles.types"
 import { RowActions } from "./row-actions"
 
-const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }))
-
-export const columns: ColumnDef<UserItem>[] = [
+export const columns: ColumnDef<Profile>[] = [
   {
+    id: "full_name",
+    header: "Nom",
+    accessorKey: "full_name",
     cell: ({ row }) => (
-      <Checkbox
-        aria-label="Select row"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
+      <span className="font-medium text-sm">{row.original.full_name}</span>
     ),
-    enableHiding: false,
-    enableSorting: false,
-    header: ({ table }) => {
-      const isAllSelected = table.getIsAllPageRowsSelected()
-      const isSomeSelected = table.getIsSomePageRowsSelected()
-      const checked = isAllSelected || (isSomeSelected && "indeterminate")
-      return (
-        <Checkbox
-          aria-label="Select all"
-          checked={checked || false}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        />
-      )
-    },
-    id: "select",
-    size: 40,
   },
   {
-    accessorKey: "name",
-    cell: ({ row }) => {
-      const name = row.getValue("name") as string
-      return (
-        <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <span className="font-medium">{name}</span>
-        </div>
-      )
-    },
-    enableHiding: false,
-    filterFn: multiColumnFilterFn,
-    header: "Name",
-    size: 200,
-  },
-  {
-    accessorKey: "email",
+    id: "email",
     header: "Email",
-    size: 220,
+    accessorKey: "email",
+    cell: ({ row }) => <span className="text-sm">{row.original.email}</span>,
   },
   {
-    accessorKey: "phone",
-    header: "IconPhone",
-    size: 150,
-  },
-  {
-    accessorKey: "cin",
-    header: "CIN",
-    size: 100,
-  },
-  {
+    id: "role",
+    header: "Rôle",
     accessorKey: "role",
-    cell: ({ row }) => {
-      const role = row.getValue("role") as UserRole
-      return (
-        <Select defaultValue={role}>
-          <SelectTrigger className="h-8 w-24">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {ROLE_OPTIONS.map(({ value, label }) => (
-              <SelectItem key={value} value={value}>{label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )
-    },
-    header: "Role",
-    size: 120,
+    cell: ({ row }) => (
+      <Badge variant="outline">{USER_ROLE_LABELS[row.original.role]}</Badge>
+    ),
   },
   {
-    accessorKey: "statusDisplay",
+    id: "is_active",
+    header: "Statut",
+    accessorKey: "is_active",
     cell: ({ row }) => (
-      <Badge
-        className={row.getValue("statusDisplay") === "Inactive" ? "bg-muted-foreground/60 text-primary-foreground" : undefined}
-      >
-        {row.getValue("statusDisplay")}
+      <Badge variant={row.original.is_active ? "default" : "destructive"}>
+        {row.original.is_active ? "Actif" : "Inactif"}
       </Badge>
     ),
-    filterFn: statusFilterFn,
-    header: "Status",
-    size: 100,
   },
   {
-    cell: ({ row }) => <RowActions row={row} />,
-    enableHiding: false,
-    header: () => <span className="sr-only">Actions</span>,
     id: "actions",
-    size: 60,
+    cell: ({ row }) => <RowActions row={row} />,
   },
 ]

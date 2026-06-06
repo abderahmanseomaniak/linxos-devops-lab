@@ -1,115 +1,93 @@
 "use client"
 
-import React from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import type { UserRole } from "@/types/users"
-import { ROLE_LABELS } from "../lib/constants"
-
-const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }))
+import { usersService } from "@/services/users.service"
+import { USER_ROLES, USER_ROLE_LABELS } from "@/types/profiles.types"
+import type { Profile, UserRole } from "@/types/profiles.types"
+import { toast } from "sonner"
 
 interface EditUserSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  formData: {
-    name: string
-    email: string
-    phone: string
-    cin: string
-    role: UserRole
-    status: boolean
-  }
-  setFormData: React.Dispatch<React.SetStateAction<{
-    name: string
-    email: string
-    phone: string
-    cin: string
-    role: UserRole
-    status: boolean
-  }>>
-  onSave: () => void
+  user: Profile
+  onUpdated: () => void
 }
 
-export function EditUserSheet({ open, onOpenChange, formData, setFormData, onSave }: EditUserSheetProps) {
+export function EditUserSheet({ open, onOpenChange, user, onUpdated }: EditUserSheetProps) {
+  const [fullName, setFullName] = useState(user.full_name)
+  const [email, setEmail] = useState(user.email)
+  const [role, setRole] = useState<UserRole>(user.role)
+  const [isActive, setIsActive] = useState(user.is_active)
+
+  useEffect(() => {
+    setFullName(user.full_name)
+    setEmail(user.email)
+    setRole(user.role)
+    setIsActive(user.is_active)
+  }, [user])
+
+  const handleSave = async () => {
+    if (!fullName.trim() || !email.trim()) {
+      toast.error("Nom et email requis")
+      return
+    }
+    try {
+      await usersService.update(user.id, {
+        full_name: fullName.trim(),
+        email: email.trim(),
+        role,
+        is_active: isActive,
+      })
+      toast.success("Utilisateur mis à jour")
+      onUpdated()
+      onOpenChange(false)
+    } catch {
+      toast.error("Erreur lors de la mise à jour")
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
+      <SheetContent className="w-full sm:max-w-md">
         <SheetHeader className="mb-6">
-          <SheetTitle>Edit User</SheetTitle>
-          <SheetDescription>Update user information</SheetDescription>
+          <SheetTitle>Modifier l'utilisateur</SheetTitle>
+          <SheetDescription>Mettre à jour les informations</SheetDescription>
         </SheetHeader>
-
-        <div className="flex flex-col gap-4 px-8">
+        <div className="flex flex-col gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="edit-name">Name</Label>
-            <Input
-              id="edit-name"
-              value={formData.name}
-              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-            />
+            <Label>Nom complet</Label>
+            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="edit-email">Email</Label>
-            <Input
-              id="edit-email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-            />
+            <Label>Email</Label>
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="edit-phone">Phone</Label>
-            <Input
-              id="edit-phone"
-              value={formData.phone}
-              onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="edit-cin">CIN</Label>
-            <Input
-              id="edit-cin"
-              value={formData.cin}
-              onChange={(e) => setFormData((prev) => ({ ...prev, cin: e.target.value }))}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="edit-role">Role</Label>
-            <Select
-              value={formData.role}
-              onValueChange={(value) => setFormData((prev) => ({ ...prev, role: value as UserRole }))}
-            >
-              <SelectTrigger id="edit-role">
+            <Label>Rôle</Label>
+            <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ROLE_OPTIONS.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                {USER_ROLES.map((r) => (
+                  <SelectItem key={r} value={r}>{USER_ROLE_LABELS[r]}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-center gap-2">
-            <Checkbox
-              id="edit-status"
-              checked={formData.status}
-              onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, status: !!checked }))}
-            />
-            <Label htmlFor="edit-status">Active</Label>
+            <Checkbox id="edit-active" checked={isActive} onCheckedChange={(c) => setIsActive(!!c)} />
+            <Label htmlFor="edit-active">Actif</Label>
           </div>
-          <Button className="mt-2 w-full" onClick={onSave}>
-            Save Changes
-          </Button>
+          <Button className="mt-2" onClick={handleSave}>Enregistrer</Button>
         </div>
       </SheetContent>
     </Sheet>

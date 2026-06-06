@@ -41,7 +41,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import type { UserRole } from "@/types/users"
-import { AddUserSheet } from "../sheet/add-user-sheet"
 import type { UseFilterReturn } from "@/hooks/use-filter"
 import { RenderIf } from "@/components/helpers/render-if"
 
@@ -156,13 +155,7 @@ export function UsersTableToolbar<TData = unknown>({
         </div>
       </div>
 
-      <AddUserSheet
-        open={showAddSheet}
-        onOpenChange={setShowAddSheet}
-        formData={addFormData}
-        setFormData={setAddFormData}
-        onAdd={() => setShowAddSheet(false)}
-      />
+      
     </>
   )
 }

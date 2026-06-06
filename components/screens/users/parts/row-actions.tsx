@@ -1,38 +1,26 @@
 "use client"
 
-import React, { useState } from "react"
+import { useState } from "react"
 import type { Row } from "@tanstack/react-table"
 import { IconDots } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuGroup,
+  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import type { UserItem } from "@/types/users"
 import { EditUserSheet } from "../sheet/edit-user-sheet"
-import { UserDetailsSheet } from "../sheet/details-users-sheet"
+import { UserDetailsSheet } from "../sheet/user-details-sheet"
+import type { Profile } from "@/types/profiles.types"
 
 interface RowActionsProps {
-  row: Row<UserItem>
+  row: Row<Profile>
+  onUpdated?: () => void
 }
 
-export function RowActions({ row }: RowActionsProps) {
+export function RowActions({ row, onUpdated }: RowActionsProps) {
   const user = row.original
   const [showDetails, setShowDetails] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
-  const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    phone: user.phone || "",
-    cin: user.cin || "",
-    role: user.role,
-    status: user.status,
-  })
 
   return (
     <>
@@ -47,45 +35,21 @@ export function RowActions({ row }: RowActionsProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => setShowDetails(true)}>
-              <span>View Details</span>
+              <span>Détails</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowEdit(true)}>
-              <span>Edit</span>
-              <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Duplicate</span>
-              <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <span>Archive</span>
-              <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
+              <span>Modifier</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="text-destructive focus:text-destructive">
-            <span>Delete</span>
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+            <span>Supprimer</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <UserDetailsSheet
-        open={showDetails}
-        onOpenChange={setShowDetails}
-        user={user}
-      />
-
-      <EditUserSheet
-        open={showEdit}
-        onOpenChange={setShowEdit}
-        formData={formData}
-        setFormData={setFormData}
-        onSave={() => setShowEdit(false)}
-      />
+      <UserDetailsSheet open={showDetails} onOpenChange={setShowDetails} user={user} />
+      <EditUserSheet open={showEdit} onOpenChange={setShowEdit} user={user} onUpdated={() => { setShowEdit(false); onUpdated?.() }} />
     </>
   )
 }

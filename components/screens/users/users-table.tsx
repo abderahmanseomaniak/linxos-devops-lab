@@ -1,169 +1,172 @@
 "use client"
 
-import { useId, useState, useEffect, useRef } from "react"
+import { useId, useState, useMemo } from "react"
 import {
   flexRender,
   getCoreRowModel,
-  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type SortingState,
+  type ColumnDef,
 } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
-import type { UserRole, UsersTableProps, UserItem } from "@/types/users"
-import { columns } from "./parts/columns"
-import { UsersTableToolbar } from "./parts/table-users-toolbar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { IconDotsVertical } from "@tabler/icons-react"
 import { TablePagination } from "@/components/shared/table-pagination"
-import { DEFAULT_SORTING } from "./lib/constants"
-import { useFilter, useTextFilter } from "@/hooks/use-filter"
 import { SORT_ICONS } from "@/components/shared/sort-icons"
+import { USER_ROLE_LABELS } from "@/types/profiles.types"
+import type { Profile } from "@/types/profiles.types"
 
-export function UsersTable({ data: initialData, onAdd }: UsersTableProps) {
-  const id = useId()
-  const [columnVisibility, setColumnVisibility] = useState({})
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
-  const [sorting, setSorting] = useState<import("@tanstack/react-table").SortingState>([DEFAULT_SORTING])
+interface UsersTableProps {
+  data: Profile[]
+  onRefresh: () => void
+  onEdit: (user: Profile) => void
+  onDelete: (user: Profile) => void
+  onView: (user: Profile) => void
+}
 
-  const [showAddSheet, setShowAddSheet] = useState(false)
-  const [addFormData, setAddFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    cin: "",
-    role: "user" as UserRole,
-    status: true,
-  })
+export function UsersTable({ data, onRefresh, onEdit, onDelete, onView }: UsersTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState("")
 
-  const [data, setData] = useState<UserItem[]>(() =>
-    initialData.map((u) => ({
-      ...u,
-      statusDisplay: u.status ? "Active" : "Inactive",
-      performance: 0,
-    }))
-  )
+  const columns: ColumnDef<Profile>[] = useMemo(() => [
+    {
+      id: "full_name",
+      header: "Nom",
+      accessorKey: "full_name",
+      cell: ({ row }) => (
+        <span className="font-medium text-sm">{row.original.full_name}</span>
+      ),
+    },
+    {
+      id: "email",
+      header: "Email",
+      accessorKey: "email",
+      cell: ({ row }) => <span className="text-sm">{row.original.email}</span>,
+    },
+    {
+      id: "role",
+      header: "Rôle",
+      accessorKey: "role",
+      cell: ({ row }) => (
+        <Badge variant="outline">{USER_ROLE_LABELS[row.original.role]}</Badge>
+      ),
+    },
+    {
+      id: "is_active",
+      header: "Statut",
+      accessorKey: "is_active",
+      cell: ({ row }) => (
+        <Badge variant={row.original.is_active ? "default" : "destructive"}>
+          {row.original.is_active ? "Actif" : "Inactif"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: () => <span className="sr-only">Actions</span>,
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="size-8 p-0">
+              <IconDotsVertical className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onView(row.original)}>
+              Détails
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit(row.original)}>
+              Modifier
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => onDelete(row.original)}
+            >
+              Supprimer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ], [onView, onEdit, onDelete])
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    columns,
     data,
-    enableSortingRemoval: false,
+    columns,
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { columnVisibility, pagination, sorting },
+    initialState: { pagination: { pageSize: 10 } },
   })
-
-  const searchFilter = useTextFilter("")
-  const statusFilter = useFilter<"Active" | "Inactive">()
-
-  const statusCounts = (() => {
-    const statusColumn = table.getColumn("statusDisplay")
-    return statusColumn?.getFacetedUniqueValues() ?? new Map<unknown, number>()
-  })()
-
-  useEffect(() => {
-    table.getColumn("name")?.setFilterValue(searchFilter.value || "")
-  }, [searchFilter.value, table])
-
-  useEffect(() => {
-    const statusValues = statusFilter.filterState
-    table.getColumn("statusDisplay")?.setFilterValue(statusValues.length ? statusValues : undefined)
-  }, [statusFilter.filterState, table])
-
-  const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows
-    const idSet = new Set(selectedRows.map((row) => row.original.id))
-    const updatedData = data.filter((item) => !idSet.has(item.id))
-    setData(updatedData)
-    table.resetRowSelection()
-  }
-
-  const inputRef = useRef<HTMLInputElement>(null)
 
   return (
     <div className="space-y-4">
-      <UsersTableToolbar
-        table={table}
-        onAdd={onAdd}
-        onDeleteRows={handleDeleteRows}
-        addFormData={addFormData}
-        setAddFormData={setAddFormData}
-        showAddSheet={showAddSheet}
-        setShowAddSheet={setShowAddSheet}
-        statusCounts={statusCounts}
-        inputRef={inputRef}
-        searchValue={searchFilter.value}
-        onSearchChange={searchFilter.setValue}
-        onSearchClear={searchFilter.clear}
-        statusFilter={statusFilter}
-        columnVisibility={columnVisibility}
-        id={id}
+      <Input
+        placeholder="Rechercher un utilisateur..."
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        className="max-w-sm"
       />
-
       <div className="overflow-hidden rounded-md border bg-background">
-        <Table className="table-fixed">
+        <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                {headerGroup.headers.map((header) =>
-                  header.column.getIsVisible() ? (
-                  <TableHead className="h-11" key={header.id} style={{ width: `${header.getSize()}px` }}>
-                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
+            {table.getHeaderGroups().map((hg) => (
+              <TableRow key={hg.id}>
+                {hg.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder ? null : (
                       <div
-                        className={cn(header.column.getCanSort() && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
+                        className={cn(
+                          "flex items-center gap-2",
+                          header.column.getCanSort() && "cursor-pointer select-none",
+                        )}
                         onClick={header.column.getToggleSortingHandler()}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.column.getToggleSortingHandler()?.(e) } }}
-                        role="button"
-                        tabIndex={header.column.getCanSort() ? 0 : undefined}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {SORT_ICONS[header.column.getIsSorted() as keyof typeof SORT_ICONS] ?? null}
                       </div>
-                    ) : (
-                      flexRender(header.column.columnDef.header, header.getContext())
                     )}
                   </TableHead>
-                  ) : null
-                )}
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length
-              ? table.getRowModel().rows.map((row) => (
-                  <TableRow data-state={row.getIsSelected() ? "selected" : undefined} key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell className="last:py-0" key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : (
-                <TableRow>
-                  <TableCell className="h-24 text-center" colSpan={columns.length}>
-                    No results.
-                  </TableCell>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              )}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell className="h-24 text-center" colSpan={columns.length}>
+                  Aucun résultat.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
-
       <TablePagination table={table} />
     </div>
   )

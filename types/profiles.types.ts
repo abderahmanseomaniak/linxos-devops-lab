@@ -6,8 +6,6 @@ import { z } from 'zod';
 // ── Constants ─────────────────────────────────
 export const USER_ROLES = [
   'SPONSORING_MANAGER',
-  'MARKETING',
-  'LOGISTICS',
   'ADMIN',
   'VIEWER',
 ] as const;
@@ -16,8 +14,6 @@ export type UserRole = (typeof USER_ROLES)[number];
 
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   SPONSORING_MANAGER: 'Sponsoring Manager',
-  MARKETING: 'Marketing',
-  LOGISTICS: 'Logistique',
   ADMIN: 'Administrateur',
   VIEWER: 'Lecteur',
 };

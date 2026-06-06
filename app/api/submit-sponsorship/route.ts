@@ -148,7 +148,6 @@ async function handleConfirmationForm(admin: any, formData: Record<string, unkno
       delivery_date: (formData.delivery_date as string) || null,
       reception_time: (formData.reception_time as string) || null,
       commitment: formData.commitment === true || formData.commitment === "true",
-      comment: (formData.comment as string) || null,
     })
     .select("*")
     .single();

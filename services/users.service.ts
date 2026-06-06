@@ -68,7 +68,7 @@ async function getById(id: string): Promise<Profile | null> {
 async function create(data: ProfileInsert): Promise<Profile> {
   const { data: created, error } = await supabase
     .from("profiles")
-    .insert(data)
+    .insert(data as never)
     .select("*")
     .single()
 
@@ -81,7 +81,7 @@ async function create(data: ProfileInsert): Promise<Profile> {
 async function update(id: string, data: ProfileUpdate): Promise<Profile> {
   const { data: updated, error } = await supabase
     .from("profiles")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select("*")
     .single()

@@ -46,7 +46,7 @@ export async function submitSponsorshipDemande1Form(
   })
 
   // 3. Créer l'événement
-  const event = await eventsService.create({
+  const evt: any = await eventsService.create({
     club_id: club.id,
     title: data.nomEvenement,
     city: data.lieu,
@@ -57,7 +57,7 @@ export async function submitSponsorshipDemande1Form(
 
   // 4. Créer application_form
   const applicationForm = await eventsService.createApplicationForm({
-    event_id: event.id,
+    event_id: evt.id,
     partnership_type: data.partenariatTypes.join(", "),
     event_type: data.eventType,
     expected_attendance: Number(data.participants) || 0,
@@ -121,9 +121,9 @@ export async function submitSponsorshipDemande1Form(
   }
 
   for (const { file, type } of fileAttachments) {
-    const fileUrl = await uploadFile(file, event.id, type)
+    const fileUrl = await uploadFile(file, evt.id, type)
     await eventsService.createAttachment({
-      event_id: event.id,
+      event_id: evt.id,
       file_type: type,
       file_url: fileUrl,
       file_name: file.name,
@@ -131,15 +131,15 @@ export async function submitSponsorshipDemande1Form(
   }
 
   // 8. Transition workflow → SUBMITTED
-  const { data: submittedState } = await supabase
+  const { data: stateRow } = await supabase
     .from("workflow_states")
     .select("id")
     .eq("code", SUBMITTED_STATE_CODE)
-    .single()
+    .maybeSingle() as unknown as { data: { id: string } | null; error: unknown }
 
-  if (submittedState) {
-    await workflowService.transition(event.id, submittedState.id, null)
+  if (stateRow) {
+    await workflowService.transition(evt.id, stateRow.id, null)
   }
 
-  return event
+  return evt
 }

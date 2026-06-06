@@ -1,47 +1,22 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
 import { EventTable } from "@/components/screens/events/event-table"
 import { EventsStats } from "@/components/screens/events/components/events-stats"
-import type { EventApplication } from "@/types/events"
-import { useEventsStore } from "@/stores/events.store"
-import { eventsToApplications } from "@/components/screens/events/event-adapter"
+import { useEventOverviewTable } from "@/components/screens/events/hooks/use-event-overview-table"
 import { Spinner } from "@/components/ui/spinner"
 
 export default function EventsPage() {
-  const { events, loading, error, fetchEvents, deleteEvent, deleteEvents } =
-    useEventsStore()
+  const {
+    data, total, loading, error,
+    stats, statsLoading,
+    pagination, setPagination,
+    filters, setFilters, updateFilter, clearFilters,
+    refresh,
+    selectedEvent, setSelectedEvent,
+    detailOpen, setDetailOpen,
+  } = useEventOverviewTable()
 
-  useEffect(() => {
-    fetchEvents()
-  }, [fetchEvents])
-
-  const applications: EventApplication[] = useMemo(
-    () => eventsToApplications(events),
-    [events]
-  )
-
-  const stats = useMemo(
-    () => ({
-      total: applications.length,
-      accepted: applications.filter((e) => e.status === "Accepted").length,
-      pending: applications.filter((e) => e.status === "Pending").length,
-      rejected: applications.filter((e) => e.status === "Rejected").length,
-    }),
-    [applications]
-  )
-
-  const handleDeleteMultiple = async (ids: number[]) => {
-    // Mapper index → event id
-    const eventIds = ids
-      .map((id) => events[id - 1]?.id)
-      .filter((id): id is string => Boolean(id))
-    if (eventIds.length > 0) {
-      await deleteEvents(eventIds)
-    }
-  }
-
-  if (loading && events.length === 0) {
+  if (loading && data.length === 0 && !error) {
     return (
       <div className="flex items-center justify-center py-12">
         <Spinner className="size-6" />
@@ -56,10 +31,21 @@ export default function EventsPage() {
           {error}
         </div>
       )}
-      <EventsStats data={stats} />
+      <EventsStats data={stats} loading={statsLoading} onRefresh={refresh} />
       <EventTable
-        data={applications}
-        onDeleteMultiple={handleDeleteMultiple}
+        data={data}
+        total={total}
+        loading={loading}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        filters={filters}
+        onFilterChange={updateFilter}
+        onClearFilters={clearFilters}
+        onRefresh={refresh}
+        onSelectEvent={setSelectedEvent}
+        selectedEvent={selectedEvent}
+        detailOpen={detailOpen}
+        onDetailOpenChange={setDetailOpen}
       />
     </div>
   )

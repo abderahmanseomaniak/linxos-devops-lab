@@ -110,7 +110,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           email,
           full_name: fullName,
           role: "SPONSORING_MANAGER",
-        })
+          is_active: true,
+        } as never)
 
         set({
           user: data.user,

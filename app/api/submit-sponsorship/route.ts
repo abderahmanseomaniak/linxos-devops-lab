@@ -10,8 +10,16 @@ function generateTrackingCode(): string {
   return `LYNX-${date}-${random}`;
 }
 
-async function handleSponsorshipDemande(supabase: any, formData: Record<string, unknown>) {
-  const { data: club, error: clubError } = await supabase
+function getAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
+}
+
+async function handleSponsorshipDemande(admin: any, formData: Record<string, unknown>) {
+  const { data: club, error: clubError } = await admin
     .from("clubs")
     .insert({
       name: formData.nomEtablissement as string,
@@ -25,7 +33,7 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
     throw new Error(`Erreur création club: ${clubError?.message}`);
   }
 
-  const { error: contactError } = await supabase
+  const { error: contactError } = await admin
     .from("club_contacts")
     .insert({
       club_id: club.id,
@@ -41,7 +49,7 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
   }
 
   const trackingCode = generateTrackingCode();
-  const { data: event, error: eventError } = await supabase
+  const { data: event, error: eventError } = await admin
     .from("events")
     .insert({
       club_id: club.id,
@@ -59,7 +67,7 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
     throw new Error(`Erreur création événement: ${eventError?.message}`);
   }
 
-  const { error: appError } = await supabase
+  const { data: appForm, error: appError } = await admin
     .from("application_forms")
     .insert({
       event_id: event.id,
@@ -67,26 +75,27 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
       expected_attendance: parseInt(formData.participants as string, 10) || 0,
       target_audience: (formData.publicCible as string) || null,
       has_ugc: (formData.hasInfluencers as string) === "yes",
-      ugc_content_types: ((formData.ugcContentTypes as string[]) || []).join(", ") || null,
+      ugc_content_types: (formData.ugcContentTypes as string) || null,
       visibility_counterparts: (formData.visibiliteContreparties as string) || null,
       image_authorization: (formData.imageConsent as boolean) || false,
-      comment: ((formData.logistiqueOptions as string[]) || []).join(", ") || null,
+      comment: ((formData.commentaire as string) || (formData.logistiqueOptions as string[])?.join(", ")) || null,
       first_collaboration: (formData.premiereCollaboration as string) === "yes",
-    });
+    })
+    .select("id")
+    .single();
 
-  if (appError) {
-    throw new Error(`Erreur création formulaire: ${appError.message}`);
+  if (appError || !appForm) {
+    throw new Error(`Erreur création formulaire: ${appError?.message}`);
   }
 
-  // Workflow transition → SUBMITTED
-  const { data: submittedState } = await supabase
+  const { data: submittedState } = await admin
     .from("workflow_states")
     .select("id")
     .eq("code", SUBMITTED_STATE_CODE)
     .single();
 
   if (submittedState) {
-    const { error: historyError } = await supabase
+    const { error: historyError } = await admin
       .from("workflow_history")
       .insert({
         event_id: event.id,
@@ -99,75 +108,94 @@ async function handleSponsorshipDemande(supabase: any, formData: Record<string, 
       throw new Error(`Erreur workflow: ${historyError.message}`);
     }
 
-    await supabase
+    await admin
       .from("events")
       .update({ state_id: submittedState.id })
       .eq("id", event.id);
   }
 
-  return { tracking_code: trackingCode, event_id: event.id };
+  return { tracking_code: trackingCode, event_id: event.id, application_form_id: appForm.id, club_id: club.id };
+}
+
+async function handleConfirmationForm(admin: any, formData: Record<string, unknown>) {
+  const trackingCode = formData.trackingCode as string;
+  if (!trackingCode) {
+    throw new Error("Code de suivi requis");
+  }
+
+  const { data: event, error: eventError } = await admin
+    .from("events")
+    .select("id")
+    .eq("tracking_code", trackingCode)
+    .single();
+
+  if (eventError || !event) {
+    throw new Error("Événement introuvable avec ce code de suivi");
+  }
+
+  const { data: confirmation, error: insertError } = await admin
+    .from("confirmation_forms")
+    .insert({
+      event_id: event.id,
+      official_instagram: formData.official_instagram as string,
+      confirmed_cans: parseInt(formData.confirmed_cans as string, 10) || 0,
+      main_contact_name: formData.main_contact_name as string,
+      main_contact_phone: formData.main_contact_phone as string,
+      main_contact_email: (formData.main_contact_email as string) || null,
+      logistics_contact_name: (formData.logistics_contact_name as string) || null,
+      logistics_contact_phone: (formData.logistics_contact_phone as string) || null,
+      delivery_address: (formData.delivery_address as string) || null,
+      delivery_date: (formData.delivery_date as string) || null,
+      reception_time: (formData.reception_time as string) || null,
+      commitment: formData.commitment === true || formData.commitment === "true",
+      comment: (formData.comment as string) || null,
+    })
+    .select("*")
+    .single();
+
+  if (insertError || !confirmation) {
+    throw new Error(`Erreur création formulaire: ${insertError?.message}`);
+  }
+
+  if (formData.drive_url) {
+    await admin
+      .from("drive_folders")
+      .insert({
+        event_id: event.id,
+        drive_url: formData.drive_url as string,
+        drive_complete: false,
+      });
+  }
+
+  return { confirmation_id: confirmation.id, event_id: event.id };
 }
 
 export async function POST(req: Request) {
   try {
     const formData = await req.json();
     const { formType } = formData;
-
-    // Valider la session Supabase (l'utilisateur a vérifié son OTP)
-    const authHeader = req.headers.get("Authorization");
-    const token = authHeader?.replace("Bearer ", "");
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Non authentifié. Veuillez d'abord vérifier votre email." },
-        { status: 401 }
-      );
-    }
-
-    const anon = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
-
-    const { data: { user }, error: authError } = await anon.auth.getUser(token);
-
-    if (authError || !user?.email) {
-      return NextResponse.json(
-        { error: "Session invalide. Veuillez vérifier votre email à nouveau." },
-        { status: 401 }
-      );
-    }
-
-    const email = user.email;
-    formData.email = email;
-
-    const admin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } }
-    );
-
-    let result: { tracking_code: string; event_id: string };
+    const admin = getAdmin();
+    let result: { [key: string]: string };
 
     switch (formType) {
-      case "demande":
+      case "demande": {
+        // Public submission — no OTP required
+        // formData.email is the applicant's email from the form
         result = await handleSponsorshipDemande(admin, formData);
-        break;
+        return NextResponse.json({ success: true, ...result });
+      }
+
+      case "confirmation": {
+        result = await handleConfirmationForm(admin, formData);
+        return NextResponse.json({ success: true, ...result });
+      }
+
       default:
         return NextResponse.json(
           { error: "Type de formulaire inconnu" },
           { status: 400 }
         );
     }
-
-    // Nettoyer l'utilisateur OTP (pas de compte permanent pour les demandeurs)
-    const { data: users } = await admin.auth.admin.listUsers();
-    const otpUser = users?.users?.find((u) => u.email === email);
-    if (otpUser) {
-      await admin.auth.admin.deleteUser(otpUser.id);
-    }
-
-    return NextResponse.json({ success: true, ...result });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Erreur serveur";
     return NextResponse.json({ error: message }, { status: 500 });

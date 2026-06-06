@@ -53,7 +53,7 @@ async function transition(
   comment?: string
 ): Promise<WorkflowHistory> {
   // 1. Get current event state
-  const { data: event, error: eventError } = await supabase
+  const { data: event, error: eventError } = await (supabase as any)
     .from("events")
     .select("state_id, state:workflow_states(*)")
     .eq("id", eventId)
@@ -63,12 +63,12 @@ async function transition(
   if (!event) throw new Error("Event not found")
 
   const oldStateId = event.state_id
-  const currentState = event.state as unknown as WorkflowStateRow | null
+  const currentState = event.state as WorkflowStateRow | null
 
   // 2. Validate transition is allowed
   if (currentState) {
     const validNextCodes = TRANSITIONS_MAP[currentState.code] ?? []
-    const { data: newState } = await supabase
+    const { data: newState } = await (supabase as any)
       .from("workflow_states")
       .select("code")
       .eq("id", newStateId)
@@ -90,7 +90,7 @@ async function transition(
     comment: comment ?? null,
   }
 
-  const { data: historyEntry, error: historyError } = await supabase
+  const { data: historyEntry, error: historyError } = await (supabase as any)
     .from("workflow_history")
     .insert(historyInsert)
     .select(
@@ -106,9 +106,10 @@ async function transition(
   if (historyError) throw historyError
 
   // 4. Update events.state_id
-  const { error: updateError } = await supabase
+  const { error: updateError } = await (supabase as any)
     .from("events")
     .update({ state_id: newStateId })
+    .eq("id", eventId)
     .eq("id", eventId)
 
   if (updateError) throw updateError

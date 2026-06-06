@@ -3,83 +3,72 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts"
 import { Typography } from "@/components/ui/typography"
-
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
-
 
 const chartConfig = {
   value: {
-    label: "Value",//
+    label: "Value",
     color: "hsl(var(--primary))",
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 const STATS_CONFIG = [
   {
-    key: "total",
+    key: "total" as const,
     title: "Total événements",
-    color: "oklch(0.55 0.22 263)",
+    color: "var(--event-stat-total)",
   },
   {
-    key: "accepted",
-    title: "Acceptés",
-    color: "oklch(0.63 0.17 149)",
+    key: "under_review" as const,
+    title: "En révision",
+    color: "var(--event-stat-under-review)",
   },
   {
-    key: "pending",
-    title: "En attente",
-    color: "oklch(0.76 0.16 56)",
+    key: "approved" as const,
+    title: "Approuvés",
+    color: "var(--event-stat-approved)",
   },
   {
-    key: "rejected",
+    key: "rejected" as const,
     title: "Rejetés",
-    color: "oklch(0.58 0.22 27)",
+    color: "var(--event-stat-rejected)",
   },
 ] as const
 
 interface EventsStatsProps {
   data: {
     total: number
-    accepted: number
-    pending: number
+    under_review: number
+    approved: number
     rejected: number
-  }
+  } | null
+  loading: boolean
+  onRefresh?: () => void
 }
 
-export function EventsStats({ data }: EventsStatsProps) {
-  const max = Math.max(
-    data.total,
-    data.accepted,
-    data.pending,
-    data.rejected,
-    1
-  )
+export function EventsStats({ data, loading }: EventsStatsProps) {
+  const values = {
+    total: data?.total ?? 0,
+    under_review: data?.under_review ?? 0,
+    approved: data?.approved ?? 0,
+    rejected: data?.rejected ?? 0,
+  }
+
+  const max = Math.max(values.total, values.under_review, values.approved, values.rejected, 1)
 
   const stats = STATS_CONFIG.map((item) => {
-    const value = data[item.key]
+    const value = values[item.key]
     const percent = Math.round((value / max) * 100)
-
-    return {
-      ...item,
-      value,
-      percent,
-    }
+    return { ...item, value, percent }
   })
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
-        <Card
-          key={stat.title}
-          className="shadow-none "
-        >
-          <CardContent className="flex items-center gap-4 ">
-            {/* Chart */}
+        <Card key={stat.title} className="shadow-none">
+          <CardContent className="flex items-center gap-4">
             <div className="relative flex items-center justify-center">
-              <ChartContainer
-                config={chartConfig}
-                className="size-[80px]"
-              >
+              <ChartContainer config={chartConfig} className="size-[80px]">
                 <RadialBarChart
                   data={[{ value: stat.percent }]}
                   innerRadius={30}
@@ -93,7 +82,6 @@ export function EventsStats({ data }: EventsStatsProps) {
                     tick={false}
                     axisLine={false}
                   />
-
                   <RadialBar
                     dataKey="value"
                     background
@@ -102,27 +90,17 @@ export function EventsStats({ data }: EventsStatsProps) {
                   />
                 </RadialBarChart>
               </ChartContainer>
-
-              {/* Percentage center */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <Typography variant="h4">{stat.percent}%</Typography>
+                <Typography variant="h4">{loading ? "-" : `${stat.percent}%`}</Typography>
               </div>
             </div>
-            
-
-            {/* Text */}
             <div>
-
-             <Typography variant="small">
-                {stat.title}
-              </Typography>
-              <Typography variant="h3">
-                {stat.value}
-              </Typography>
+              <Typography variant="small">{stat.title}</Typography>
+              <Typography variant="h3">{loading ? "..." : stat.value}</Typography>
             </div>
           </CardContent>
         </Card>
       ))}
     </div>
-  );
+  )
 }

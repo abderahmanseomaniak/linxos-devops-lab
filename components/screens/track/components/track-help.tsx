@@ -22,50 +22,41 @@ export function TrackHelp({ className }: { className?: string }) {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className={className}>
           <HelpCircle className="size-4 mr-2" />
-          Help
+          Aide
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Help & Support</DialogTitle>
+          <DialogTitle>Aide et support</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="find" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="find">Find Reference</TabsTrigger>
-            <TabsTrigger value="contact">Contact Support</TabsTrigger>
+            <TabsTrigger value="find">Retrouver mon code</TabsTrigger>
+            <TabsTrigger value="contact">Contacter le support</TabsTrigger>
           </TabsList>
 
           <TabsContent value="find" className="space-y-4 py-4">
             <div className="space-y-3">
               <div className="p-3 bg-muted rounded-lg">
                 <Typography variant="p" className="font-medium mb-1">
-                  From confirmation email
+                  Depuis l&apos;email de confirmation
                 </Typography>
                 <Typography variant="small" className="text-muted-foreground">
-                  Check your email inbox for the subject &quot;Request Confirmed&quot; or
-                  &quot;Your Reference Number&quot;
+                  Vérifiez votre boîte de réception. Le code de suivi vous a été
+                  envoyé par email après la soumission de votre demande.
                 </Typography>
               </div>
 
               <div className="p-3 bg-muted rounded-lg">
                 <Typography variant="p" className="font-medium mb-1">
-                  From your club dashboard
-                </Typography>
-                <Typography variant="small" className="text-muted-foreground">
-                  Log in to your club portal and check the &quot;My Requests&quot; section
-                </Typography>
-              </div>
-
-              <div className="p-3 bg-muted rounded-lg">
-                <Typography variant="p" className="font-medium mb-1">
-                  Format
+                  Format du code
                 </Typography>
                 <Typography
                   variant="small"
                   className="text-muted-foreground font-mono"
                 >
-                  Example: SPO-2026-001, SPG-2025-123
+                  Exemple : LYNX-202606-ABCD
                 </Typography>
               </div>
             </div>
@@ -74,21 +65,21 @@ export function TrackHelp({ className }: { className?: string }) {
           <TabsContent value="contact" className="space-y-4 py-4">
             <div className="text-center space-y-4">
               <Typography variant="p" className="text-muted-foreground">
-                Need more help? Our support team is here to assist you.
+                Besoin d&apos;aide ? Notre équipe est là pour vous.
               </Typography>
 
               <div className="flex flex-col gap-2">
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="mailto:support@linxos.com">
+                  <a href="mailto:support@linxos.ma">
                     <Mail className="size-4 mr-2" />
-                    Email Support
+                    Envoyer un email
                   </a>
                 </Button>
 
                 <Button variant="outline" className="w-full" asChild>
                   <Link href="/contact" target="_blank">
                     <ExternalLink className="size-4 mr-2" />
-                    Contact Form
+                    Formulaire de contact
                   </Link>
                 </Button>
               </div>

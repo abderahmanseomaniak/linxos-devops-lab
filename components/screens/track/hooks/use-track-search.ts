@@ -1,33 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import type { TrackResult } from "@/components/screens/track/types/track.types"
-
-interface UseTrackSearchOptions {
-  data: TrackResult[]
-}
+import { trackingService } from "@/services/tracking.service"
+import type { TrackApplicationData } from "../types/track.types"
 
 interface UseTrackSearchReturn {
   code: string
+  email: string
   setCode: (code: string) => void
+  setEmail: (email: string) => void
   loading: boolean
   error: string
-  result: TrackResult | null
+  result: TrackApplicationData | null
   searched: boolean
   handleSearch: () => void
 }
 
-export function useTrackSearch({ data }: UseTrackSearchOptions): UseTrackSearchReturn {
+export function useTrackSearch(): UseTrackSearchReturn {
   const [code, setCode] = useState("")
+  const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [result, setResult] = useState<TrackResult | null>(null)
+  const [result, setResult] = useState<TrackApplicationData | null>(null)
   const [searched, setSearched] = useState(false)
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const trimmed = code.trim()
     if (!trimmed) {
-      setError("Please enter a reference code")
+      setError("Veuillez entrer un code de suivi")
       return
     }
 
@@ -36,18 +36,20 @@ export function useTrackSearch({ data }: UseTrackSearchOptions): UseTrackSearchR
     setResult(null)
     setSearched(false)
 
-    const normalized = trimmed.toUpperCase()
-    const found = data.find((item) => item.reference === normalized)
-
-    if (found) {
-      setResult(found)
-    } else {
-      setError("No request found with this reference")
+    try {
+      const data = await trackingService.trackApplication(trimmed.toUpperCase(), email.trim() || undefined)
+      if (data.found && data.event) {
+        setResult(data)
+      } else {
+        setError("Aucune demande trouvée avec ces identifiants")
+      }
+    } catch {
+      setError("Erreur lors de la recherche")
     }
 
     setLoading(false)
     setSearched(true)
   }
 
-  return { code, setCode, loading, error, result, searched, handleSearch }
+  return { code, email, setCode, setEmail, loading, error, result, searched, handleSearch }
 }

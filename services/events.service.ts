@@ -100,7 +100,7 @@ async function create(
 
   const { data: created, error } = await supabase
     .from("events")
-    .insert({ ...data, tracking_code: trackingCode })
+    .insert({ ...data, tracking_code: trackingCode } as never)
     .select(
       `
       *,
@@ -121,7 +121,7 @@ async function update(
 ): Promise<Event> {
   const { data: updated, error } = await supabase
     .from("events")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(
       `
@@ -169,7 +169,7 @@ async function createApplicationForm(data: {
       image_authorization: data.image_authorization ?? false,
       first_collaboration: data.first_collaboration ?? null,
       comment: data.comment ?? null,
-    })
+    } as never)
     .select("*")
     .single()
 
@@ -207,7 +207,7 @@ async function createUgcProfile(data: {
       followers_count: data.followers_count ?? null,
       content_type: data.content_type ?? null,
       available_for_shooting: data.available_for_shooting ?? null,
-    })
+    } as never)
     .select("*")
     .single()
 
@@ -228,7 +228,7 @@ async function createAttachment(data: {
       file_type: data.file_type,
       file_url: data.file_url,
       file_name: data.file_name ?? null,
-    })
+    } as never)
     .select("*")
     .single()
 

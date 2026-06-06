@@ -1,17 +1,17 @@
 "use client"
 
-import React, { useId, useState } from "react"
+import React, { useId, useState, useEffect } from "react"
 import {
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   type SortingState,
   type VisibilityState,
   type PaginationState,
+  type ColumnDef,
 } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
 import {
@@ -22,225 +22,380 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { EventTableProps, EventApplication } from "@/types/events"
-import { createColumns } from "./parts/columns"
+import type { EventOverviewRow, EventListFilters } from "@/types/events-overview"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Checkbox } from "@/components/ui/checkbox"
+import { IconDotsVertical } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { EventTableToolbar } from "./parts/table-event-toolbar"
 import { TablePagination } from "@/components/shared/table-pagination"
 import { EventDetailSheet } from "./sheets/detail-event-sheet"
-import { EventAddSheet } from "./sheets/add-event-sheet"
-import { EventEditSheet } from "./sheets/edit-event-sheet"
-import { DeleteConfirmDialog } from "./dialogs/delete-confirm-dialog"
+import { Spinner } from "@/components/ui/spinner"
 import { DEFAULT_SORTING } from "./lib/constants"
 import { SORT_ICONS } from "@/components/shared/sort-icons"
 
-const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: 10 }
-
-interface EventTableComponentProps extends EventTableProps {
-  onDeleteMultiple?: (ids: number[]) => void
+const WORKFLOW_LABELS: Record<string, string> = {
+  DRAFT: "Brouillon",
+  UNDER_REVIEW: "En révision",
+  APPROVED: "Approuvé",
+  REJECTED: "Rejeté",
+  CONFIRMED: "Confirmé",
+  SHIPPED: "Expédié",
+  DELIVERED: "Livré",
+  COMPLETED: "Terminé",
+  CONTENT_REVIEWED: "Contenu vérifié",
+  REPORTED: "Signalé",
 }
 
-export function EventTable({ data: initialData, onAdd, onEdit, onDelete, onDeleteMultiple, onDetail }: EventTableComponentProps) {
+const WORKFLOW_VARIANTS: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  DRAFT: "outline",
+  UNDER_REVIEW: "secondary",
+  APPROVED: "default",
+  REJECTED: "destructive",
+  CONFIRMED: "default",
+  SHIPPED: "secondary",
+  DELIVERED: "default",
+  COMPLETED: "default",
+  CONTENT_REVIEWED: "default",
+  REPORTED: "destructive",
+}
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: 10 }
+
+interface EventTableProps {
+  data: EventOverviewRow[]
+  total: number
+  loading: boolean
+  pagination: PaginationState
+  onPaginationChange: (pagination: PaginationState) => void
+  filters: EventListFilters
+  onFilterChange: <K extends keyof EventListFilters>(key: K, value: EventListFilters[K]) => void
+  onClearFilters: () => void
+  onRefresh: () => void
+  onSelectEvent: (event: EventOverviewRow | null) => void
+  selectedEvent: EventOverviewRow | null
+  detailOpen: boolean
+  onDetailOpenChange: (open: boolean) => void
+}
+
+export function EventTable({
+  data, total, loading, pagination, onPaginationChange,
+  filters, onFilterChange, onClearFilters, onRefresh,
+  onSelectEvent, selectedEvent, detailOpen, onDetailOpenChange,
+}: EventTableProps) {
   const id = useId()
-
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGINATION)
   const [sorting, setSorting] = useState<SortingState>([DEFAULT_SORTING])
+  const [rowSelection, setRowSelection] = useState({})
 
-  const [showAddSheet, setShowAddSheet] = useState(false)
-  const [showEditSheet, setShowEditSheet] = useState(false)
-  const [editingEvent, setEditingEvent] = useState<EventApplication | null>(null)
-  const [data, setData] = useState<EventApplication[]>(() => initialData)
-
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
-  const [detailEvent, setDetailEvent] = useState<EventApplication | null>(null)
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const [rowToDelete, setRowToDelete] = useState<EventApplication | null>(null)
-  const [deleteOpen, setDeleteOpen] = useState(false)
-
-  // Search state local pour le rerender
-  const [searchValue, setSearchValue] = useState("")
-
-  const columnsWithActions = createColumns({
-    onEdit: (event: EventApplication) => {
-      setEditingEvent(event)
-      setShowEditSheet(true)
-      onEdit?.(event)
+  const columns: ColumnDef<EventOverviewRow>[] = [
+    {
+      id: "select",
+      size: 40,
+      enableHiding: false,
+      enableSorting: false,
+      header: ({ table }) => (
+        <Checkbox
+          aria-label="Select all"
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          aria-label="Select row"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+        />
+      ),
     },
-    onDelete: (event: EventApplication) => {
-      setRowToDelete(event)
-      setDeleteOpen(true)
-      onDelete?.(event)
+    {
+      id: "name",
+      header: "Événement",
+      cell: ({ row }) => {
+        const item = row.original
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="size-8">
+              <AvatarFallback className="text-xs">{getInitials(item.club_name)}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium text-sm">{item.event_title}</span>
+              <span className="text-xs text-muted-foreground">{item.club_name}</span>
+            </div>
+          </div>
+        )
+      },
+      size: 250,
+      enableHiding: false,
     },
-    onDetail: (event: EventApplication) => {
-      if (onDetail) {
-        onDetail(event)
-      } else {
-        setDetailEvent(event)
-        setSheetOpen(true)
-      }
+    {
+      accessorKey: "city",
+      header: "Ville",
+      cell: ({ row }) => <span className="text-sm">{row.getValue("city") || "-"}</span>,
+      size: 120,
     },
-  })
+    {
+      id: "status",
+      header: "Statut",
+      cell: ({ row }) => {
+        const code = row.original.workflow_code ?? ""
+        return (
+          <Badge variant={WORKFLOW_VARIANTS[code] ?? "secondary"}>
+            {WORKFLOW_LABELS[code] ?? code}
+          </Badge>
+        )
+      },
+      size: 130,
+    },
+    {
+      id: "ai_score",
+      header: "Score IA",
+      cell: ({ row }) => {
+        const score = row.original.ai_score
+        if (score === null || score === undefined) return <span className="text-sm text-muted-foreground">-</span>
+        const color = score >= 70 ? "text-green-600" : score >= 40 ? "text-yellow-600" : "text-red-600"
+        return (
+          <span className={`text-sm font-semibold ${color}`}>
+            {score}/100
+          </span>
+        )
+      },
+      size: 100,
+    },
+    {
+      accessorKey: "campaign_name",
+      id: "campaign_name",
+      header: "Campagne",
+      cell: ({ row }) => <span className="text-sm">{row.original.campaign_name || "-"}</span>,
+      size: 150,
+    },
+    {
+      id: "ai_recommendation",
+      header: "Recommandation IA",
+      cell: ({ row }) => {
+        const rec = row.original.ai_recommendation
+        if (!rec) return <span className="text-sm text-muted-foreground">-</span>
+        const variant = rec === "APPROVED" ? "default" : rec === "REJECTED" ? "destructive" : "secondary"
+        const label = rec === "APPROVED" ? "Approuvé" : rec === "REJECTED" ? "Rejeté" : "À réviser"
+        return <Badge variant={variant}>{label}</Badge>
+      },
+      size: 130,
+    },
+    {
+      id: "allocated_quantity",
+      header: "Qté allouée",
+      cell: ({ row }) => {
+        const qty = row.original.allocated_quantity
+        return <span className="text-sm">{qty != null ? qty : "-"}</span>
+      },
+      size: 100,
+    },
+    {
+      id: "confirmation_completed",
+      header: "Confirmé",
+      cell: ({ row }) => {
+        const val = row.original.confirmation_completed
+        return (
+          <Badge variant={val ? "default" : "secondary"}>
+            {val ? "Oui" : "Non"}
+          </Badge>
+        )
+      },
+      size: 100,
+    },
+    {
+      id: "shipment_status",
+      header: "Expédition",
+      cell: ({ row }) => {
+        const status = row.original.shipment_status
+        if (!status) return <span className="text-sm text-muted-foreground">-</span>
+        const labels: Record<string, string> = {
+          PENDING: "En attente", PREPARING: "En préparation",
+          IN_DELIVERY: "En livraison", DELIVERED: "Livré", PROBLEM: "Problème",
+        }
+        const variants: Record<string, "default" | "secondary" | "destructive"> = {
+          PENDING: "secondary", PREPARING: "secondary",
+          IN_DELIVERY: "secondary", DELIVERED: "default", PROBLEM: "destructive",
+        }
+        return (
+          <Badge variant={variants[status] ?? "secondary"}>
+            {labels[status] ?? status}
+          </Badge>
+        )
+      },
+      size: 120,
+    },
+    {
+      id: "drive_submitted",
+      header: "Drive",
+      cell: ({ row }) => {
+        const val = row.original.drive_submitted
+        return (
+          <Badge variant={val ? "default" : "secondary"}>
+            {val ? "Soumis" : "Non"}
+          </Badge>
+        )
+      },
+      size: 90,
+    },
+    {
+      id: "ugc_count",
+      header: "UGC",
+      cell: ({ row }) => {
+        const count = row.original.ugc_count
+        return <span className="text-sm">{count != null ? count : 0}</span>
+      },
+      size: 80,
+    },
+    {
+      accessorKey: "created_at",
+      header: "Date",
+      cell: ({ row }) => <span className="text-sm">{formatDate(row.getValue("created_at"))}</span>,
+      size: 120,
+    },
+    {
+      id: "actions",
+      size: 60,
+      enableHiding: false,
+      header: () => <span className="sr-only">Actions</span>,
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="size-8 p-0">
+              <IconDotsVertical className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => {
+              onSelectEvent(row.original)
+              onDetailOpenChange(true)
+            }}>
+              Voir détails
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
 
-// eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    columns: columnsWithActions,
     data,
+    columns,
+    pageCount: Math.ceil(total / pagination.pageSize),
+    state: {
+      columnVisibility,
+      sorting,
+      pagination,
+      rowSelection,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
+    onPaginationChange: (updater) => {
+      const newValue = typeof updater === "function" ? updater(pagination) : updater
+      onPaginationChange(newValue)
+    },
+    onRowSelectionChange: setRowSelection,
     enableSortingRemoval: false,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    state: { columnVisibility, pagination, sorting },
   })
-
-  const uniqueStatusValues = (() => {
-    const statusColumn = table.getColumn("status")
-    if (!statusColumn) return []
-    return Array.from(statusColumn.getFacetedUniqueValues().keys()).sort()
-  })()
-
-  const statusCounts = (() => {
-    const statusColumn = table.getColumn("status")
-    if (!statusColumn) return {} as Record<string, number>
-    const counts: Record<string, number> = {}
-    statusColumn.getFacetedUniqueValues().forEach((count, status) => {
-      counts[status] = count
-    })
-    return counts
-  })()
-
-  const handleSearchChange = (value: string) => {
-    setSearchValue(value)
-    table.getColumn("name")?.setFilterValue(value || undefined)
-  }
-
-  const handleSearchClear = () => {
-    setSearchValue("")
-    table.getColumn("name")?.setFilterValue(undefined)
-  }
-
-  const handleStatusChange = (checked: boolean, value: string) => {
-    setSelectedStatuses((prev) => {
-      let newFilter: string[]
-      if (checked) {
-        newFilter = prev.includes(value) ? prev : [...prev, value]
-      } else {
-        newFilter = prev.filter((v) => v !== value)
-      }
-      table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
-      return newFilter
-    })
-  }
-
-  const handleStatusClear = () => {
-    setSelectedStatuses([])
-    table.getColumn("status")?.setFilterValue(undefined)
-  }
-
-  const handleSelectAllStatuses = (checked: boolean) => {
-    const newFilter = checked ? uniqueStatusValues : []
-    setSelectedStatuses(newFilter)
-    table.getColumn("status")?.setFilterValue(newFilter.length ? newFilter : undefined)
-  }
-
-  const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows
-    const ids = selectedRows.map((row) => row.original.id)
-    if (onDeleteMultiple) {
-      onDeleteMultiple(ids)
-    } else {
-      const idSet = new Set(ids)
-      setData((prev) => prev.filter((item) => !idSet.has(item.id)))
-    }
-    table.resetRowSelection()
-  }
-
-  const handleSaveEvent = (newEvent: EventApplication) => {
-    if (editingEvent) {
-      setData((prev) => prev.map((e) => (e.id === newEvent.id ? newEvent : e)))
-      setShowEditSheet(false)
-      setEditingEvent(null)
-    } else {
-      setData((prev) => [...prev, newEvent])
-      setShowAddSheet(false)
-      onAdd?.()
-    }
-  }
-
-  const handleDeleteSingleEvent = () => {
-    if (rowToDelete) {
-      setData((prev) => prev.filter((e) => e.id !== rowToDelete.id))
-      setRowToDelete(null)
-      setDeleteOpen(false)
-    }
-  }
 
   return (
     <div className="space-y-4">
       <EventTableToolbar
         table={table}
-        onAdd={onAdd}
-        searchValue={searchValue}
-        onSearchChange={handleSearchChange}
-        onSearchClear={handleSearchClear}
-        statusCounts={statusCounts}
-        selectedStatuses={selectedStatuses}
-        onStatusChange={handleStatusChange}
-        onStatusClear={handleStatusClear}
-        onSelectAllStatuses={handleSelectAllStatuses}
+        onRefresh={onRefresh}
+        onClearFilters={onClearFilters}
         columnVisibility={columnVisibility}
-        showAddSheet={showAddSheet}
-        setShowAddSheet={setShowAddSheet}
-        onSave={handleSaveEvent}
-        id={id}
-        uniqueStatusValues={uniqueStatusValues}
-        onDeleteRows={handleDeleteRows}
+        onColumnVisibilityChange={setColumnVisibility}
+        filters={filters}
+        onFilterChange={onFilterChange}
       />
 
-      <div className="overflow-hidden rounded-md border bg-background">
-        <Table className="table-fixed ">
+      <div className="relative overflow-hidden rounded-md border bg-background">
+        {loading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
+            <Spinner className="size-6" />
+          </div>
+        )}
+        <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                {(() => {
-                  const items: React.ReactNode[] = []
-                  for (const header of headerGroup.headers) {
-                    if (header.column.getIsVisible()) {
-                      const canSort = header.column.getCanSort()
-                      const sortHandler = header.column.getToggleSortingHandler()
-                      items.push(
-                  <TableHead className="h-8" key={header.id} style={{ width: `${header.getSize()}px` }}>
-                    {header.isPlaceholder ? null : canSort ? (
-                      <div
-                        role="button"
-                        className={cn(canSort && "flex h-full cursor-pointer select-none items-center justify-between gap-2")}
-                        onClick={sortHandler}
-                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sortHandler?.(e as never) } }}
-                        tabIndex={canSort ? 0 : undefined}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {SORT_ICONS[header.column.getIsSorted() as keyof typeof SORT_ICONS] ?? null}
-                      </div>
-                    ) : (
-                      flexRender(header.column.columnDef.header, header.getContext())
-                    )}
-                  </TableHead>
+                {headerGroup.headers.map((header) => {
+                  if (!header.column.getIsVisible()) return null
+                  const canSort = header.column.getCanSort()
+                  const sortHandler = header.column.getToggleSortingHandler()
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className="h-8"
+                      style={{ width: `${header.getSize()}px` }}
+                    >
+                      {header.isPlaceholder ? null : canSort ? (
+                        <div
+                          role="button"
+                          className={cn(
+                            "flex h-full cursor-pointer select-none items-center justify-between gap-2",
+                          )}
+                          onClick={sortHandler}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault()
+                              sortHandler?.(e as never)
+                            }
+                          }}
+                          tabIndex={canSort ? 0 : undefined}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {SORT_ICONS[header.column.getIsSorted() as keyof typeof SORT_ICONS] ?? null}
+                        </div>
+                      ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
+                      )}
+                    </TableHead>
                   )
-                }
-              }
-              return items
-              })()}
+                })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow className="hover:bg-transparent h-8" data-state={row.getIsSelected() && "selected"} key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="hover:bg-transparent h-8 cursor-pointer"
+                  data-state={row.getIsSelected() && "selected"}
+                  onClick={() => {
+                    onSelectEvent(row.original)
+                    onDetailOpenChange(true)
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell className="py-1 px-2 text-xs" key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -250,7 +405,7 @@ export function EventTable({ data: initialData, onAdd, onEdit, onDelete, onDelet
               ))
             ) : (
               <TableRow>
-                <TableCell className="h-24 text-center" colSpan={columnsWithActions.length}>
+                <TableCell className="h-24 text-center" colSpan={columns.length}>
                   Aucun résultat.
                 </TableCell>
               </TableRow>
@@ -261,39 +416,13 @@ export function EventTable({ data: initialData, onAdd, onEdit, onDelete, onDelet
 
       <TablePagination table={table} />
 
-      <EventAddSheet
-        open={showAddSheet}
-        onOpenChange={setShowAddSheet}
-        onSave={handleSaveEvent}
-      />
-
-      <EventEditSheet
-        open={showEditSheet}
-        onOpenChange={(open) => {
-          setShowEditSheet(open)
-          if (!open) setEditingEvent(null)
-        }}
-        event={editingEvent}
-        onSave={handleSaveEvent}
-      />
-
       <EventDetailSheet
-        event={detailEvent}
-        open={sheetOpen}
+        eventId={selectedEvent?.id ?? null}
+        open={detailOpen}
         onOpenChange={(open) => {
-          setSheetOpen(open)
-          if (!open) setDetailEvent(null)
+          onDetailOpenChange(open)
+          if (!open) onSelectEvent(null)
         }}
-      />
-
-      <DeleteConfirmDialog
-        open={deleteOpen}
-        onOpenChange={(open) => {
-          setDeleteOpen(open)
-          if (!open) setRowToDelete(null)
-        }}
-        onConfirm={handleDeleteSingleEvent}
-        eventName={rowToDelete?.eventName}
       />
     </div>
   )

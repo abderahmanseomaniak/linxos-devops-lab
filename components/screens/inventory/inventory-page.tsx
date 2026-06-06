@@ -309,8 +309,8 @@ function MovementsTab({ movements, typeFilter, onTypeFilterChange, products, cat
                   if (!mProduct || !mQty) return
                   let cid = defaultCampaign?.id ?? null
                   if (!cid) {
-                    const { data } = await supabase.from("campaigns").insert({ name: "Stock général", status: "ACTIVE" }).select("id").maybeSingle()
-                    if (data) cid = data.id
+                    const { data: campData } = await supabase.from("campaigns").insert({ name: "Stock général", status: "ACTIVE" } as never).select("id").maybeSingle() as unknown as { data: { id: string } | null; error: unknown }
+                    if (campData) cid = campData.id
                   }
                   await onCreateMovement({
                     campaign_id: cid,

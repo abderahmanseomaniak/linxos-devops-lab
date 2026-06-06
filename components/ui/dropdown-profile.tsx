@@ -1,40 +1,62 @@
+"use client"
+
 import {
-  BoltIcon,
-  BookOpenIcon,
-  ChevronDownIcon,
-  Layers2Icon,
   LogOutIcon,
-  PinIcon,
   UserIcon,
-  UserPenIcon,
-} from "lucide-react";
+  ChevronDownIcon,
+} from "lucide-react"
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+} from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/providers/auth-provider"
+import { USER_ROLE_LABELS } from "@/types/profiles.types"
+import Link from "next/link"
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
 
 export default function DropdownProfile() {
+  const { profile, user, signOut } = useAuth()
+
+  const name = profile?.full_name ?? user?.email ?? "Utilisateur"
+  const email = profile?.email ?? user?.email ?? ""
+  const role = profile?.role ?? "VIEWER"
+  const initials = getInitials(name)
+  const avatarUrl = user?.user_metadata?.avatar_url ?? "/origin/avatar.jpg"
+
+  if (!user) return null
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="h-auto p-0 hover:bg-transparent" variant="ghost">
+        <Button className="h-auto gap-2 p-0 hover:bg-transparent" variant="ghost">
           <Avatar>
-            <AvatarImage alt="Profile image" src="/origin/avatar.jpg" />
-            <AvatarFallback>KK</AvatarFallback>
+            <AvatarImage alt={name} src={avatarUrl} />
+            <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
+          <div className="hidden text-left md:block">
+            <div className="text-sm font-medium">{name}</div>
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{USER_ROLE_LABELS[role] ?? role}</Badge>
+          </div>
           <ChevronDownIcon
             aria-hidden="true"
             className="opacity-60"
@@ -42,53 +64,25 @@ export default function DropdownProfile() {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-64">
+      <DropdownMenuContent className="max-w-64" align="end">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
-          <span className="truncate font-medium text-foreground text-sm">
-            Keith Kennedy
-          </span>
-          <span className="truncate font-normal text-muted-foreground text-xs">
-            k.kennedy@coss.com
-          </span>
+          <span className="truncate font-medium text-foreground text-sm">{name}</span>
+          <span className="truncate font-normal text-muted-foreground text-xs">{email}</span>
+          <Badge variant="secondary" className="mt-1 w-fit text-[10px]">{USER_ROLE_LABELS[role] ?? role}</Badge>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/profile">
-              <UserIcon aria-hidden="true" className="opacity-60" size={16} />
-              <span>Profile</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <BoltIcon aria-hidden="true" className="opacity-60" size={16} />
-            <span>Option 2</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Layers2Icon aria-hidden="true" className="opacity-60" size={16} />
-            <span>Option 3</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <BookOpenIcon aria-hidden="true" className="opacity-60" size={16} />
-            <span>Option 4</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        <DropdownMenuItem asChild>
+          <Link href="/profile">
+            <UserIcon aria-hidden="true" className="opacity-60" size={16} />
+            <span>Profil</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <PinIcon aria-hidden="true" className="opacity-60" size={16} />
-            <span>Option 5</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <UserPenIcon aria-hidden="true" className="opacity-60" size={16} />
-            <span>Option 6</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={signOut}>
           <LogOutIcon aria-hidden="true" className="opacity-60" size={16} />
-          <span>Logout</span>
+          <span>Déconnexion</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { Loader2 } from "lucide-react"
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 
@@ -9,6 +10,7 @@ type Props = {
   onPrev: () => void
   onNext: () => void
   onSubmit: () => void
+  submitting?: boolean
 }
 
 export function FormNavigation({
@@ -17,11 +19,12 @@ export function FormNavigation({
   onPrev,
   onNext,
   onSubmit,
+  submitting,
 }: Props) {
   return (
     <div className="flex items-center justify-between">
       {canGoPrev ? (
-        <Button variant="outline" onClick={onPrev}>
+        <Button variant="outline" onClick={onPrev} disabled={submitting}>
           <IconArrowLeft data-icon="inline-start" />
           Retour
         </Button>
@@ -29,13 +32,20 @@ export function FormNavigation({
         <div />
       )}
       {canGoNext ? (
-        <Button onClick={onNext}>
+        <Button onClick={onNext} disabled={submitting}>
           Suivant
           <IconArrowRight data-icon="inline-end" />
         </Button>
       ) : (
-        <Button onClick={onSubmit}>
-          Envoyer
+        <Button onClick={onSubmit} disabled={submitting}>
+          {submitting ? (
+            <>
+              <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+              Envoi en cours...
+            </>
+          ) : (
+            "Envoyer"
+          )}
         </Button>
       )}
     </div>

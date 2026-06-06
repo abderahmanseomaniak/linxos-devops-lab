@@ -17,7 +17,7 @@ import type {
 async function createAllocation(data: AllocationInsert): Promise<Allocation> {
   const { data: created, error } = await supabase
     .from("allocations")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -128,7 +128,7 @@ async function getShipmentById(id: string): Promise<Shipment | null> {
 async function createShipment(data: ShipmentInsert): Promise<Shipment> {
   const { data: created, error } = await supabase
     .from("shipments")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -155,7 +155,7 @@ async function updateShipmentStatus(
   const updateData: ShipmentUpdate = { status, ...extra }
   const { data: updated, error } = await supabase
     .from("shipments")
-    .update(updateData)
+    .update(updateData as never)
     .eq("id", id)
     .select(
       `
@@ -185,7 +185,7 @@ async function removeShipment(id: string): Promise<void> {
 async function addShipmentItem(data: ShipmentItemInsert): Promise<ShipmentItem> {
   const { data: created, error } = await supabase
     .from("shipment_items")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -208,7 +208,7 @@ async function removeShipmentItem(id: string): Promise<void> {
 async function addDeliveryProof(data: DeliveryProofInsert): Promise<DeliveryProof> {
   const { data: created, error } = await supabase
     .from("delivery_proofs")
-    .insert(data)
+    .insert(data as never)
     .select("*")
     .single()
 

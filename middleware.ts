@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Public routes — no session required
-  const publicPaths = ["/auth", "/landing", "/forms", "/track", "/tracking"]
+  const publicPaths = ["/auth", "/landing", "/forms", "/track", "/tracking", "/api"]
   const isPublic = publicPaths.some((p) => pathname.startsWith(p))
 
   if (isPublic) return supabaseResponse

@@ -102,7 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         full_name: fullName,
         role: "SPONSORING_MANAGER",
-      })
+        is_active: true,
+      } as never)
     }
     return { error: error?.message ?? null }
   }

@@ -31,8 +31,8 @@ export function TrackShare({ reference, className }: TrackShareProps) {
   }
 
   const handleEmail = () => {
-    const subject = `Track Request: ${reference}`
-    const body = `Check the status of your request ${reference} here: ${shareUrlRef.current}`
+    const subject = `Suivi de demande : ${reference}`
+    const body = `Suivez le statut de votre demande ${reference} ici : ${shareUrlRef.current}`
     window.location.href = `mailto:?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`
@@ -43,7 +43,7 @@ export function TrackShare({ reference, className }: TrackShareProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className={className}>
           <Share2 className="size-4 mr-2" />
-          Share
+          Partager
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[180px]">
@@ -53,11 +53,11 @@ export function TrackShare({ reference, className }: TrackShareProps) {
           ) : (
             <Copy className="size-4 mr-2" />
           )}
-          {copied ? "Copied!" : "Copy Link"}
+          {copied ? "Copié !" : "Copier le lien"}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleEmail}>
           <Mail className="size-4 mr-2" />
-          Email
+          Envoyer par email
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -66,7 +66,7 @@ export function TrackShare({ reference, className }: TrackShareProps) {
           }}
         >
           <Link2 className="size-4 mr-2" />
-          Copy Reference
+          Copier la référence
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

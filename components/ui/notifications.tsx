@@ -1,66 +1,21 @@
-"use client";
+"use client"
 
-import { BellIcon } from "lucide-react";
-import { useState } from "react";
+import { BellIcon } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-
-const initialNotifications = [
-  {
-    action: "requested review on",
-    id: 1,
-    target: "PR #42: Feature implementation",
-    timestamp: "15 minutes ago",
-    unread: true,
-    user: "Chris Tompson",
-  },
-  {
-    action: "shared",
-    id: 2,
-    target: "New component library",
-    timestamp: "45 minutes ago",
-    unread: true,
-    user: "Emma Davis",
-  },
-  {
-    action: "assigned you to",
-    id: 3,
-    target: "API integration task",
-    timestamp: "4 hours ago",
-    unread: false,
-    user: "James Wilson",
-  },
-  {
-    action: "replied to your comment in",
-    id: 4,
-    target: "Authentication flow",
-    timestamp: "12 hours ago",
-    unread: false,
-    user: "Alex Morgan",
-  },
-  {
-    action: "commented on",
-    id: 5,
-    target: "Dashboard redesign",
-    timestamp: "2 days ago",
-    unread: false,
-    user: "Sarah Chen",
-  },
-  {
-    action: "mentioned you in",
-    id: 6,
-    target: "coss.com open graph image",
-    timestamp: "2 weeks ago",
-    unread: false,
-    user: "Miky Derya",
-  },
-];
+} from "@/components/ui/popover"
+import { useAuth } from "@/providers/auth-provider"
+import { notificationsService } from "@/services/notifications.service"
+import type { Notification } from "@/types/notifications.types"
+import { formatDistanceToNow } from "date-fns"
+import { fr } from "date-fns/locale"
 
 function Dot({ className }: { className?: string }) {
   return (
@@ -74,37 +29,55 @@ function Dot({ className }: { className?: string }) {
     >
       <circle cx="3" cy="3" r="3" />
     </svg>
-  );
+  )
 }
 
 export default function Notifications() {
-  const [notifications, setNotifications] = useState(initialNotifications);
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const { user } = useAuth()
+  const router = useRouter()
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [open, setOpen] = useState(false)
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        unread: false,
-      })),
-    );
-  };
+  useEffect(() => {
+    if (!user) return
+    setLoading(true)
+    notificationsService.list(user.id, { pageSize: 10 }).then((result) => {
+      setNotifications(result.data)
+    }).catch(() => {
+      setNotifications([])
+    }).finally(() => {
+      setLoading(false)
+    })
+  }, [user])
 
-  const handleNotificationClick = (id: number) => {
-    setNotifications(
-      notifications.map((notification) =>
-        notification.id === id
-          ? { ...notification, unread: false }
-          : notification,
+  const unreadCount = notifications.filter((n) => !n.is_read).length
+
+  const handleMarkAllAsRead = async () => {
+    if (!user) return
+    await notificationsService.markAllAsRead(user.id)
+    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+  }
+
+  const handleNotificationClick = async (id: string, eventId?: string | null) => {
+    await notificationsService.markAsRead(id)
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, is_read: true } : n,
       ),
-    );
-  };
+    )
+    if (eventId) {
+      router.push(`/events?id=${eventId}`)
+    }
+  }
+
+  if (!user) return null
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          aria-label="Open notifications"
+          aria-label="Notifications"
           className="relative"
           size="icon"
           variant="outline"
@@ -126,7 +99,7 @@ export default function Notifications() {
               onClick={handleMarkAllAsRead}
               type="button"
             >
-              Mark all as read
+              Tout marquer comme lu
             </button>
           )}
         </div>
@@ -136,41 +109,47 @@ export default function Notifications() {
           role="separator"
           tabIndex={-1}
         />
-        {notifications.map((notification) => (
-          <div
-            className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
-            key={notification.id}
-          >
-            <div className="relative flex items-start pe-3">
-              <div className="flex-1 space-y-1">
-                <button
-                  className="text-left text-foreground/80 after:absolute after:inset-0"
-                  onClick={() => handleNotificationClick(notification.id)}
-                  type="button"
-                >
-                  <span className="font-medium text-foreground hover:underline">
-                    {notification.user}
-                  </span>{" "}
-                  {notification.action}{" "}
-                  <span className="font-medium text-foreground hover:underline">
-                    {notification.target}
-                  </span>
-                  .
-                </button>
-                <div className="text-muted-foreground text-xs">
-                  {notification.timestamp}
-                </div>
-              </div>
-              {notification.unread && (
-                <div className="absolute end-0 self-center">
-                  <span className="sr-only">Unread</span>
-                  <Dot />
-                </div>
-              )}
-            </div>
+        {loading ? (
+          <div className="px-3 py-4 text-center text-muted-foreground text-sm">
+            Chargement...
           </div>
-        ))}
+        ) : notifications.length === 0 ? (
+          <div className="px-3 py-4 text-center text-muted-foreground text-sm">
+            Aucune notification
+          </div>
+        ) : (
+          notifications.map((notification) => (
+            <div
+              className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
+              key={notification.id}
+            >
+              <div className="relative flex items-start pe-3">
+                <div className="flex-1 space-y-1">
+                  <button
+                    className="text-left after:absolute after:inset-0"
+                    onClick={() => handleNotificationClick(notification.id, notification.related_event_id)}
+                    type="button"
+                  >
+                    <span className="font-medium text-foreground">
+                      {notification.title}
+                    </span>
+                    <span className="text-foreground/80"> {notification.message}</span>
+                  </button>
+                  <div className="text-muted-foreground text-xs">
+                    {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: fr })}
+                  </div>
+                </div>
+                {!notification.is_read && (
+                  <div className="absolute end-0 self-center">
+                    <span className="sr-only">Non lu</span>
+                    <Dot />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </PopoverContent>
     </Popover>
-  );
+  )
 }

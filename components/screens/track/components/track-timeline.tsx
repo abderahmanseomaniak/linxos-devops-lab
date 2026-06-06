@@ -1,192 +1,96 @@
 "use client"
 
-import { FileText, Search, Package, Truck, CheckCircle2, Circle } from "lucide-react"
+import { CheckCircle2, Circle, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
-import { useIsMobile } from "@/hooks/use-mobile"
-
-type TrackStatus = "confirmed" | "pending" | "cancelled" | "approved" | "ready"
+import type { TrackWorkflowEntry } from "../types/track.types"
+import { WORKFLOW_COLORS, type WorkflowCode } from "@/types/workflow.types"
 
 interface TrackTimelineProps {
-  status: TrackStatus
-  reference?: string
+  history: TrackWorkflowEntry[]
   className?: string
 }
 
-const steps = [
-  { key: "submitted", label: "Submitted", icon: FileText },
-  { key: "review", label: "In Review", icon: Search },
-  { key: "processing", label: "Processing", icon: Package },
-  { key: "ready", label: "Ready", icon: Truck },
-  { key: "complete", label: "Complete", icon: CheckCircle2 },
-] as const
+function getColor(code?: string): string {
+  if (!code) return "#6B7280"
+  return WORKFLOW_COLORS[code as WorkflowCode] ?? "#6B7280"
+}
 
-const getProgress = (status: TrackStatus, reference?: string) => {
-  if (status === "confirmed") return 6
-  if (status === "cancelled") return -1
-  if (status === "approved") return 6
-  if (status === "pending") {
-    if (reference === "SPO-2026-002") return 3
-    return 2
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
+export function TrackTimeline({ history, className }: TrackTimelineProps) {
+  if (!history || history.length === 0) {
+    return null
   }
-  if (status === "ready") return 4
-  return 2
-}
-
-interface StepState {
-  isCompleted: boolean
-  isCurrent: boolean
-  isRejected: boolean
-  isApproved: boolean
-  isEmpty: boolean
-}
-
-const getStepState = (progress: number, index: number, status: TrackStatus): StepState => {
-  const isCurrentStep = progress === index + 1
-  const isCompletedStep = progress > index + 1
-  return {
-    isCompleted: isCompletedStep,
-    isCurrent: isCurrentStep,
-    isRejected: progress === -1 && status === "cancelled",
-    isApproved: status === "approved",
-    isEmpty: progress < index + 1 && progress !== -1,
-  }
-}
-
-function Empty({ size = "default" }: { size?: "default" | "small" }) {
-  const isSmall = size === "small"
-  return (
-    <Circle
-      className={cn(
-        "text-muted-foreground",
-        isSmall ? "h-4 w-4" : "h-5 w-5"
-      )}
-    />
-  )
-}
-
-function TimelineDesktop({ stepStates, status, reference }: { stepStates: StepState[]; status: TrackStatus; reference?: string }) {
-  const progress = getProgress(status, reference)
 
   return (
-    <div className="relative">
-      <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted" />
-      <div
-        className={cn(
-          "absolute top-5 left-0 h-0.5",
-          status === "cancelled" ? "bg-red-500" : status === "pending" || status === "approved" || status === "ready" ? "bg-green-500" : "bg-primary"
-        )}
-        style={{ width: `${progress > 0 ? `calc(${Math.min(progress - 1, 4) * 25}% - 16px)` : "0%" }` }}
-      />
-      <div className="relative flex justify-between">
-        {steps.map((step, index) => {
-          const { isCompleted, isCurrent, isRejected, isApproved, isEmpty } = stepStates[index]
-          const Icon = step.icon
+    <div className={cn("w-full", className)}>
+      <Typography variant="small" className="font-medium text-muted-foreground uppercase tracking-wider text-xs mb-4 block">
+        Historique du dossier
+      </Typography>
+      <div className="space-y-0">
+        {history.map((entry, index) => {
+          const isLast = index === history.length - 1
+          const label = entry.new_state?.label ?? entry.new_state?.code ?? "Mise à jour"
+          const color = getColor(entry.new_state?.code)
+          const date = formatDate(entry.created_at)
 
           return (
-            <div key={step.key} className="flex flex-col items-center">
-              <div
-                className={cn(
-                  "relative z-10 w-10 h-10 rounded-full flex items-center justify-center bg-muted",
-                  isCurrent && "ring-4 ring-primary/20"
-                )}
-              >
-                {isRejected ? (
-                  <Icon className="size-5 text-red-500" />
-                ) : isCurrent ? (
-                  <Icon className="size-5 text-orange-500" />
-                ) : isCompleted ? (
-                  <Icon className="size-5 text-green-500" />
-                ) : isEmpty ? (
-                  <Empty />
-                ) : (
-                  <Icon className="size-5" />
+            <div key={entry.id} className="flex gap-3">
+              {/* Timeline line */}
+              <div className="flex flex-col items-center">
+                <div
+                  className="size-5 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: isLast ? color : undefined }}
+                >
+                  {isLast ? (
+                    <CheckCircle2 className="size-4 text-white" />
+                  ) : (
+                    <Circle className="size-3.5" style={{ color }} />
+                  )}
+                </div>
+                {!isLast && (
+                  <div className="w-0.5 flex-1 min-h-6 bg-border" />
                 )}
               </div>
-              <Typography
-                variant="small"
-                className={cn(
-                  "mt-2 text-xs font-medium text-center",
-                  isRejected ? "text-red-500" : isCurrent ? "text-orange-500" : isCompleted || isApproved ? "text-green-500" : isEmpty ? "text-muted-foreground" : "text-foreground"
+
+              {/* Content */}
+              <div className={cn("pb-6 min-w-0", isLast && "pb-0")}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Typography variant="p" className="text-sm font-medium">
+                    {label}
+                  </Typography>
+                  {isLast && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      <Clock className="size-3" />
+                      Actuel
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <Typography variant="small" className="text-muted-foreground text-xs">
+                    {date}
+                  </Typography>
+                </div>
+                {entry.comment && (
+                  <Typography variant="small" className="text-muted-foreground text-xs mt-1 italic">
+                    {entry.comment}
+                  </Typography>
                 )}
-              >
-                {step.label}
-              </Typography>
+              </div>
             </div>
           )
         })}
       </div>
-    </div>
-  )
-}
-
-function TimelineMobile({ stepStates }: { stepStates: StepState[] }) {
-  return (
-    <div className="space-y-0">
-      {steps.map((step, index) => {
-        const { isCompleted, isCurrent, isRejected, isApproved, isEmpty } = stepStates[index]
-        const Icon = step.icon
-
-        return (
-          <div key={step.key} className="flex items-start gap-3">
-            <div className="flex flex-col items-center">
-              <div
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center bg-muted",
-                  isCurrent && "ring-2 ring-primary/30"
-                )}
-              >
-                {isRejected ? (
-                  <Icon className="size-4 text-red-500" />
-                ) : isCurrent ? (
-                  <Icon className="size-4 text-orange-500" />
-                ) : isCompleted ? (
-                  <Icon className="size-4 text-green-500" />
-                ) : isEmpty ? (
-                  <Empty size="small" />
-                ) : (
-                  <Icon className="size-4" />
-                )}
-              </div>
-              {index < steps.length - 1 && (
-                <div className={cn("w-0.5 h-6", isRejected ? "bg-red-500" : isCompleted ? "bg-green-500" : "bg-muted")} />
-              )}
-            </div>
-            <div className="flex-1 pb-4">
-              <Typography
-                variant="small"
-                className={cn(
-                  "font-medium",
-                  isRejected ? "text-red-500" : isCurrent ? "text-orange-500" : isCompleted || isApproved ? "text-green-500" : isEmpty ? "text-muted-foreground" : "text-foreground"
-                )}
-              >
-                {step.label}
-              </Typography>
-              {isCurrent && !isRejected && (
-                <Typography variant="small" className="text-muted-foreground text-xs">Current step</Typography>
-              )}
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-export function TrackTimeline({ status, reference, className }: TrackTimelineProps) {
-  const isMobile = useIsMobile()
-
-  const progress = getProgress(status, reference)
-
-  const stepStates = steps.map((_, index) => getStepState(progress, index, status))
-
-  return (
-    <div className={cn("w-full mt-4", className)}>
-      {isMobile ? (
-        <TimelineMobile stepStates={stepStates} />
-      ) : (
-        <TimelineDesktop stepStates={stepStates} status={status} reference={reference} />
-      )}
     </div>
   )
 }

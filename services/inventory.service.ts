@@ -27,7 +27,7 @@ async function listCategories(): Promise<ProductCategory[]> {
 async function createCategory(data: ProductCategoryInsert): Promise<ProductCategory> {
   const { data: created, error } = await supabase
     .from("product_categories")
-    .insert(data)
+    .insert(data as never)
     .select("*")
     .single()
 
@@ -38,7 +38,7 @@ async function createCategory(data: ProductCategoryInsert): Promise<ProductCateg
 async function updateCategory(id: string, data: ProductCategoryUpdate): Promise<ProductCategory> {
   const { data: updated, error } = await supabase
     .from("product_categories")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select("*")
     .single()
@@ -121,7 +121,7 @@ async function getProductById(id: string): Promise<Product | null> {
 async function createProduct(data: ProductInsert): Promise<Product> {
   const { data: created, error } = await supabase
     .from("products")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -137,7 +137,7 @@ async function createProduct(data: ProductInsert): Promise<Product> {
 async function updateProduct(id: string, data: ProductUpdate): Promise<Product> {
   const { data: updated, error } = await supabase
     .from("products")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(
       `
@@ -197,7 +197,7 @@ async function getStocksByProduct(productId: string): Promise<CampaignStock[]> {
 async function updateStock(id: string, data: CampaignStockUpdate): Promise<CampaignStock> {
   const { data: updated, error } = await supabase
     .from("campaign_stocks")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(`
       *,
@@ -263,7 +263,7 @@ async function listMovements(filters: MovementListFilters = {}): Promise<Movemen
 async function createMovement(data: InventoryMovementInsert): Promise<InventoryMovement> {
   const { data: movement, error: movementError } = await supabase
     .from("inventory_movements")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -281,30 +281,31 @@ async function createMovement(data: InventoryMovementInsert): Promise<InventoryM
       const qty = data.quantity
       const type = data.movement_type
 
-      const { data: existing } = await supabase
+      const existing = await supabase
         .from("campaign_stocks")
         .select("*")
         .eq("campaign_id", data.campaign_id)
         .eq("product_id", data.product_id)
-        .maybeSingle()
+        .maybeSingle() as unknown as { data: { id: string; total_quantity: number; available_quantity: number; reserved_quantity: number } | null }
 
-      if (existing) {
+      if (existing.data) {
+        const e = existing.data
         const updates: Record<string, number> = {}
         if (type === "IN") {
-          updates.total_quantity = (existing.total_quantity ?? 0) + qty
-          updates.available_quantity = (existing.available_quantity ?? 0) + qty
+          updates.total_quantity = (e.total_quantity ?? 0) + qty
+          updates.available_quantity = (e.available_quantity ?? 0) + qty
         } else if (type === "OUT") {
-          updates.available_quantity = Math.max(0, (existing.available_quantity ?? 0) - qty)
+          updates.available_quantity = Math.max(0, (e.available_quantity ?? 0) - qty)
         } else if (type === "RESERVATION") {
-          updates.available_quantity = Math.max(0, (existing.available_quantity ?? 0) - qty)
-          updates.reserved_quantity = (existing.reserved_quantity ?? 0) + qty
+          updates.available_quantity = Math.max(0, (e.available_quantity ?? 0) - qty)
+          updates.reserved_quantity = (e.reserved_quantity ?? 0) + qty
         } else if (type === "RETURN") {
-          updates.available_quantity = (existing.available_quantity ?? 0) + qty
-          updates.reserved_quantity = Math.max(0, (existing.reserved_quantity ?? 0) - qty)
+          updates.available_quantity = (e.available_quantity ?? 0) + qty
+          updates.reserved_quantity = Math.max(0, (e.reserved_quantity ?? 0) - qty)
         }
-        await supabase.from("campaign_stocks").update(updates).eq("id", existing.id)
+        await (supabase as any).from("campaign_stocks").update(updates).eq("id", e.id)
       } else if (type === "IN") {
-        await supabase.from("campaign_stocks").insert({
+        await (supabase as any).from("campaign_stocks").insert({
           campaign_id: data.campaign_id,
           product_id: data.product_id,
           total_quantity: qty,

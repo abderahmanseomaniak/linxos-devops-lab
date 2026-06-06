@@ -2,7 +2,6 @@
 // Profiles
 // ──────────────────────────────────────────────
 import { z } from 'zod';
-import type { Database } from './supabase/database.types';
 
 // ── Constants ─────────────────────────────────
 export const USER_ROLES = [

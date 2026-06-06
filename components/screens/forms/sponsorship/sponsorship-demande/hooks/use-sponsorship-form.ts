@@ -13,8 +13,6 @@ import {
   type SponsorshipDemande1Values,
 } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
-const OTP_LENGTH = 8
-
 type StepApi = {
   current: number
   total: number
@@ -25,26 +23,21 @@ type StepApi = {
   goTo: (step: number) => void
 }
 
-type OtpApi = {
-  open: boolean
-  value: string
-  error: boolean
-  loading: boolean
-  verified: boolean
-  length: number
-  setValue: (value: string) => void
-  verify: () => void
-  close: () => void
-  resend: () => void
-}
+export type SubmissionResult = {
+  tracking_code: string
+  event_id: string
+  application_form_id: string
+  club_id: string
+} | null
 
 export type SponsorshipFormApi = {
   form: UseFormReturn<SponsorshipDemande1Values>
   step: StepApi
-  otp: OtpApi
   submit: () => void
   submitting: boolean
   submissionError: string | null
+  result: SubmissionResult
+  reset: () => void
 }
 
 export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
@@ -59,119 +52,192 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
     { goToNextStep, goToPrevStep, setStep, canGoToNextStep, canGoToPrevStep },
   ] = useStep(totalSteps)
 
-  const [otpOpen, setOtpOpen] = useState(false)
-  const [otpValue, setOtpValue] = useState("")
-  const [otpError, setOtpError] = useState(false)
-  const [otpLoading, setOtpLoading] = useState(false)
-  const [otpVerified, setOtpVerified] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
+  const [result, setResult] = useState<SubmissionResult>(null)
 
-  const sendOtpToEmail = useCallback(async (email: string) => {
-    setOtpLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { shouldCreateUser: true },
-      })
-      if (error) {
-        toast.error("Erreur d'envoi", { description: error.message })
-        return false
-      }
-      toast.success("Code envoyé", {
-        description: `Un code à 8 chiffres a été envoyé à ${email}.`,
-      })
-      return true
-    } catch {
-      toast.error("Erreur réseau", { description: "Impossible d'envoyer le code" })
-      return false
-    } finally {
-      setOtpLoading(false)
-    }
+  const uploadFile = useCallback(async (
+    file: File,
+    eventId: string,
+    fileType: string,
+  ): Promise<string> => {
+    const filePath = `events/${eventId}/${fileType}/${Date.now()}_${file.name}`
+    const { error } = await supabase.storage
+      .from("event-attachments")
+      .upload(filePath, file)
+
+    if (error) throw new Error(`Erreur d'upload: ${error.message}`)
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("event-attachments")
+      .getPublicUrl(filePath)
+
+    return publicUrl
   }, [])
 
   const doSubmit = useCallback(async (values: SponsorshipDemande1Values) => {
     setSubmitting(true)
     setSubmissionError(null)
+    setResult(null)
+
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch("/api/submit-sponsorship", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token ?? ""}`,
-        },
-        body: JSON.stringify({ ...values, formType: "demande" }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        throw new Error(data.error || "Erreur lors de l'envoi")
+      let trackedData: {
+        tracking_code: string
+        event_id: string
+        application_form_id: string
+        club_id: string
+      } | null = null
+
+      // API route with service_role key
+      {
+        const res = await fetch("/api/submit-sponsorship", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            formType: "demande",
+            nomEtablissement: values.nomEtablissement,
+            ville: values.ville,
+            universite: values.universite || null,
+            nomResponsable: values.nomResponsable,
+            fonction: values.fonction || null,
+            telephone: values.telephone,
+            email: values.email,
+            nomEvenement: values.nomEvenement,
+            lieu: values.lieu,
+            dateDebut: values.dateDebut,
+            dateFin: values.dateFin || null,
+            partenariatTypes: values.partenariatTypes.join(", "),
+            eventType: values.eventType || null,
+            participants: Number(values.participants) || null,
+            publicCible: values.publicCible || null,
+            visibiliteContreparties: values.visibiliteContreparties || null,
+            hasInfluencers: values.hasInfluencers === "yes",
+            ugcContentTypes: values.ugcContentTypes.join(", ") || null,
+            imageConsent: values.imageConsent,
+            premiereCollaboration: values.premiereCollaboration === "yes" || null,
+            commentaire: values.commentaire || null,
+          }),
+        })
+
+        const apiData = await res.json()
+        if (!res.ok) {
+          throw new Error(apiData.error || "Erreur lors de la soumission")
+        }
+
+        trackedData = {
+          tracking_code: apiData.tracking_code,
+          event_id: apiData.event_id,
+          application_form_id: apiData.application_form_id,
+          club_id: apiData.club_id,
+        }
       }
-      toast.success("Demande envoyée avec succès !", {
-        description: `Votre référence est ${data.tracking_code}.`,
+
+      if (!trackedData?.tracking_code || !trackedData?.event_id) {
+        throw new Error("Réponse inattendue du serveur")
+      }
+
+      const rpcData = trackedData
+
+      // ── UGC Profiles ──
+      const ugcPromises: Promise<unknown>[] = []
+
+      for (const ambassadeur of values.ambassadeurs ?? []) {
+        if (ambassadeur.url) {
+          const instagramUrl = ambassadeur.url.includes("instagram")
+            ? ambassadeur.url : null
+          const tiktokUrl = ambassadeur.url.includes("tiktok")
+            ? ambassadeur.url : null
+          ugcPromises.push(
+            (supabase as any).from("application_ugc_profiles").insert({
+              application_form_id: rpcData.application_form_id,
+              instagram_url: instagramUrl ?? (!tiktokUrl ? ambassadeur.url : null),
+              tiktok_url: tiktokUrl,
+            })
+          )
+        }
+      }
+
+      for (const influencer of values.influencers ?? []) {
+        if (influencer.nom || influencer.instagram || influencer.tiktok) {
+          ugcPromises.push(
+            (supabase as any).from("application_ugc_profiles").insert({
+              application_form_id: rpcData.application_form_id,
+              full_name: influencer.nom || null,
+              instagram_url: influencer.instagram || null,
+              tiktok_url: influencer.tiktok || null,
+              followers_count: Number(influencer.nbAbonnes) || null,
+              content_type: influencer.typeContenu || null,
+              available_for_shooting: influencer.disponibleTournage || false,
+            })
+          )
+        }
+      }
+
+      await Promise.allSettled(ugcPromises)
+
+      // ── File uploads ──
+      const fileEntries: Array<{ file: File; type: string }> = []
+      if (values.afficheEvenement instanceof File) {
+        fileEntries.push({ file: values.afficheEvenement, type: "affiche" })
+      }
+      if (values.dossierSponsoring instanceof File) {
+        fileEntries.push({ file: values.dossierSponsoring, type: "dossier" })
+      }
+      if (values.photosPrecedentes instanceof File) {
+        fileEntries.push({ file: values.photosPrecedentes, type: "photos" })
+      }
+      if (values.cachet instanceof File) {
+        fileEntries.push({ file: values.cachet, type: "cachet" })
+      }
+
+      const uploadPromises = fileEntries.map(async ({ file, type }) => {
+        const fileUrl = await uploadFile(file, rpcData.event_id, type)
+        await (supabase as any).from("event_attachments").insert({
+          event_id: rpcData.event_id,
+          file_type: type,
+          file_url: fileUrl,
+          file_name: file.name,
+        })
       })
+
+      await Promise.allSettled(uploadPromises)
+
+      setResult({
+        tracking_code: rpcData.tracking_code,
+        event_id: rpcData.event_id,
+        application_form_id: rpcData.application_form_id,
+        club_id: rpcData.club_id,
+      })
+
       form.reset(defaultSponsorshipDemande1Values)
-      setOtpVerified(false)
-      return data
+
+      toast.success("Demande envoyée avec succès !", {
+        description: `Votre référence est ${rpcData.tracking_code}.`,
+      })
+
+      import("@/services/email/send-email").then(({ sendTrackingCodeEmail }) => {
+        sendTrackingCodeEmail(rpcData.event_id, values.email, rpcData.tracking_code)
+      })
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erreur lors de l'envoi"
       setSubmissionError(message)
-      setOtpVerified(false)
       toast.error("Erreur", { description: message })
-      return null
     } finally {
       setSubmitting(false)
     }
-  }, [form])
+  }, [form, uploadFile])
 
-  const submit = useCallback(async () => {
-    if (!otpVerified) {
-      const values = form.getValues()
-      setOtpOpen(true)
-      await sendOtpToEmail(values.email)
-      return
-    }
+  const submit = useCallback(() => {
     const values = form.getValues()
     doSubmit(values)
-  }, [otpVerified, form, doSubmit, sendOtpToEmail])
+  }, [form, doSubmit])
 
-  const verifyOtp = useCallback(async () => {
-    setOtpLoading(true)
-    setOtpError(false)
-    const values = form.getValues()
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: values.email,
-        token: otpValue,
-        type: "email",
-      })
-      setOtpLoading(false)
-      if (error) {
-        setOtpError(true)
-        setOtpValue("")
-        toast.error("Code invalide", { description: error.message })
-        return
-      }
-      setOtpVerified(true)
-      setOtpOpen(false)
-      await doSubmit(values)
-    } catch {
-      setOtpLoading(false)
-      setOtpError(true)
-      toast.error("Erreur", { description: "Erreur de vérification" })
-    }
-  }, [otpValue, form, doSubmit])
-
-  const closeOtp = useCallback(() => {
-    setOtpOpen(false)
-    setOtpValue("")
-    setOtpError(false)
-  }, [])
-
-  const resendOtp = useCallback(async () => {
-    const values = form.getValues()
-    await sendOtpToEmail(values.email)
-  }, [sendOtpToEmail])
+  const reset = useCallback(() => {
+    form.reset(defaultSponsorshipDemande1Values)
+    setResult(null)
+    setSubmissionError(null)
+    setStep(1)
+  }, [form, setStep])
 
   return {
     form,
@@ -184,20 +250,10 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
       goPrev: goToPrevStep,
       goTo: (next) => setStep(next),
     },
-    otp: {
-      open: otpOpen,
-      value: otpValue,
-      error: otpError,
-      loading: otpLoading,
-      verified: otpVerified,
-      length: OTP_LENGTH,
-      setValue: setOtpValue,
-      verify: verifyOtp,
-      close: closeOtp,
-      resend: resendOtp,
-    },
     submit,
     submitting,
     submissionError,
+    result,
+    reset,
   }
 }

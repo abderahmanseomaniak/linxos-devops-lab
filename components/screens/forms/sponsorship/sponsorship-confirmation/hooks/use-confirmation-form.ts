@@ -13,8 +13,6 @@ import {
   type ConfirmationFormValues,
 } from "@/components/screens/forms/sponsorship/sponsorship-confirmation/lib/schema"
 
-const OTP_LENGTH = 8
-
 type StepApi = {
   current: number
   total: number
@@ -25,26 +23,14 @@ type StepApi = {
   goTo: (step: number) => void
 }
 
-type OtpApi = {
-  open: boolean
-  value: string
-  error: boolean
-  loading: boolean
-  verified: boolean
-  length: number
-  setValue: (value: string) => void
-  verify: () => void
-  close: () => void
-  resend: () => void
-}
-
 export type ConfirmationFormApi = {
   form: UseFormReturn<ConfirmationFormValues>
   step: StepApi
-  otp: OtpApi
   submit: () => void
   submitting: boolean
   submissionError: string | null
+  result: { confirmation_id: string; event_id: string } | null
+  reset: () => void
 }
 
 export function useConfirmationForm(
@@ -62,128 +48,136 @@ export function useConfirmationForm(
     { goToNextStep, goToPrevStep, setStep, canGoToNextStep, canGoToPrevStep },
   ] = useStep(totalSteps)
 
-  const [otpOpen, setOtpOpen] = useState(false)
-  const [otpValue, setOtpValue] = useState("")
-  const [otpError, setOtpError] = useState(false)
-  const [otpLoading, setOtpLoading] = useState(false)
-  const [otpVerified, setOtpVerified] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
-
-  const sendOtpToEmail = useCallback(async (email: string) => {
-    setOtpLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { shouldCreateUser: true },
-      })
-      if (error) {
-        toast.error("Erreur d'envoi", { description: error.message })
-        return false
-      }
-      toast.success("Code envoyé", {
-        description: `Un code à 8 chiffres a été envoyé à ${email}.`,
-      })
-      return true
-    } catch {
-      toast.error("Erreur réseau", { description: "Impossible d'envoyer le code" })
-      return false
-    } finally {
-      setOtpLoading(false)
-    }
-  }, [])
+  const [result, setResult] = useState<{ confirmation_id: string; event_id: string } | null>(null)
 
   const doSubmit = useCallback(
     async (values: ConfirmationFormValues) => {
       if (!trackingCode) {
         toast.error("Code de suivi manquant")
-        return null
+        return
       }
 
       setSubmitting(true)
       setSubmissionError(null)
+
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        const res = await fetch("/api/submit-sponsorship", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token ?? ""}`,
-          },
-          body: JSON.stringify({ ...values, formType: "confirmation", trackingCode }),
-        })
-        const data = await res.json()
-        if (!res.ok) {
-          throw new Error(data.error || "Erreur lors de l'envoi")
+        let confirmationId: string | null = null
+        let eventId: string | null = null
+
+        // Try RPC first
+        try {
+          const { data, error } = await (supabase as any).rpc("submit_confirmation_form", {
+            p_tracking_code: trackingCode,
+            p_official_instagram: values.instagramUrl,
+            p_confirmed_cans: values.cansConfirmed,
+            p_main_contact_name: values.fullName,
+            p_main_contact_phone: values.whatsappPhone,
+            p_main_contact_email: values.email || null,
+            p_logistics_contact_name: values.logisticsName || null,
+            p_logistics_contact_phone: values.logisticsWhatsapp || null,
+            p_delivery_address: values.deliveryAddress || null,
+            p_delivery_date: values.deliveryDate || null,
+            p_reception_time: values.receptionTime || null,
+            p_commitment: values.commitUgc,
+            p_comment: values.comment || null,
+            p_drive_url: values.driveUrl || null,
+          })
+
+          if (!error && data?.success) {
+            confirmationId = (data as { confirmation_id: string }).confirmation_id
+            eventId = (data as { event_id: string }).event_id
+          } else {
+            console.warn("[submit_confirmation_form] RPC unavailable, using API fallback:", error?.message ?? error)
+          }
+        } catch (rpcErr) {
+          console.warn("[submit_confirmation_form] RPC threw, using API fallback:", rpcErr)
         }
-        toast.success("Confirmation envoyée !", {
-          description: "Votre demande de confirmation a été enregistrée.",
+
+        // Fallback: API route with service_role key
+        if (!confirmationId) {
+          const res = await fetch("/api/submit-sponsorship", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              formType: "confirmation",
+              trackingCode,
+              official_instagram: values.instagramUrl,
+              confirmed_cans: values.cansConfirmed,
+              main_contact_name: values.fullName,
+              main_contact_phone: values.whatsappPhone,
+              main_contact_email: values.email || null,
+              logistics_contact_name: values.logisticsName || null,
+              logistics_contact_phone: values.logisticsWhatsapp || null,
+              delivery_address: values.deliveryAddress || null,
+              delivery_date: values.deliveryDate || null,
+              reception_time: values.receptionTime || null,
+              commitment: values.commitUgc,
+              comment: values.comment || null,
+              drive_url: values.driveUrl || null,
+            }),
+          })
+
+          const apiData = await res.json()
+
+          if (!res.ok) {
+            throw new Error(apiData.error || "Erreur lors de la soumission")
+          }
+
+          confirmationId = apiData.confirmation_id as string
+          eventId = apiData.event_id as string
+        }
+
+        if (!confirmationId) {
+          throw new Error("Erreur lors de la soumission du formulaire")
+        }
+
+        // Insert UGC profiles client-side
+        if (values.hasUgc === "yes" && values.ugcUrls) {
+          const ugcPromises = values.ugcUrls
+            .filter((u) => u.url?.trim())
+            .map((u) =>
+              (supabase as any).from("confirmation_ugc_profiles").insert({
+                confirmation_form_id: confirmationId,
+                instagram_url: u.url.includes("instagram") ? u.url : null,
+                tiktok_url: u.url.includes("tiktok") ? u.url : null,
+              })
+            )
+          await Promise.allSettled(ugcPromises)
+        }
+
+        setResult({
+          confirmation_id: confirmationId,
+          event_id: eventId ?? "",
         })
-        form.reset(defaultConfirmationValues)
-        setOtpVerified(false)
-        return data
+
+        toast.success("Confirmation envoyée !", {
+          description: "Votre formulaire de confirmation a été enregistré.",
+        })
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Erreur lors de l'envoi"
         setSubmissionError(message)
-        setOtpVerified(false)
         toast.error("Erreur", { description: message })
-        return null
       } finally {
         setSubmitting(false)
       }
     },
-    [trackingCode, form]
+    [trackingCode]
   )
 
-  const submit = useCallback(async () => {
-    if (!otpVerified) {
-      const values = form.getValues()
-      setOtpOpen(true)
-      await sendOtpToEmail(values.email)
-      return
-    }
+  const submit = useCallback(() => {
     const values = form.getValues()
     doSubmit(values)
-  }, [otpVerified, form, doSubmit, sendOtpToEmail])
+  }, [form, doSubmit])
 
-  const verifyOtp = useCallback(async () => {
-    setOtpLoading(true)
-    setOtpError(false)
-    const values = form.getValues()
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: values.email,
-        token: otpValue,
-        type: "email",
-      })
-      setOtpLoading(false)
-      if (error) {
-        setOtpError(true)
-        setOtpValue("")
-        toast.error("Code invalide", { description: error.message })
-        return
-      }
-      setOtpVerified(true)
-      setOtpOpen(false)
-      await doSubmit(values)
-    } catch {
-      setOtpLoading(false)
-      setOtpError(true)
-      toast.error("Erreur", { description: "Erreur de vérification" })
-    }
-  }, [otpValue, form, doSubmit])
-
-  const closeOtp = useCallback(() => {
-    setOtpOpen(false)
-    setOtpValue("")
-    setOtpError(false)
-  }, [])
-
-  const resendOtp = useCallback(async () => {
-    const values = form.getValues()
-    await sendOtpToEmail(values.email)
-  }, [sendOtpToEmail])
+  const reset = useCallback(() => {
+    form.reset(defaultConfirmationValues)
+    setResult(null)
+    setSubmissionError(null)
+    setStep(1)
+  }, [form, setStep])
 
   return {
     form,
@@ -196,20 +190,10 @@ export function useConfirmationForm(
       goPrev: goToPrevStep,
       goTo: (next) => setStep(next),
     },
-    otp: {
-      open: otpOpen,
-      value: otpValue,
-      error: otpError,
-      loading: otpLoading,
-      verified: otpVerified,
-      length: OTP_LENGTH,
-      setValue: setOtpValue,
-      verify: verifyOtp,
-      close: closeOtp,
-      resend: resendOtp,
-    },
     submit,
     submitting,
     submissionError,
+    result,
+    reset,
   }
 }

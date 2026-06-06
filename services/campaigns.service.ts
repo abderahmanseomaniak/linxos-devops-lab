@@ -74,7 +74,7 @@ async function getById(id: string): Promise<Campaign | null> {
 async function create(data: CampaignInsert): Promise<Campaign> {
   const { data: created, error } = await supabase
     .from("campaigns")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -93,7 +93,7 @@ async function create(data: CampaignInsert): Promise<Campaign> {
 async function update(id: string, data: CampaignUpdate): Promise<Campaign> {
   const { data: updated, error } = await supabase
     .from("campaigns")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(
       `

@@ -65,7 +65,7 @@ async function getById(id: string): Promise<Club | null> {
 async function create(data: ClubInsert): Promise<Club> {
   const { data: created, error } = await supabase
     .from("clubs")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -81,7 +81,7 @@ async function create(data: ClubInsert): Promise<Club> {
 async function update(id: string, data: ClubUpdate): Promise<Club> {
   const { data: updated, error } = await supabase
     .from("clubs")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(
       `
@@ -117,7 +117,7 @@ async function createContact(data: {
       phone: data.phone ?? null,
       email: data.email ?? null,
       is_primary: data.is_primary ?? true,
-    })
+    } as never)
     .select("*")
     .single()
 
@@ -146,7 +146,7 @@ async function updateContact(id: string, data: Partial<{
 }>): Promise<unknown> {
   const { data: updated, error } = await supabase
     .from("club_contacts")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select("*")
     .single()

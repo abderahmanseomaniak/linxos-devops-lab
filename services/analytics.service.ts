@@ -50,7 +50,7 @@ async function createScoringProfile(
 ): Promise<ScoringProfile> {
   const { data: created, error } = await supabase
     .from("scoring_profiles")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -70,7 +70,7 @@ async function updateScoringProfile(
 ): Promise<ScoringProfile> {
   const { data: updated, error } = await supabase
     .from("scoring_profiles")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(
       `
@@ -115,7 +115,7 @@ async function createScoringRule(
 ): Promise<ScoringRule> {
   const { data: created, error } = await supabase
     .from("scoring_rules")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,
@@ -134,7 +134,7 @@ async function updateScoringRule(
 ): Promise<ScoringRule> {
   const { data: updated, error } = await supabase
     .from("scoring_rules")
-    .update(data)
+    .update(data as never)
     .eq("id", id)
     .select(
       `
@@ -177,7 +177,7 @@ async function createAIAnalysis(
 ): Promise<AIAnalysis> {
   const { data: created, error } = await supabase
     .from("ai_analyses")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,

@@ -60,7 +60,7 @@ async function list(
 async function markAsRead(id: string): Promise<void> {
   const { error } = await supabase
     .from("notifications")
-    .update({ is_read: true })
+    .update({ is_read: true } as never)
     .eq("id", id)
 
   if (error) throw error
@@ -69,7 +69,7 @@ async function markAsRead(id: string): Promise<void> {
 async function markAllAsRead(userId: string): Promise<void> {
   const { error } = await supabase
     .from("notifications")
-    .update({ is_read: true })
+    .update({ is_read: true } as never)
     .eq("user_id", userId)
     .eq("is_read", false)
 
@@ -79,7 +79,7 @@ async function markAllAsRead(userId: string): Promise<void> {
 async function create(data: NotificationInsert): Promise<Notification> {
   const { data: created, error } = await supabase
     .from("notifications")
-    .insert(data)
+    .insert(data as never)
     .select(
       `
       *,

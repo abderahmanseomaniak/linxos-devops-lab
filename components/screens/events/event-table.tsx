@@ -207,7 +207,7 @@ export function EventTable({
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) => {
         const event = row.original
-        const isUnderReview = event.workflow_code === "UNDER_REVIEW"
+        const canAccept = event.workflow_code === "UNDER_REVIEW" || event.workflow_code === "SUBMITTED"
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -222,7 +222,7 @@ export function EventTable({
               }}>
                 Voir détails
               </DropdownMenuItem>
-              {canDecide && isUnderReview && (
+              {canDecide && canAccept && (
                 <DropdownMenuItem
                   disabled={actionLoading === event.event_id}
                   onClick={async () => {

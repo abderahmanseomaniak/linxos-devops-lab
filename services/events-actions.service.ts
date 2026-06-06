@@ -42,14 +42,7 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
 }
 
 export async function acceptEvent(eventId: string, userId: string, comment?: string) {
-  const { error } = await (supabase as any).rpc("accept_event", {
-    p_event_id: eventId,
-    p_user_id: userId,
-    p_comment: comment ?? null,
-  })
-  if (error) {
-    await transitionEventState(eventId, "APPROVED", userId, comment)
-  }
+  await transitionEventState(eventId, "VALIDATED", userId, comment)
 
   // Send confirmation email to applicant
   try {

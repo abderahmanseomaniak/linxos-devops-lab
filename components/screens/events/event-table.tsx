@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useState, useEffect } from "react"
+import React, { useId, useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -40,6 +40,9 @@ import { EventDetailSheet } from "./sheets/detail-event-sheet"
 import { Spinner } from "@/components/ui/spinner"
 import { DEFAULT_SORTING } from "./lib/constants"
 import { SORT_ICONS } from "@/components/shared/sort-icons"
+import { eventsActionsService } from "@/services/events-actions.service"
+import { useAuth } from "@/providers/auth-provider"
+import { toast } from "sonner"
 
 const WORKFLOW_LABELS: Record<string, string> = {
   DRAFT: "Brouillon",
@@ -108,6 +111,10 @@ export function EventTable({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([DEFAULT_SORTING])
   const [rowSelection, setRowSelection] = useState({})
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const { user, isAdmin, isSponsoringManager } = useAuth()
+  const userId = user?.id ?? ""
+  const canDecide = isAdmin || isSponsoringManager
 
   const columns: ColumnDef<EventOverviewRow>[] = [
     {
@@ -170,10 +177,10 @@ export function EventTable({
       size: 130,
     },
     {
-      id: "ai_score",
+      id: "score_ai",
       header: "Score IA",
       cell: ({ row }) => {
-        const score = row.original.ai_score
+        const score = row.original.score_ai ?? row.original.ai_score
         if (score === null || score === undefined) return <span className="text-sm text-muted-foreground">-</span>
         const color = score >= 70 ? "text-green-600" : score >= 40 ? "text-yellow-600" : "text-red-600"
         return (
@@ -185,118 +192,59 @@ export function EventTable({
       size: 100,
     },
     {
-      accessorKey: "campaign_name",
-      id: "campaign_name",
-      header: "Campagne",
-      cell: ({ row }) => <span className="text-sm">{row.original.campaign_name || "-"}</span>,
-      size: 150,
-    },
-    {
-      id: "ai_recommendation",
-      header: "Recommandation IA",
+      id: "date_confirme",
+      header: "Date confirmation",
       cell: ({ row }) => {
-        const rec = row.original.ai_recommendation
-        if (!rec) return <span className="text-sm text-muted-foreground">-</span>
-        const variant = rec === "APPROVED" ? "default" : rec === "REJECTED" ? "destructive" : "secondary"
-        const label = rec === "APPROVED" ? "Approuvé" : rec === "REJECTED" ? "Rejeté" : "À réviser"
-        return <Badge variant={variant}>{label}</Badge>
+        const date = row.original.date_confirme
+        return <span className="text-sm">{date ? formatDate(date) : "-"}</span>
       },
       size: 130,
     },
     {
-      id: "allocated_quantity",
-      header: "Qté allouée",
-      cell: ({ row }) => {
-        const qty = row.original.allocated_quantity
-        return <span className="text-sm">{qty != null ? qty : "-"}</span>
-      },
-      size: 100,
-    },
-    {
-      id: "confirmation_completed",
-      header: "Confirmé",
-      cell: ({ row }) => {
-        const val = row.original.confirmation_completed
-        return (
-          <Badge variant={val ? "default" : "secondary"}>
-            {val ? "Oui" : "Non"}
-          </Badge>
-        )
-      },
-      size: 100,
-    },
-    {
-      id: "shipment_status",
-      header: "Expédition",
-      cell: ({ row }) => {
-        const status = row.original.shipment_status
-        if (!status) return <span className="text-sm text-muted-foreground">-</span>
-        const labels: Record<string, string> = {
-          PENDING: "En attente", PREPARING: "En préparation",
-          IN_DELIVERY: "En livraison", DELIVERED: "Livré", PROBLEM: "Problème",
-        }
-        const variants: Record<string, "default" | "secondary" | "destructive"> = {
-          PENDING: "secondary", PREPARING: "secondary",
-          IN_DELIVERY: "secondary", DELIVERED: "default", PROBLEM: "destructive",
-        }
-        return (
-          <Badge variant={variants[status] ?? "secondary"}>
-            {labels[status] ?? status}
-          </Badge>
-        )
-      },
-      size: 120,
-    },
-    {
-      id: "drive_submitted",
-      header: "Drive",
-      cell: ({ row }) => {
-        const val = row.original.drive_submitted
-        return (
-          <Badge variant={val ? "default" : "secondary"}>
-            {val ? "Soumis" : "Non"}
-          </Badge>
-        )
-      },
-      size: 90,
-    },
-    {
-      id: "ugc_count",
-      header: "UGC",
-      cell: ({ row }) => {
-        const count = row.original.ugc_count
-        return <span className="text-sm">{count != null ? count : 0}</span>
-      },
-      size: 80,
-    },
-    {
-      accessorKey: "created_at",
-      header: "Date",
-      cell: ({ row }) => <span className="text-sm">{formatDate(row.getValue("created_at"))}</span>,
-      size: 120,
-    },
-    {
       id: "actions",
-      size: 60,
+      size: 80,
       enableHiding: false,
       header: () => <span className="sr-only">Actions</span>,
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="size-8 p-0">
-              <IconDotsVertical className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => {
-              onSelectEvent(row.original)
-              onDetailOpenChange(true)
-            }}>
-              Voir détails
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      cell: ({ row }) => {
+        const event = row.original
+        const isUnderReview = event.workflow_code === "UNDER_REVIEW"
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="size-8 p-0">
+                <IconDotsVertical className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => {
+                onSelectEvent(row.original)
+                onDetailOpenChange(true)
+              }}>
+                Voir détails
+              </DropdownMenuItem>
+              {canDecide && isUnderReview && (
+                <DropdownMenuItem
+                  disabled={actionLoading === event.event_id}
+                  onClick={async () => {
+                    setActionLoading(event.event_id)
+                    try {
+                      await eventsActionsService.acceptEvent(event.event_id, userId, undefined)
+                      toast.success("Événement accepté")
+                      onRefresh()
+                    } catch {
+                      toast.error("Erreur lors de l'acceptation")
+                    } finally {
+                      setActionLoading(null)
+                    }
+                  }}
+                >
+                  {actionLoading === event.event_id ? "..." : "Accepter"}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
     },
   ]
 
@@ -417,7 +365,7 @@ export function EventTable({
       <TablePagination table={table} />
 
       <EventDetailSheet
-        eventId={selectedEvent?.id ?? null}
+        eventId={selectedEvent?.event_id ?? null}
         open={detailOpen}
         onOpenChange={(open) => {
           onDetailOpenChange(open)

@@ -18,6 +18,8 @@ export interface EventRow {
   end_date: string | null;
   applicant_email: string;
   tracking_code: string;
+  score_ai: number | null;
+  date_confirme: string | null;
   created_at: string;
 }
 
@@ -32,6 +34,8 @@ export interface EventInsert {
   end_date?: string | null;
   applicant_email: string;
   tracking_code: string;
+  score_ai?: number | null;
+  date_confirme?: string | null;
   created_at?: string;
 }
 
@@ -45,6 +49,8 @@ export interface EventUpdate {
   end_date?: string | null;
   applicant_email?: string;
   tracking_code?: string;
+  score_ai?: number | null;
+  date_confirme?: string | null;
 }
 
 export interface Event extends EventRow {
@@ -151,6 +157,8 @@ export const eventSchema = z.object({
   end_date: z.string().nullable().optional(),
   applicant_email: z.string().email('Email candidat invalide'),
   tracking_code: z.string().min(1, 'Le code de suivi est requis'),
+  score_ai: z.number().nullable().optional(),
+  date_confirme: z.string().nullable().optional(),
   created_at: z.string().datetime().optional(),
 });
 

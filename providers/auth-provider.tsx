@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react"
+import { createContext, useContext, useEffect, useState, useCallback } from "react"
 import { createClient } from "@/supabase/client"
 import type { User } from "@supabase/supabase-js"
 import type { Profile } from "@/types/profiles.types"
@@ -40,20 +40,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [supabase],
   )
 
-  const userIdRef = useRef(user?.id)
-  userIdRef.current = user?.id
-
   useEffect(() => {
-    // Hydrate from existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      }
-      setLoading(false)
-    })
+    let cancelled = false
 
-    // Listen to auth state changes
+    const getSession = supabase.auth.getSession()
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("getSession timed out")), 10_000),
+    )
+
+    Promise.race([getSession, timeout])
+      .then(({ data: { session } }: Awaited<typeof getSession>) => {
+        if (cancelled) return
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          fetchProfile(session.user.id)
+        }
+      })
+      .catch(() => {
+        // Timeout or error — stop loading so the UI shows the login form
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -65,8 +74,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     })
 
-    // Subscribe to realtime profile changes (role updates, etc.)
-    const currentId = userIdRef.current
     const channel = supabase
       .channel("profile-changes")
       .on(
@@ -75,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           event: "UPDATE",
           schema: "public",
           table: "profiles",
-          filter: currentId ? `id=eq.${currentId}` : undefined,
+          filter: user?.id ? `id=eq.${user.id}` : undefined,
         },
         (payload) => {
           setProfile(payload.new as Profile)
@@ -84,10 +91,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .subscribe()
 
     return () => {
+      cancelled = true
       subscription.unsubscribe()
       channel.unsubscribe()
     }
-  }, [supabase, fetchProfile])
+  }, [supabase, fetchProfile, user?.id])
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })

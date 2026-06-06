@@ -1,5 +1,5 @@
 export interface EventOverviewRow {
-  id: string
+  event_id: string
   event_title: string
   club_name: string
   club_id: string
@@ -9,8 +9,10 @@ export interface EventOverviewRow {
   workflow_label: string | null
   workflow_code: string | null
   state_id: string | null
+  score_ai: number | null
   ai_score: number | null
   ai_recommendation: string | null
+  date_confirme: string | null
   allocated_quantity: number | null
   confirmation_completed: boolean | null
   shipment_status: string | null
@@ -32,6 +34,8 @@ export interface EventDetail {
   start_date: string | null
   end_date: string | null
   city: string | null
+  score_ai: number | null
+  date_confirme: string | null
   club: {
     id: string
     name: string

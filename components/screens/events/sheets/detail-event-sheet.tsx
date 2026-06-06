@@ -150,6 +150,12 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
                   <InfoRow label="Date début" value={formatDate(detail.start_date)} />
                   <InfoRow label="Date fin" value={formatDate(detail.end_date)} />
                   <InfoRow label="Ville" value={detail.city} />
+                  <InfoRow label="Score IA" value={
+                    detail.score_ai != null
+                      ? <span className={detail.score_ai >= 70 ? "text-green-600 font-semibold" : detail.score_ai >= 40 ? "text-yellow-600 font-semibold" : "text-red-600 font-semibold"}>{detail.score_ai}/100</span>
+                      : "-"
+                  } />
+                  <InfoRow label="Date confirmation" value={formatDate(detail.date_confirme)} />
                 </div>
               </section>
               <Separator />

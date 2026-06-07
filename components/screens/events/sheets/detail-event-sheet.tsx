@@ -108,7 +108,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="min-w-1xl w-full overflow-y-auto sm:max-w-2xl">
+      <SheetContent className="min-w-2xl overflow-y-auto w-full flex flex-col">
         <SheetHeader>
           <SheetTitle>{detail?.title ?? "Détails de l'événement"}</SheetTitle>
           <SheetDescription>
@@ -129,7 +129,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-            <TabsList className="flex-wrap h-auto">
+            <TabsList >
               <TabsTrigger value="general" className="text-xs">Vue générale</TabsTrigger>
               <TabsTrigger value="demande" className="text-xs">Demande</TabsTrigger>
               <TabsTrigger value="ia" className="text-xs">Analyse IA</TabsTrigger>
@@ -140,7 +140,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               <TabsTrigger value="historique" className="text-xs">Historique</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="general" className="space-y-4 pt-4">
+            <TabsContent value="general" className="space-y-4 pt-4 ml-6">
               <section>
                 <Typography variant="h4" className="mb-3 text-sm font-semibold">Informations générales</Typography>
                 <div className="grid gap-2">
@@ -183,7 +183,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               </section>
             </TabsContent>
 
-            <TabsContent value="demande" className="space-y-4 pt-4">
+            <TabsContent value="demande" className="space-y-4 pt-4 ml-6">
               {detail.application_form ? (
                 <>
                   <section>
@@ -241,7 +241,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               )}
             </TabsContent>
 
-            <TabsContent value="ia" className="space-y-4 pt-4">
+            <TabsContent value="ia" className="space-y-4 pt-4 ml-6">
               {detail.ai_analysis ? (
                 <section>
                   <Typography variant="h4" className="mb-3 text-sm font-semibold">Analyse IA</Typography>
@@ -276,7 +276,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               )}
             </TabsContent>
 
-            <TabsContent value="decision" className="space-y-4 pt-4">
+            <TabsContent value="decision" className="space-y-4 pt-4 ml-6">
               {detail.state && (
                 <section>
                   <Typography variant="h4" className="mb-3 text-sm font-semibold">Décision</Typography>
@@ -314,7 +314,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               </section>
             </TabsContent>
 
-            <TabsContent value="confirmation" className="space-y-4 pt-4">
+            <TabsContent value="confirmation" className="space-y-4 pt-4 ml-6">
               {detail.confirmation_form ? (
                 <section>
                   <Typography variant="h4" className="mb-3 text-sm font-semibold">Formulaire de confirmation</Typography>
@@ -333,7 +333,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               )}
             </TabsContent>
 
-            <TabsContent value="logistique" className="space-y-4 pt-4">
+            <TabsContent value="logistique" className="space-y-4 pt-4 ml-6">
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => setShowShipDialog(true)}
                   disabled={actionLoading !== null}>
@@ -404,7 +404,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               )}
             </TabsContent>
 
-            <TabsContent value="ugc" className="space-y-4 pt-4">
+            <TabsContent value="ugc" className="space-y-4 pt-4 ml-6">
               {detail.drive_folder && (
                 <section>
                   <Typography variant="h4" className="mb-3 text-sm font-semibold">Drive</Typography>
@@ -481,7 +481,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
               </section>
             </TabsContent>
 
-            <TabsContent value="historique" className="space-y-4 pt-4">
+            <TabsContent value="historique" className="space-y-4 pt-4 ml-6">
               {detail.workflow_history.length > 0 ? (
                 <div className="space-y-3">
                   {detail.workflow_history.map((entry) => (

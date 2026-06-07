@@ -73,17 +73,13 @@ async function getStats(): Promise<EventsOverviewStats> {
   )
 
   const counts: Record<string, number> = {
-    total: total ?? 0, under_review: 0, approved: 0,
-    confirmed: 0, shipped: 0, completed: 0, rejected: 0,
+    total: total ?? 0, validated: 0, delivered: 0, rejected: 0,
   }
 
   for (const e of (stateCounts as Array<{ state_id: string | null }>)) {
     if (!e.state_id) continue
-    if (e.state_id === stateMap.UNDER_REVIEW) counts.under_review++
-    else if (e.state_id === stateMap.APPROVED) counts.approved++
-    else if (e.state_id === stateMap.CONFIRMED) counts.confirmed++
-    else if (e.state_id === stateMap.SHIPPED) counts.shipped++
-    else if (e.state_id === stateMap.COMPLETED) counts.completed++
+    if (e.state_id === stateMap.VALIDATED) counts.validated++
+    else if (e.state_id === stateMap.DELIVERED) counts.delivered++
     else if (e.state_id === stateMap.REJECTED) counts.rejected++
   }
 

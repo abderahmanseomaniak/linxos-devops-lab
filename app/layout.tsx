@@ -7,7 +7,7 @@ import { Inter } from "next/font/google";
 import { AuthProvider } from "@/providers/auth-provider";
 import "./globals.css";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={cn("h-full", "antialiased", "bg-background", "font-sans", inter.variable)}
+      className={cn("h-full", "antialiased", "bg-background", inter.variable, "font-sans")}
       suppressHydrationWarning
     >
       <body className="min-h-screen overflow-auto" suppressHydrationWarning>

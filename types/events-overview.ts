@@ -156,11 +156,8 @@ export interface EventDetail {
 
 export interface EventsOverviewStats {
   total: number
-  under_review: number
-  approved: number
-  confirmed: number
-  shipped: number
-  completed: number
+  validated: number
+  delivered: number
   rejected: number
 }
 

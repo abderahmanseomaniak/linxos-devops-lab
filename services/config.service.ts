@@ -1,77 +1,65 @@
-import { supabase } from "@/services/supabase/client"
-import type { PlatformConfig } from "@/types/config"
+import { analyticsService } from "@/services/analytics.service"
+import { campaignsService } from "@/services/campaigns.service"
+import type { Campaign } from "@/types/campaigns.types"
+import type {
+  ScoringProfile,
+  ScoringProfileInsert,
+  ScoringProfileUpdate,
+  ScoringRule,
+  ScoringRuleInsert,
+  ScoringRuleUpdate,
+} from "@/types/analytics.types"
 
-// ── Defaults ──────────────────────────────────────
-
-const DEFAULT_CONFIG: PlatformConfig = {
-  ugcSettings: {
-    minUgcCreators: 3,
-  },
-  eventPipeline: {
-    defaultEventStages: [
-      "SUBMITTED",
-      "UNDER_REVIEW",
-      "APPROVED",
-      "CONFIRMED",
-      "SHIPPED",
-      "COMPLETED",
-    ],
-  },
-  scoringSystem: {
-    scoringWeights: {
-      audienceWeight: 0.3,
-      engagementWeight: 0.3,
-      contentQualityWeight: 0.4,
-    },
-  },
-  notificationSettings: {
-    emailEnabled: true,
-    inAppEnabled: true,
-    deliveryAlerts: true,
-    contentAlerts: true,
-  },
+async function listCampaigns(): Promise<Campaign[]> {
+  const result = await campaignsService.list({ pageSize: 100 })
+  return result.data
 }
 
-// ── Get Config ───────────────────────────────────
-
-async function getConfig(): Promise<PlatformConfig> {
-  try {
-    const { data, error } = await supabase
-      .from("platform_config")
-      .select("*")
-      .single()
-
-    if (error) {
-      if (error.code === "PGRST116" || error.code === "42P01") {
-        // Table not found or no rows — return defaults
-        console.warn(
-          "[config] platform_config table not available, using defaults"
-        )
-        return { ...DEFAULT_CONFIG }
-      }
-      throw error
-    }
-
-    if (!data) return { ...DEFAULT_CONFIG }
-
-    // Merge stored config with defaults to fill any missing keys
-    const stored = data as Record<string, unknown>
-
-    return {
-      ...DEFAULT_CONFIG,
-      ...(stored.config
-        ? (stored.config as Partial<PlatformConfig>)
-        : (stored as unknown as Partial<PlatformConfig>)),
-    } satisfies PlatformConfig
-  } catch (err) {
-    // If anything goes wrong (network, permissions, etc.), return safe defaults
-    console.error("[config] getConfig failed, returning defaults:", err)
-    return { ...DEFAULT_CONFIG }
-  }
+async function listScoringProfiles(): Promise<ScoringProfile[]> {
+  return analyticsService.listScoringProfiles()
 }
 
-// ── Export ────────────────────────────────────────
+async function getScoringProfileById(id: string): Promise<ScoringProfile | null> {
+  return analyticsService.getScoringProfileById(id)
+}
+
+async function createScoringProfile(data: ScoringProfileInsert): Promise<ScoringProfile> {
+  return analyticsService.createScoringProfile(data)
+}
+
+async function updateScoringProfile(id: string, data: ScoringProfileUpdate): Promise<ScoringProfile> {
+  return analyticsService.updateScoringProfile(id, data)
+}
+
+async function removeScoringProfile(id: string): Promise<void> {
+  return analyticsService.removeScoringProfile(id)
+}
+
+async function listRulesByProfile(profileId: string): Promise<ScoringRule[]> {
+  return analyticsService.listScoringRulesByProfile(profileId)
+}
+
+async function createRule(data: ScoringRuleInsert): Promise<ScoringRule> {
+  return analyticsService.createScoringRule(data)
+}
+
+async function updateRule(id: string, data: ScoringRuleUpdate): Promise<ScoringRule> {
+  return analyticsService.updateScoringRule(id, data)
+}
+
+async function removeRule(id: string): Promise<void> {
+  return analyticsService.removeScoringRule(id)
+}
 
 export const configService = {
-  getConfig,
+  listCampaigns,
+  listScoringProfiles,
+  getScoringProfileById,
+  createScoringProfile,
+  updateScoringProfile,
+  removeScoringProfile,
+  listRulesByProfile,
+  createRule,
+  updateRule,
+  removeRule,
 }

@@ -1,369 +1,339 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
-import { IconPlus, IconX, IconGripVertical, IconArrowBackUp, IconDeviceFloppy } from "@tabler/icons-react"
+import { Badge } from "@/components/ui/badge"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { IconPlus, IconX, IconDeviceFloppy } from "@tabler/icons-react"
 
-import type { PlatformConfigData } from "@/types/config"
-import configData from "@/data/config.json"
+import { configService } from "@/services/config.service"
+import type { Campaign } from "@/types/campaigns.types"
+import type { ScoringProfile, ScoringRule } from "@/types/analytics.types"
 
-type ConfigData = PlatformConfigData
-
-const defaultConfig: ConfigData = configData as ConfigData
-
-interface StageManagerProps {
-  stages: string[]
-  onChange: (stages: string[]) => void
-}
-
-function StageManager({ stages, onChange }: StageManagerProps) {
-  const [newStage, setNewStage] = useState("")
-
-  const addStage = () => {
-    if (newStage.trim() && !stages.includes(newStage.trim())) {
-      onChange([...stages, newStage.trim()])
-      setNewStage("")
-    }
-  }
-
-  const removeStage = (index: number) => {
-    onChange(stages.filter((_, i) => i !== index))
-  }
-
-
-
+function ThresholdSlider({
+  label,
+  value,
+  onChange,
+  description,
+}: {
+  label: string
+  value: number
+  onChange: (v: number) => void
+  description?: string
+}) {
   return (
-    <div className="space-y-3">
-      <div className="flex gap-2">
-        <Input
-          placeholder="Nouveau stage"
-          value={newStage}
-          onChange={(e) => setNewStage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addStage()}
-        />
-        <Button type="button" onClick={addStage} disabled={!newStage.trim()}>
-          <IconPlus className="size-4" />
-        </Button>
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <div>
+          <Typography variant="small">{label}</Typography>
+          {description && (
+            <Typography variant="muted" className="text-xs">{description}</Typography>
+          )}
+        </div>
+        <Typography className="font-mono text-sm tabular-nums">{value}%</Typography>
       </div>
-      <div className="space-y-2 max-h-48 overflow-y-auto">
-        {stages.map((stage, index) => (
-          <div
-            key={stage}
-            className="flex items-center gap-2 p-2 bg-muted/50 rounded-md"
-          >
-            <IconGripVertical className="size-4 text-muted-foreground cursor-grab" />
-            <Typography variant="small" className="flex-1">{stage}</Typography>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => removeStage(index)}
-            >
-              <IconX className="size-4" />
-            </Button>
-          </div>
-        ))}
-      </div>
-      {stages.length === 0 && (
-        <Typography variant="muted">Aucun stage défini</Typography>
-      )}
+      <Slider value={[value]} onValueChange={([v]) => onChange(v)} max={100} step={1} />
     </div>
   )
 }
 
-interface ScoringInputsProps {
-  weights: {
-    audienceWeight: number
-    engagementWeight: number
-    contentQualityWeight: number
-  }
-  onChange: (weights: {
-    audienceWeight: number
-    engagementWeight: number
-    contentQualityWeight: number
-  }) => void
-}
-
-function ScoringInputs({ weights, onChange }: ScoringInputsProps) {
-  const total =
-    weights.audienceWeight + weights.engagementWeight + weights.contentQualityWeight
-  const isValid = total === 100
-
+function RuleRow({
+  rule,
+  onUpdate,
+  onDelete,
+}: {
+  rule: ScoringRule
+  onUpdate: (id: string, data: { name?: string; weight?: number; is_active?: boolean }) => void
+  onDelete: (id: string) => void
+}) {
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <div className="flex justify-between">
-          <Typography variant="small">Audience</Typography>
-          <Typography variant="muted">{weights.audienceWeight}%</Typography>
-        </div>
+    <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+      <Input
+        className="flex-1"
+        value={rule.name}
+        onChange={(e) => onUpdate(rule.id, { name: e.target.value })}
+        placeholder="Rule name"
+      />
+      <div className="flex items-center gap-2 w-32">
         <Slider
-          value={[weights.audienceWeight]}
-          onValueChange={([v]) => onChange({ ...weights, audienceWeight: v })}
+          value={[rule.weight]}
+          onValueChange={([v]) => onUpdate(rule.id, { weight: v })}
           max={100}
           step={5}
+          className="flex-1"
         />
+        <Typography className="font-mono text-xs tabular-nums w-8 text-right">
+          {rule.weight}
+        </Typography>
       </div>
-      <div className="space-y-2">
-        <div className="flex justify-between">
-          <Typography variant="small">Engagement</Typography>
-          <Typography variant="muted">{weights.engagementWeight}%</Typography>
-        </div>
-        <Slider
-          value={[weights.engagementWeight]}
-          onValueChange={([v]) => onChange({ ...weights, engagementWeight: v })}
-          max={100}
-          step={5}
-        />
-      </div>
-      <div className="space-y-2">
-        <div className="flex justify-between">
-          <Typography variant="small">Quality Content</Typography>
-          <Typography variant="muted">{weights.contentQualityWeight}%</Typography>
-        </div>
-        <Slider
-          value={[weights.contentQualityWeight]}
-          onValueChange={([v]) => onChange({ ...weights, contentQualityWeight: v })}
-          max={100}
-          step={5}
-        />
-      </div>
-      <div className="pt-2 border-t">
-        <div className="flex justify-between">
-          <Typography variant="small">Total</Typography>
-          <Typography className={isValid ? "text-green-600" : "text-red-600"}>
-            {total}%
-          </Typography>
-        </div>
-        {!isValid && (
-          <Typography variant="small" className="text-red-600 mt-1">Le total doit être égal à 100%</Typography>
-        )}
-      </div>
+      <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(rule.id)}>
+        <IconX className="size-4" />
+      </Button>
     </div>
-  )
-}
-
-interface NotificationSwitchesProps {
-  settings: {
-    emailEnabled: boolean
-    inAppEnabled: boolean
-    deliveryAlerts: boolean
-    contentAlerts: boolean
-  }
-  onChange: (settings: {
-    emailEnabled: boolean
-    inAppEnabled: boolean
-    deliveryAlerts: boolean
-    contentAlerts: boolean
-  }) => void
-}
-
-function NotificationSwitches({ settings, onChange }: NotificationSwitchesProps) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <Typography variant="small">Email Notifications</Typography>
-          <Typography variant="muted">Receive notifications via email</Typography>
-        </div>
-<Switch
-          checked={settings.inAppEnabled}
-          onCheckedChange={(checked) => onChange({ ...settings, inAppEnabled: checked })}
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <div>
-          <Typography variant="small">In-App Notifications</Typography>
-          <Typography variant="muted">Receive notifications in the app</Typography>
-        </div>
-        <Switch
-          checked={settings.deliveryAlerts}
-          onCheckedChange={(checked) => onChange({ ...settings, deliveryAlerts: checked })}
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <div>
-          <Typography variant="small">Delivery Alerts</Typography>
-          <Typography variant="muted">Alerts for delivery updates</Typography>
-        </div>
-        <Switch
-          checked={settings.contentAlerts}
-          onCheckedChange={(checked) => onChange({ ...settings, contentAlerts: checked })}
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <div>
-          <Typography variant="small">Content Alerts</Typography>
-          <Typography variant="muted">Alerts for content changes</Typography>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface ConfigSectionCardProps {
-  title: string
-  description: string
-  children: React.ReactNode
-  accentColor?: string
-}
-
-function ConfigSectionCard({ title, description, children, accentColor }: ConfigSectionCardProps) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={`text-lg ${accentColor}`}>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
   )
 }
 
 export function PlatformConfig() {
-  const [config, setConfig] = useState<ConfigData>(defaultConfig)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [profiles, setProfiles] = useState<ScoringProfile[]>([])
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>("")
+  const [profile, setProfile] = useState<ScoringProfile | null>(null)
+  const [rules, setRules] = useState<ScoringRule[]>([])
+  const [newRuleName, setNewRuleName] = useState("")
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {}
+  useEffect(() => {
+    Promise.all([
+      configService.listCampaigns(),
+      configService.listScoringProfiles(),
+    ]).then(([camps, profs]) => {
+      setCampaigns(camps)
+      setProfiles(profs)
+      if (camps.length > 0) setSelectedCampaignId(camps[0].id)
+      setLoading(false)
+    })
+  }, [])
 
-    if (config.ugcSettings.minUgcCreators < 0) {
-      newErrors.minUgcCreators = "Must be positive"
+  useEffect(() => {
+    if (!selectedCampaignId) return
+    const sp = profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null
+    setProfile(sp)
+    if (sp) {
+      configService.listRulesByProfile(sp.id).then(setRules)
+    } else {
+      setRules([])
     }
+  }, [selectedCampaignId, profiles])
 
-    if (config.eventPipeline.defaultEventStages.length === 0) {
-      newErrors.stages = "At least one stage required"
-    }
+  const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId)
+  const totalWeight = rules.reduce((sum, r) => sum + r.weight, 0)
+  const weightsValid = totalWeight === 100
 
-    const total =
-      config.scoringSystem.scoringWeights.audienceWeight +
-      config.scoringSystem.scoringWeights.engagementWeight +
-      config.scoringSystem.scoringWeights.contentQualityWeight
-    if (total !== 100) {
-      newErrors.weights = "Total must equal 100%"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSave = () => {
-    if (validate()) {
-      console.log("Saving config:", config)
+  const updateProfile = useCallback(
+    async (updates: Partial<ScoringProfile>) => {
+      if (!profile || !selectedCampaignId) return
+      const updated = await configService.updateScoringProfile(profile.id, updates)
+      setProfile(updated)
+      setProfiles((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
       setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
-    }
-  }
+      setTimeout(() => setSaved(false), 1500)
+    },
+    [profile, selectedCampaignId]
+  )
 
-  const handleReset = () => {
-    setConfig(defaultConfig)
-    setErrors({})
+  const createProfile = useCallback(async () => {
+    if (!selectedCampaignId) return
+    const sp = await configService.createScoringProfile({
+      campaign_id: selectedCampaignId,
+      score_minimum: 0,
+      acceptance_threshold: 80,
+      escalation_threshold: 60,
+      rejection_threshold: 40,
+    })
+    setProfile(sp)
+    setProfiles((prev) => [...prev, sp])
+  }, [selectedCampaignId])
+
+  const updateRule = useCallback(
+    async (id: string, data: { name?: string; weight?: number; is_active?: boolean }) => {
+      const updated = await configService.updateRule(id, data)
+      setRules((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))
+    },
+    []
+  )
+
+  const deleteRule = useCallback(async (id: string) => {
+    await configService.removeRule(id)
+    setRules((prev) => prev.filter((r) => r.id !== id))
+  }, [])
+
+  const addRule = useCallback(async () => {
+    if (!profile || !newRuleName.trim()) return
+    const rule = await configService.createRule({
+      scoring_profile_id: profile.id,
+      name: newRuleName.trim(),
+      weight: 0,
+    })
+    setRules((prev) => [...prev, rule])
+    setNewRuleName("")
+  }, [profile, newRuleName])
+
+  if (loading) {
+    return <Typography variant="muted">Chargement...</Typography>
   }
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <div className="space-y-2">
-        <Typography variant="h2">Platform Configuration</Typography>
-        <Typography variant="muted">Manage system-wide settings</Typography>
+        <Typography variant="h2">Configuration IA</Typography>
+        <Typography variant="muted">
+          Gérez les profils de scoring et les règles utilisés par l'IA pour évaluer les événements.
+        </Typography>
       </div>
 
-      <div className="grid gap-6">
-        <ConfigSectionCard
-          title="UGC Settings"
-          description="Configure minimum UGC creator requirements"
-          accentColor="text-blue-600"
-        >
-          <div className="space-y-2">
-            <Typography variant="small">Minimum UGC Creators Required</Typography>
-            <Input
-              type="number"
-              value={config.ugcSettings.minUgcCreators}
-              onChange={(e) =>
-                setConfig((prev) => ({
-                  ...prev,
-                  ugcSettings: {
-                    ...prev.ugcSettings,
-                    minUgcCreators: parseInt(e.target.value) || 0,
-                  },
-                }))
-              }
-              min={0}
-            />
-            {!!errors.minUgcCreators && (
-              <Typography variant="small" className="text-red-600">{errors.minUgcCreators}</Typography>
-            )}
-            <Typography variant="muted">
-              Minimum number of creators required per event
-            </Typography>
-          </div>
-        </ConfigSectionCard>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Campagne</CardTitle>
+          <CardDescription>Sélectionnez la campagne à configurer</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Select value={selectedCampaignId} onValueChange={setSelectedCampaignId}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Choisir une campagne" />
+            </SelectTrigger>
+            <SelectContent>
+              {campaigns.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
 
-        <ConfigSectionCard
-          title="Event Pipeline"
-          description="Manage event workflow stages"
-          accentColor="text-yellow-600"
-        >
-          <StageManager
-            stages={config.eventPipeline.defaultEventStages}
-            onChange={(stages) =>
-              setConfig((prev) => ({
-                ...prev,
-                eventPipeline: { ...prev.eventPipeline, defaultEventStages: stages },
-              }))
-            }
-          />
-          {!!errors.stages && <Typography variant="small" className="text-red-600">{errors.stages}</Typography>}
-        </ConfigSectionCard>
+      {selectedCampaign && (
+        <>
+          {!profile ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Profil de scoring</CardTitle>
+                <CardDescription>
+                  Aucun profil de scoring pour cette campagne.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={createProfile}>
+                  <IconPlus className="size-4 mr-2" />
+                  Créer un profil de scoring
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Seuils de scoring</CardTitle>
+                  <CardDescription>
+                    Définissez les seuils utilisés par l'IA pour classer les événements.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ThresholdSlider
+                    label="Score minimum"
+                    description="Score en dessous duquel l'événement est automatiquement rejeté"
+                    value={profile.score_minimum ?? 0}
+                    onChange={(v) => {
+                      setProfile((prev) => prev ? { ...prev, score_minimum: v } : null)
+                      updateProfile({ score_minimum: v })
+                    }}
+                  />
+                  <ThresholdSlider
+                    label="Seuil d'acceptation"
+                    description="Au-dessus de ce score, l'événement est accepté"
+                    value={profile.acceptance_threshold ?? 80}
+                    onChange={(v) => {
+                      setProfile((prev) => prev ? { ...prev, acceptance_threshold: v } : null)
+                      updateProfile({ acceptance_threshold: v })
+                    }}
+                  />
+                  <ThresholdSlider
+                    label="Seuil d'escalade"
+                    description="Entre ce seuil et l'acceptation, l'événement nécessite une révision manuelle"
+                    value={profile.escalation_threshold ?? 60}
+                    onChange={(v) => {
+                      setProfile((prev) => prev ? { ...prev, escalation_threshold: v } : null)
+                      updateProfile({ escalation_threshold: v })
+                    }}
+                  />
+                  <ThresholdSlider
+                    label="Seuil de rejet"
+                    description="En dessous de ce seuil, l'événement est rejeté"
+                    value={profile.rejection_threshold ?? 40}
+                    onChange={(v) => {
+                      setProfile((prev) => prev ? { ...prev, rejection_threshold: v } : null)
+                      updateProfile({ rejection_threshold: v })
+                    }}
+                  />
+                  <div className="pt-2 text-right">
+                    <Badge variant={saved ? "default" : "outline"}>
+                      {saved ? "Sauvegardé" : "Modifications en direct"}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <ConfigSectionCard
-          title="Scoring System"
-          description="Configure scoring weight distribution"
-          accentColor="text-green-600"
-        >
-          <ScoringInputs
-            weights={config.scoringSystem.scoringWeights}
-            onChange={(weights) =>
-              setConfig((prev) => ({
-                ...prev,
-                scoringSystem: { ...prev.scoringSystem, scoringWeights: weights },
-              }))
-            }
-          />
-          {!!errors.weights && <Typography variant="small" className="text-red-600">{errors.weights}</Typography>}
-        </ConfigSectionCard>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Règles de scoring</CardTitle>
+                  <CardDescription>
+                    Pondérations des critères d'évaluation utilisés par l'IA.
+                    Le total doit être égal à 100.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Nom de la règle"
+                      value={newRuleName}
+                      onChange={(e) => setNewRuleName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && addRule()}
+                    />
+                    <Button type="button" onClick={addRule} disabled={!newRuleName.trim()}>
+                      <IconPlus className="size-4" />
+                    </Button>
+                  </div>
 
-        <ConfigSectionCard
-          title="Notifications"
-          description="Configure notification preferences"
-          accentColor="text-purple-600"
-        >
-          <NotificationSwitches
-            settings={config.notificationSettings}
-            onChange={(settings) =>
-              setConfig((prev) => ({
-                ...prev,
-                notificationSettings: settings,
-              }))
-            }
-          />
-        </ConfigSectionCard>
-      </div>
+                  <div className="space-y-2">
+                    {rules.map((rule) => (
+                      <RuleRow
+                        key={rule.id}
+                        rule={rule}
+                        onUpdate={updateRule}
+                        onDelete={deleteRule}
+                      />
+                    ))}
+                    {rules.length === 0 && (
+                      <Typography variant="muted">
+                        Aucune règle définie. Ajoutez des critères de scoring.
+                      </Typography>
+                    )}
+                  </div>
 
-      <div className="flex gap-4">
-        <Button onClick={handleSave}>
-          <IconDeviceFloppy className="size-4 mr-2" />
-          {saved ? "Saved!" : "Save Changes"}
-        </Button>
-        <Button variant="outline" onClick={handleReset}>
-          <IconArrowBackUp className="size-4 mr-2" />
-          Reset to Default
-        </Button>
-      </div>
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <Typography variant="small">Poids total</Typography>
+                    <div className="flex items-center gap-2">
+                      <Typography
+                        className={`font-mono tabular-nums ${
+                          weightsValid ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {totalWeight}%
+                      </Typography>
+                      {!weightsValid && (
+                        <Typography variant="small" className="text-red-600">
+                          Le total doit être 100%
+                        </Typography>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </>
+      )}
     </div>
   )
 }

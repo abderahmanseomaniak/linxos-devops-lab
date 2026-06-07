@@ -16,30 +16,30 @@ const STATS_CONFIG = [
   {
     key: "total" as const,
     title: "Total événements",
-    color: "var(--event-stat-total)",
+    color: "#3b82f6",
   },
   {
-    key: "under_review" as const,
-    title: "En révision",
-    color: "var(--event-stat-under-review)",
+    key: "validated" as const,
+    title: "Validés",
+    color: "#22c55e",
   },
   {
-    key: "approved" as const,
-    title: "Approuvés",
-    color: "var(--event-stat-approved)",
+    key: "delivered" as const,
+    title: "Livrés",
+    color: "#f97316",
   },
   {
     key: "rejected" as const,
     title: "Rejetés",
-    color: "var(--event-stat-rejected)",
+    color: "#ef4444",
   },
 ] as const
 
 interface EventsStatsProps {
   data: {
     total: number
-    under_review: number
-    approved: number
+    validated: number
+    delivered: number
     rejected: number
   } | null
   loading: boolean
@@ -49,12 +49,12 @@ interface EventsStatsProps {
 export function EventsStats({ data, loading }: EventsStatsProps) {
   const values = {
     total: data?.total ?? 0,
-    under_review: data?.under_review ?? 0,
-    approved: data?.approved ?? 0,
+    validated: data?.validated ?? 0,
+    delivered: data?.delivered ?? 0,
     rejected: data?.rejected ?? 0,
   }
 
-  const max = Math.max(values.total, values.under_review, values.approved, values.rejected, 1)
+  const max = Math.max(values.total, values.validated, values.delivered, values.rejected, 1)
 
   const stats = STATS_CONFIG.map((item) => {
     const value = values[item.key]

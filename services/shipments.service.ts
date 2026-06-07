@@ -21,7 +21,13 @@ async function createAllocation(data: AllocationInsert): Promise<Allocation> {
     .select(
       `
       *,
-      event:events(*),
+      event:events(
+        *,
+        club:clubs(
+          *,
+          contacts:club_contacts(*)
+        )
+      ),
       campaign:campaigns(*),
       approved_by_user:profiles!allocations_approved_by_fkey(*)
     `
@@ -38,7 +44,13 @@ async function getAllocationsByEvent(eventId: string): Promise<Allocation[]> {
     .select(
       `
       *,
-      event:events(*),
+      event:events(
+        *,
+        club:clubs(
+          *,
+          contacts:club_contacts(*)
+        )
+      ),
       campaign:campaigns(*),
       approved_by_user:profiles!allocations_approved_by_fkey(*)
     `
@@ -73,7 +85,13 @@ async function listShipments(filters: ShipmentListFilters = {}): Promise<Shipmen
     .select(
       `
       *,
-      event:events(*),
+      event:events(
+        *,
+        club:clubs(
+          *,
+          contacts:club_contacts(*)
+        )
+      ),
       allocation:allocations(*),
       items:shipment_items(
         *,
@@ -109,7 +127,13 @@ async function getShipmentById(id: string): Promise<Shipment | null> {
     .select(
       `
       *,
-      event:events(*),
+      event:events(
+        *,
+        club:clubs(
+          *,
+          contacts:club_contacts(*)
+        )
+      ),
       allocation:allocations(*),
       items:shipment_items(
         *,
@@ -132,7 +156,13 @@ async function createShipment(data: ShipmentInsert): Promise<Shipment> {
     .select(
       `
       *,
-      event:events(*),
+      event:events(
+        *,
+        club:clubs(
+          *,
+          contacts:club_contacts(*)
+        )
+      ),
       allocation:allocations(*),
       items:shipment_items(
         *,
@@ -160,7 +190,13 @@ async function updateShipmentStatus(
     .select(
       `
       *,
-      event:events(*),
+      event:events(
+        *,
+        club:clubs(
+          *,
+          contacts:club_contacts(*)
+        )
+      ),
       allocation:allocations(*),
       items:shipment_items(
         *,

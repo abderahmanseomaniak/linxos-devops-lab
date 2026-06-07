@@ -3,33 +3,34 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import {  IssueTypeLabels, DeliveryDetailsModalProps } from "@/types/logistics"
 import { StatusBadge } from "./status-badge"
-import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconPhone, IconFileText, IconMessageCircle } from "@tabler/icons-react"
+import type { Shipment } from "@/types/shipments.types"
+import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconBrandWhatsapp, IconFileText } from "@tabler/icons-react"
 
-export function DeliveryDetailsModal({ delivery, open, onOpenChange }: DeliveryDetailsModalProps) {
-  if (!delivery) return null
+interface DeliveryDetailsModalProps {
+  shipment: Shipment | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
-  const formattedDate = new Date(delivery.date).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  })
+export function DeliveryDetailsModal({ shipment, open, onOpenChange }: DeliveryDetailsModalProps) {
+  if (!shipment) return null
 
-  const handleWhatsApp = () => {
-    const cleanPhone = delivery.phone.replace(/\s/g, "")
-    window.open(`https://wa.me/${cleanPhone}`, "_blank")
+  const event = shipment.event
+  const club = event?.club
+  const contact = club?.contacts?.[0]
+  const quantity = shipment.allocation?.allocated_quantity ?? 0
+
+  const whatsappPhone = contact?.phone?.replace(/\s/g, "") ?? ""
+
+  const formatDate = (d?: string | null) => {
+    if (!d) return "-"
+    return new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
   }
 
-  const formatTimestamp = (dateString?: string) => {
-    if (!dateString) return "-"
-    return new Date(dateString).toLocaleString("fr-FR", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+  const formatDateTime = (d?: string | null) => {
+    if (!d) return "-"
+    return new Date(d).toLocaleString("fr-FR", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
   }
 
   return (
@@ -37,8 +38,8 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange }: DeliveryD
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
-            {delivery.eventName}
-            <StatusBadge status={delivery.status} />
+            {event?.title ?? "Expédition"}
+            <StatusBadge status={shipment.status} />
           </DialogTitle>
         </DialogHeader>
 
@@ -46,137 +47,123 @@ export function DeliveryDetailsModal({ delivery, open, onOpenChange }: DeliveryD
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="p-3 bg-muted/30 rounded-lg">
               <Typography variant="small" className="mb-1 block">Club</Typography>
-              <Typography variant="small" className="font-medium">{delivery.clubName}</Typography>
+              <Typography variant="small" className="font-medium">{club?.name ?? "—"}</Typography>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
-              <Typography variant="small" className="mb-1 block">City</Typography>
-              <Typography variant="small" className="font-medium">{delivery.city}</Typography>
+              <Typography variant="small" className="mb-1 block">Ville</Typography>
+              <Typography variant="small" className="font-medium">{event?.city ?? "—"}</Typography>
             </div>
           </div>
 
-          <div className="p-3 bg-muted/30 rounded-lg">
-            <Typography variant="small" className="mb-1 block">Delivery address</Typography>
-            <div className="flex items-start gap-2">
-              <IconMapPin className="size-4 mt-0.5 text-muted-foreground shrink-0" />
-              <Typography variant="small">{delivery.address}</Typography>
+          {shipment.tracking_code && (
+            <div className="p-3 bg-muted/30 rounded-lg">
+              <Typography variant="small" className="mb-1 block">Code de suivi</Typography>
+              <Typography variant="small" className="font-mono font-medium">{shipment.tracking_code}</Typography>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="p-3 bg-muted/30 rounded-lg">
-              <Typography variant="small" className="mb-1">Expected date</Typography>
+              <Typography variant="small" className="mb-1">Date événement</Typography>
               <div className="flex items-center gap-2">
                 <IconCalendar className="size-4 text-muted-foreground" />
-                <Typography>{formattedDate}</Typography>
+                <Typography>{formatDate(event?.start_date)}</Typography>
               </div>
             </div>
             <div className="p-3 bg-muted/30 rounded-lg">
-              <Typography variant="small" className="mb-1">Quantity</Typography>
+              <Typography variant="small" className="mb-1">Quantité</Typography>
               <div className="flex items-center gap-2">
                 <IconPackage className="size-4 text-muted-foreground" />
-                <Typography>{delivery.quantity} units</Typography>
+                <Typography>{quantity} can{quantity > 1 ? "s" : ""}</Typography>
               </div>
             </div>
           </div>
 
-          <div className="p-3 bg-muted/30 rounded-lg">
-            <Typography variant="small" className="mb-2">Contact</Typography>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <IconUser className="size-4 text-muted-foreground" />
-                <Typography className="font-medium">{delivery.contactName}</Typography>
-              </div>
-              <div className="flex items-center gap-2">
-                <IconPhone className="size-4 text-muted-foreground" />
-                <Typography>{delivery.phone}</Typography>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full mt-3 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-              onClick={handleWhatsApp}
-            >
-              <IconMessageCircle className="size-4 mr-2" />
-              Contact via WhatsApp
-            </Button>
-          </div>
-
-          {delivery.status !== "Ready" && (
+          {contact && (
             <div className="p-3 bg-muted/30 rounded-lg">
-              <Typography variant="small" className="mb-2">History</Typography>
-              <div className="space-y-2 text-sm">
+              <Typography variant="small" className="mb-2">Contact</Typography>
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <IconTruck className="size-4 text-muted-foreground" />
-                  <Typography variant="small">Shipped:</Typography>
-                  <span className="font-medium">{formatTimestamp(delivery.deliveryStartedAt)}</span>
+                  <IconUser className="size-4 text-muted-foreground" />
+                  <Typography className="font-medium">{contact.full_name}</Typography>
                 </div>
-                {!!delivery.deliveredAt && (
+                {contact.phone && <Typography>{contact.phone}</Typography>}
+              </div>
+              {contact.email && (
+                <Typography variant="muted" className="text-xs mt-1">{contact.email}</Typography>
+              )}
+              {whatsappPhone && (
+                <Button variant="outline" size="sm" className="w-full mt-3 bg-green-50 border-green-200 text-green-700 hover:bg-green-100" onClick={() => window.open(`https://wa.me/${whatsappPhone}`, "_blank")}>
+                  <IconBrandWhatsapp className="size-4 mr-2" />
+                  Contact via WhatsApp
+                </Button>
+              )}
+            </div>
+          )}
+
+          {shipment.status !== "PREPARING" && (
+            <div className="p-3 bg-muted/30 rounded-lg">
+              <Typography variant="small" className="mb-2">Historique</Typography>
+              <div className="space-y-2 text-sm">
+                {shipment.shipped_at && (
+                  <div className="flex items-center gap-2">
+                    <IconTruck className="size-4 text-muted-foreground" />
+                    <Typography variant="small">Expédié :</Typography>
+                    <span className="font-medium">{formatDateTime(shipment.shipped_at)}</span>
+                  </div>
+                )}
+                {shipment.delivered_at && (
                   <div className="flex items-center gap-2">
                     <IconPackage className="size-4 text-muted-foreground" />
-                    <Typography variant="small">Delivered:</Typography>
-                    <span className="font-medium">{formatTimestamp(delivery.deliveredAt)}</span>
+                    <Typography variant="small">Livré :</Typography>
+                    <span className="font-medium">{formatDateTime(shipment.delivered_at)}</span>
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          {delivery.status === "Issue" && (
+          {shipment.status === "PROBLEM" && shipment.problem_description && (
             <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-              <Typography variant="small" className="text-destructive font-medium mb-2">Reported issue</Typography>
-              <div className="space-y-1 text-sm">
-                <Typography className="text-destructive">
-                  <Typography variant="small">Type:</Typography>
-                  {delivery.issueType ? IssueTypeLabels[delivery.issueType] : "-"}
-                </Typography>
-                {!!delivery.issueDescription && (
-                  <Typography className="text-muted-foreground">
-                    <Typography variant="small">Description:</Typography>
-                    {delivery.issueDescription}
-                  </Typography>
-                )}
-              </div>
+              <Typography variant="small" className="text-destructive font-medium mb-2">Problème signalé</Typography>
+              <Typography variant="small">{shipment.problem_description}</Typography>
             </div>
           )}
 
-          {delivery.notes && delivery.notes.length > 0 && (
+          {shipment.items && shipment.items.length > 0 && (
             <div className="p-3 bg-muted/30 rounded-lg">
-              <Typography variant="small" className="mb-2">Notes ({delivery.notes.length})</Typography>
-              <div className="space-y-2">
-                {delivery.notes.map((note) => (
-                  <div key={note.id} className="text-sm p-2 bg-white border rounded">
-                    <Typography>{note.content}</Typography>
-                    <Typography variant="small" className="mt-1">
-                      {note.author} · {formatTimestamp(note.createdAt)}
-                    </Typography>
+              <Typography variant="small" className="mb-2">Articles ({shipment.items.length})</Typography>
+              <div className="space-y-1">
+                {shipment.items.map((item) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <Typography variant="small">{item.product?.name ?? "—"}</Typography>
+                    <Typography variant="small" className="font-medium">x{item.quantity}</Typography>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {!!delivery.receiptUrl && (
+          {shipment.delivery_proofs && shipment.delivery_proofs.length > 0 && (
             <div className="p-3 bg-muted/30 rounded-lg">
-              <Typography variant="small" className="mb-2">Delivery proof</Typography>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => window.open(delivery.receiptUrl, "_blank")}
-              >
-                <IconFileText className="size-4 mr-2" />
-                View receipt
-              </Button>
+              <Typography variant="small" className="mb-2">Preuves de livraison</Typography>
+              {shipment.delivery_proofs.map((proof) => (
+                <Button key={proof.id} variant="outline" size="sm" className="w-full mb-1" onClick={() => window.open(proof.file_url, "_blank")}>
+                  <IconFileText className="size-4 mr-2" />
+                  {proof.description || "Voir le fichier"}
+                </Button>
+              ))}
             </div>
           )}
 
-          <div className="flex gap-2 pt-2">
-            <Button className="flex-1" onClick={handleWhatsApp}>
-              <IconMessageCircle className="size-4 mr-2" />
-              Contact client
-            </Button>
-          </div>
+          {whatsappPhone && (
+            <div className="flex gap-2 pt-2">
+              <Button className="flex-1" onClick={() => window.open(`https://wa.me/${whatsappPhone}`, "_blank")}>
+                <IconBrandWhatsapp className="size-4 mr-2" />
+                Contacter
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

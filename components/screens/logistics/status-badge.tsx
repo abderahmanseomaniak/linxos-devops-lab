@@ -1,19 +1,22 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { LogisticsStatus, StatusLabels, StatusBadgeProps } from "@/types/logistics"
+import { SHIPMENT_STATUS_LABELS } from "@/types/shipments.types"
+import type { ShipmentStatus } from "@/types/shipments.types"
 
-const statusVariants: Record<LogisticsStatus, "secondary" | "default" | "outline" | "destructive"> = {
-  Ready: "secondary",
-  Shipped: "default",
-  Delivered: "outline",
-  Issue: "destructive",
+
+const variantMap: Record<ShipmentStatus, "secondary" | "default" | "outline" | "destructive"> = {
+  PREPARING: "secondary",
+  IN_DELIVERY: "default",
+  DELIVERED: "outline",
+  PROBLEM: "destructive",
+  CANCELLED: "secondary",
 }
 
-export function StatusBadge({ status }: StatusBadgeProps) {
+export function StatusBadge({ status }: { status: ShipmentStatus }) {
   return (
-    <Badge variant={statusVariants[status]}>
-      {StatusLabels[status]}
+    <Badge variant={variantMap[status]}>
+      {SHIPMENT_STATUS_LABELS[status]}
     </Badge>
   )
 }

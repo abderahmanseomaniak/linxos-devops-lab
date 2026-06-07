@@ -9,7 +9,7 @@ import {
   DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { EditUserSheet } from "../sheet/edit-user-sheet"
-import { UserDetailsSheet } from "../sheet/user-details-sheet"
+import { UserDetailsSheet } from "../sheet/details-user-sheet"
 import type { Profile } from "@/types/profiles.types"
 
 interface RowActionsProps {

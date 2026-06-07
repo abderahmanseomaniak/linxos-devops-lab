@@ -65,7 +65,7 @@ export function AddUserSheet({ open, onOpenChange, onCreated }: AddUserSheetProp
           <SheetTitle>Ajouter un utilisateur</SheetTitle>
           <SheetDescription>Créer un nouvel utilisateur</SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 px-8">
           <div className="grid gap-2">
             <Label>Nom complet *</Label>
             <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Nom complet" />

@@ -7,7 +7,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import { AddUserSheet } from "@/components/screens/users/sheet/add-user-sheet"
 import { EditUserSheet } from "@/components/screens/users/sheet/edit-user-sheet"
-import { UserDetailsSheet } from "@/components/screens/users/sheet/user-details-sheet"
+import { UserDetailsSheet } from "@/components/screens/users/sheet/details-user-sheet"
 import type { Profile } from "@/types/profiles.types"
 
 export default function UsersPage() {

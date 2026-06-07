@@ -61,7 +61,7 @@ export function EditUserSheet({ open, onOpenChange, user, onUpdated }: EditUserS
           <SheetTitle>Modifier l'utilisateur</SheetTitle>
           <SheetDescription>Mettre à jour les informations</SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 px-8">
           <div className="grid gap-2">
             <Label>Nom complet</Label>
             <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />

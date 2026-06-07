@@ -39,7 +39,6 @@ import {
   IconCertificate,
 } from "@tabler/icons-react"
 import { useAuth } from "@/providers/auth-provider"
-import { ROLE_MENU_ACCESS } from "@/lib/auth-utils"
 
 const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: React.ComponentType<{ className?: string }>; group: string }>> = {
   ADMIN: [
@@ -70,9 +69,22 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
     { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
     { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
-  VIEWER: [
+  LOGISTICS_MANAGER: [
+    { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
+    { title: "Stocks", href: "/stocks", icon: IconChartBar, group: "Gestion" },
+    { title: "Produits", href: "/products", icon: IconPackage, group: "Gestion" },
+    { title: "Catégories", href: "/categories", icon: IconCategory, group: "Gestion" },
+    { title: "Allocations", href: "/allocations", icon: IconClipboardList, group: "Gestion" },
+    { title: "Livraison", href: "/logistics", icon: IconTruckDelivery, group: "Gestion" },
+    { title: "Événements", href: "/events", icon: IconCalendar, group: "Gestion" },
+    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
+    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
+  ],
+  CONTENT_MANAGER: [
     { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
     { title: "Événements", href: "/events", icon: IconCalendar, group: "Gestion" },
+    { title: "UGC", href: "/ugc", icon: IconPhoto, group: "Gestion" },
+    { title: "Campagnes", href: "/campaigns", icon: IconGift, group: "Gestion" },
     { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
     { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
@@ -81,8 +93,8 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { profile, loading, signOut } = useAuth()
 
-  const role = profile?.role ?? "VIEWER"
-  const menuItems = roleMenuConfig[role] ?? roleMenuConfig.VIEWER
+  const role = profile?.role ?? "CONTENT_MANAGER"
+  const menuItems = roleMenuConfig[role] ?? roleMenuConfig.CONTENT_MANAGER
 
   const groupedItems = menuItems.reduce<Record<string, typeof menuItems>>((acc, item) => {
     if (!acc[item.group]) acc[item.group] = []

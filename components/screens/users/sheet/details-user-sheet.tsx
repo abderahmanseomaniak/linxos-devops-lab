@@ -21,12 +21,12 @@ function formatDate(dateStr: string) {
 export function UserDetailsSheet({ open, onOpenChange, user }: UserDetailsSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md">
+        <SheetContent className="min-w-1xl overflow-y-auto w-full flex flex-col">
         <SheetHeader className="mb-6">
           <SheetTitle>Détails utilisateur</SheetTitle>
           <SheetDescription>Informations complètes</SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 px-8">
           <section className="flex flex-col items-center text-center">
             <div className="flex size-20 items-center justify-center rounded-full bg-primary/10 text-3xl font-semibold text-primary">
               {user.full_name.charAt(0).toUpperCase()}

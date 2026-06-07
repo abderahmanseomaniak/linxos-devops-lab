@@ -5,17 +5,19 @@ import { z } from 'zod';
 
 // ── Constants ─────────────────────────────────
 export const USER_ROLES = [
-  'SPONSORING_MANAGER',
   'ADMIN',
-  'VIEWER',
+  'SPONSORING_MANAGER',
+  'LOGISTICS_MANAGER',
+  'CONTENT_MANAGER',
 ] as const;
 
 export type UserRole = (typeof USER_ROLES)[number];
 
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
-  SPONSORING_MANAGER: 'Sponsoring Manager',
   ADMIN: 'Administrateur',
-  VIEWER: 'Lecteur',
+  SPONSORING_MANAGER: 'Sponsoring Manager',
+  LOGISTICS_MANAGER: 'Logistics Manager',
+  CONTENT_MANAGER: 'Content Manager',
 };
 
 // ── Row type ──────────────────────────────────

@@ -153,7 +153,7 @@ export interface Database {
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
-      user_role: 'SPONSORING_MANAGER' | 'ADMIN' | 'VIEWER';
+      user_role: 'ADMIN' | 'SPONSORING_MANAGER' | 'LOGISTICS_MANAGER' | 'CONTENT_MANAGER';
       movement_type: 'IN' | 'OUT' | 'RESERVATION' | 'RETURN' | 'ADJUSTMENT';
       shipment_status: 'PREPARING' | 'IN_DELIVERY' | 'DELIVERED' | 'PROBLEM' | 'CANCELLED';
       recipient_type: 'APPLICANT' | 'INTERNAL';

@@ -6,7 +6,7 @@ import { IconDots } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger,
+  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { EditUserSheet } from "../sheet/edit-user-sheet"
 import { UserDetailsSheet } from "../sheet/details-user-sheet"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState, useMemo } from "react"
+import { useState, useMemo } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -35,7 +35,7 @@ interface UsersTableProps {
   onView: (user: Profile) => void
 }
 
-export function UsersTable({ data, onRefresh, onEdit, onDelete, onView }: UsersTableProps) {
+export function UsersTable({ data, onEdit, onDelete, onView }: UsersTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
 

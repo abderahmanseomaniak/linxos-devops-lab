@@ -459,7 +459,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
                         </div>
                         <div className="text-xs text-muted-foreground grid grid-cols-3 gap-1">
                           <span>Vues: {ugc.views ?? "-"}</span>
-                          <span>J'aime: {ugc.likes ?? "-"}</span>
+                          <span>J&apos;aime: {ugc.likes ?? "-"}</span>
                           <span>Commentaires: {ugc.comments ?? "-"}</span>
                         </div>
                         {ugc.verification && (
@@ -545,7 +545,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
         <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Refuser l'événement</AlertDialogTitle>
+              <AlertDialogTitle>Refuser l&apos;événement</AlertDialogTitle>
               <AlertDialogDescription>
                 Ajoutez un commentaire expliquant le refus.
               </AlertDialogDescription>

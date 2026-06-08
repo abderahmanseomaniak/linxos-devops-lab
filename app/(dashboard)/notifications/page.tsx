@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { formatDistanceToNow } from "date-fns"
 import { fr } from "date-fns/locale"
+import { Typography } from "@/components/ui/typography"
 import { IconBell, IconCheck, IconRefresh } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -48,7 +49,7 @@ export default function NotificationsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold">Notifications</h1>
+          <Typography variant="h1" className="text-xl font-semibold">Notifications</Typography>
           {unreadCount > 0 && <Badge>{unreadCount} non lue(s)</Badge>}
         </div>
         <div className="flex items-center gap-2">
@@ -66,7 +67,7 @@ export default function NotificationsPage() {
       ) : notifications.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
           <IconBell className="size-12 mb-2 opacity-30" />
-          <p className="text-sm">Aucune notification</p>
+          <Typography variant="p" className="text-sm">Aucune notification</Typography>
         </div>
       ) : (
         <div className="space-y-2">
@@ -81,10 +82,10 @@ export default function NotificationsPage() {
                     <span className="font-medium text-sm">{n.title}</span>
                     {!n.is_read && <Badge variant="default" className="text-[10px] px-1">Nouveau</Badge>}
                   </div>
-                  <p className="text-sm text-muted-foreground">{n.message}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <Typography variant="p" className="text-sm text-muted-foreground">{n.message}</Typography>
+                  <Typography variant="p" className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: fr })}
-                  </p>
+                  </Typography>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {n.related_event_id && (

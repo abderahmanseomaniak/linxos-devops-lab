@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { StatusBadge } from "./status-badge"
 import type { Shipment } from "@/types/shipments.types"
-import { IconMapPin, IconUser, IconPackage, IconTruck, IconCalendar, IconBrandWhatsapp, IconFileText } from "@tabler/icons-react"
+import { IconUser, IconPackage, IconTruck, IconCalendar, IconBrandWhatsapp, IconFileText } from "@tabler/icons-react"
 
 interface DeliveryDetailsModalProps {
   shipment: Shipment | null

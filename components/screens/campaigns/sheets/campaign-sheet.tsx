@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,6 +26,7 @@ export function CampaignSheet({ open, onOpenChange, campaign, onSave }: Campaign
   const [startDate, setStartDate] = useState(campaign?.start_date?.split("T")[0] ?? "")
   const [endDate, setEndDate] = useState(campaign?.end_date?.split("T")[0] ?? "")
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!open) return
     setName(campaign?.name ?? "")
@@ -34,6 +35,7 @@ export function CampaignSheet({ open, onOpenChange, campaign, onSave }: Campaign
     setStartDate(campaign?.start_date?.split("T")[0] ?? "")
     setEndDate(campaign?.end_date?.split("T")[0] ?? "")
   }, [campaign, open])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")

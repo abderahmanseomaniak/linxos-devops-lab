@@ -41,7 +41,6 @@ export default function Notifications() {
 
   useEffect(() => {
     if (!user) return
-    setLoading(true)
     notificationsService.list(user.id, { pageSize: 10 }).then((result) => {
       setNotifications(result.data)
     }).catch(() => {

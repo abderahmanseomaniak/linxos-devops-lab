@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { supabase } from "@/services/supabase/client"
 import { campaignsService } from "@/services/campaigns.service"
 import type { Campaign } from "@/types/campaigns.types"
 

@@ -1,6 +1,5 @@
 import { supabase } from "@/services/supabase/client"
-import type { Event, EventRow, EventInsert, EventUpdate } from "@/types/events.types"
-import type { WorkflowStateRow } from "@/types/workflow.types"
+import type { Event, EventInsert, EventUpdate } from "@/types/events.types"
 
 function generateTrackingCode(): string {
   const now = new Date()

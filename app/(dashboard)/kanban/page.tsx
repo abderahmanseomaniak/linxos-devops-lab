@@ -9,7 +9,7 @@ import { useEventsStore } from "@/stores/events.store"
 import { useWorkflowStore } from "@/stores/workflow.store"
 import { eventsToKanban } from "@/components/screens/kanban/kanban-adapter"
 import { Spinner } from "@/components/ui/spinner"
-import { workflowService, TRANSITIONS_MAP } from "@/services/workflow.service"
+import { TRANSITIONS_MAP } from "@/services/workflow.service"
 
 const STAGE_TO_WORKFLOW_CODE: Record<KanbanStage, string | null> = {
   Validée: "SUBMITTED",

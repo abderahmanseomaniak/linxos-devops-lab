@@ -2,7 +2,6 @@ import { supabase } from "@/services/supabase/client"
 import type {
   Notification,
   NotificationInsert,
-  NotificationType,
 } from "@/types/notifications.types"
 
 export interface NotificationListFilters {

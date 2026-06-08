@@ -5,7 +5,6 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { IconCalendar } from "@tabler/icons-react"
 
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -13,7 +12,6 @@ import { Field, FieldDescription, FieldLabel, FieldSet } from "@/components/ui/f
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import { Typography } from "@/components/ui/typography"
 import { type ConfirmationFormValues } from "@/components/screens/forms/sponsorship/sponsorship-confirmation/lib/schema"
 
 function toDate(value: string | undefined): Date | undefined {

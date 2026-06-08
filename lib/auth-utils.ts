@@ -1,4 +1,3 @@
-import type { UserRole } from "@/types/profiles.types"
 
 export const ROLE_MENU_ACCESS: Record<string, string[]> = {
   ADMIN: [

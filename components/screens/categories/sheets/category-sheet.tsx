@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -22,12 +22,14 @@ export function CategorySheet({ open, onOpenChange, category, onSave }: Category
   const [description, setDescription] = useState(category?.description ?? "")
   const [isActive, setIsActive] = useState(category?.is_active ?? true)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!open) return
     setName(category?.name ?? "")
     setDescription(category?.description ?? "")
     setIsActive(category?.is_active ?? true)
   }, [category, open])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")

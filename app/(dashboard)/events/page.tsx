@@ -10,7 +10,7 @@ export default function EventsPage() {
     data, total, loading, error,
     stats, statsLoading,
     pagination, setPagination,
-    filters, setFilters, updateFilter, clearFilters,
+    filters, updateFilter, clearFilters,
     refresh,
     selectedEvent, setSelectedEvent,
     detailOpen, setDetailOpen,

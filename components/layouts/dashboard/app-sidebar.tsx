@@ -5,7 +5,6 @@ import Link from "next/link"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -16,16 +15,10 @@ import {
 } from "@/components/ui/sidebar"
 import {
   IconCalendar,
-  IconHome,
   IconLayoutDashboard,
   IconSettings,
   IconUsers,
-  IconLayoutGrid,
-  IconTruck,
-  IconFileText,
-  IconMapPin,
   IconClipboardList,
-  IconList,
   IconPackage,
   IconChartBar,
   IconBell,
@@ -33,10 +26,8 @@ import {
   IconCategory,
   IconGift,
   IconPhoto,
-  IconChecklist,
   IconUser,
   IconTruckDelivery,
-  IconCertificate,
 } from "@tabler/icons-react"
 import { useAuth } from "@/providers/auth-provider"
 
@@ -91,7 +82,7 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
 }
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-  const { profile, loading, signOut } = useAuth()
+  const { profile } = useAuth()
 
   const role = profile?.role ?? "CONTENT_MANAGER"
   const menuItems = roleMenuConfig[role] ?? roleMenuConfig.CONTENT_MANAGER

@@ -17,6 +17,7 @@ import type { ProductCategory, ProductCategoryInsert, ProductCategoryUpdate } fr
 import { toast } from "sonner"
 import { IconPlus, IconPencil, IconTrash, IconRefresh } from "@tabler/icons-react"
 import { CategorySheet } from "./sheets/category-sheet"
+import { Typography } from "@/components/ui/typography"
 
 export function CategoriesPage() {
   const [categories, setCategories] = useState<ProductCategory[]>([])
@@ -60,7 +61,7 @@ export function CategoriesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Catégories</h1>
+        <Typography variant="h1" className="text-xl font-semibold">Catégories</Typography>
         <div className="flex items-center gap-2">
           <Button variant="outline" className="h-8" onClick={fetch}><IconRefresh className="size-3.5" /></Button>
           <Button className="h-8 text-xs" onClick={() => { setEditing(null); setEditOpen(true) }}>

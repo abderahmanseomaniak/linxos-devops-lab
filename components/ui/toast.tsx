@@ -1,7 +1,6 @@
 // components/ui/toast.ts
 import { toast as sonnerToast } from "sonner";
 
-type ToastType = "default" | "success" | "error" | "warning" | "info";
 
 const baseStyle = {
   borderRadius: "8px",

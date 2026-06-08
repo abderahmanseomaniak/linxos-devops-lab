@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { AddUserSheet } from "@/components/screens/users/sheet/add-user-sheet"
 import { EditUserSheet } from "@/components/screens/users/sheet/edit-user-sheet"
 import { UserDetailsSheet } from "@/components/screens/users/sheet/details-user-sheet"
+import { Typography } from "@/components/ui/typography"
 import type { Profile } from "@/types/profiles.types"
 
 export default function UsersPage() {
@@ -45,7 +46,7 @@ export default function UsersPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Utilisateurs</h1>
+        <Typography variant="h1" className="text-xl font-semibold">Utilisateurs</Typography>
         <Button onClick={() => setShowAdd(true)}>Ajouter</Button>
       </div>
       <UsersTable

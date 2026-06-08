@@ -152,7 +152,6 @@ export function EventTableToolbar({
         <ColumnVisibilityDropdown
           table={table}
           columnVisibility={columnVisibility}
-          onColumnVisibilityChange={onColumnVisibilityChange}
         />
       </div>
       <div className="flex items-center gap-3">
@@ -227,10 +226,9 @@ function ShipmentFilterPopover({ value, onChange }: { value: string; onChange: (
   )
 }
 
-function ColumnVisibilityDropdown({ table, columnVisibility, onColumnVisibilityChange }: {
+function ColumnVisibilityDropdown({ table, columnVisibility }: {
   table: Table<EventOverviewRow>
   columnVisibility: Record<string, boolean>
-  onColumnVisibilityChange: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }) {
   return (
     <DropdownMenu>

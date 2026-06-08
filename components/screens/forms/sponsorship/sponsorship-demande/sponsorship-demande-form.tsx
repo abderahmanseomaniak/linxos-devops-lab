@@ -13,6 +13,7 @@ import { FormStepper } from "@/components/screens/forms/sponsorship/sponsorship-
 import { StepRenderer } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/step-renderer"
 import { FormNavigation } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/form-navigation"
 import { ContactFooter } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/contact-footer"
+import { Typography } from "@/components/ui/typography"
 import type { SponsorshipDemande1Values } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
 
 const STEPS: readonly Step[] = [
@@ -82,19 +83,19 @@ export function SponsorshipDemande1Form() {
           <CardContent className="space-y-6">
             <div className="rounded-lg bg-muted p-6 space-y-4">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Code de suivi</p>
-                <p className="text-3xl font-mono font-bold tracking-wider text-primary">
+                <Typography variant="p" className="text-sm text-muted-foreground mb-1">Code de suivi</Typography>
+                <Typography variant="p" className="text-3xl font-mono font-bold tracking-wider text-primary">
                   {result.tracking_code}
-                </p>
+                </Typography>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Référence événement</p>
-                  <p className="font-mono text-xs">{result.event_id}</p>
+                  <Typography variant="p" className="text-muted-foreground">Référence événement</Typography>
+                  <Typography variant="p" className="font-mono text-xs">{result.event_id}</Typography>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Statut</p>
-                  <p className="font-medium text-amber-600">En cours d&apos;examen</p>
+                  <Typography variant="p" className="text-muted-foreground">Statut</Typography>
+                  <Typography variant="p" className="font-medium text-amber-600">En cours d&apos;examen</Typography>
                 </div>
               </div>
             </div>

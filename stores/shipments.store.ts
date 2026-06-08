@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { supabase } from "@/services/supabase/client"
 import { shipmentsService } from "@/services/shipments.service"
 import type { Allocation, Shipment, ShipmentStatus } from "@/types/shipments.types"
 
@@ -25,7 +24,7 @@ interface ShipmentsActions {
 
 type ShipmentsStore = ShipmentsState & ShipmentsActions
 
-export const useShipmentsStore = create<ShipmentsStore>((set, get) => ({
+export const useShipmentsStore = create<ShipmentsStore>((set) => ({
   allocations: [],
   shipments: [],
   selectedShipment: null,

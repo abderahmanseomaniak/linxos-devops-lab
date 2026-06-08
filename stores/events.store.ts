@@ -170,7 +170,6 @@ export const useEventsStore = create<EventsStore>((set, get) => ({
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "events" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (payload: { new: { id: string }; old: Record<string, unknown> }) => {
           eventsService.getById(payload.new.id).then((event) => {
             if (event) {
@@ -185,7 +184,6 @@ export const useEventsStore = create<EventsStore>((set, get) => ({
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "events" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (payload: { new: { id: string }; old: Record<string, unknown> }) => {
           eventsService.getById(payload.new.id).then((event) => {
             if (event) {
@@ -201,7 +199,6 @@ export const useEventsStore = create<EventsStore>((set, get) => ({
       .on(
         "postgres_changes",
         { event: "DELETE", schema: "public", table: "events" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (payload: { new: Record<string, unknown>; old: { id: string } }) => {
           set((state) => ({
             events: state.events.filter((e) => e.id !== payload.old.id),

@@ -14,12 +14,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { campaignsService } from "@/services/campaigns.service"
-import type { Campaign, CampaignInsert, CampaignUpdate, CampaignStatus } from "@/types/campaigns.types"
+import type { Campaign, CampaignInsert, CampaignUpdate } from "@/types/campaigns.types"
 import { CAMPAIGN_STATUS_LABELS } from "@/types/campaigns.types"
 import { toast } from "sonner"
 import { IconPlus, IconPencil, IconRefresh } from "@tabler/icons-react"
 import { format } from "date-fns"
 import { CampaignSheet } from "./sheets/campaign-sheet"
+import { Typography } from "@/components/ui/typography"
 
 export function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
@@ -62,7 +63,7 @@ export function CampaignsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Campagnes</h1>
+        <Typography variant="h1" className="text-xl font-semibold">Campagnes</Typography>
         <div className="flex items-center gap-2">
           <Input
             placeholder="Rechercher..."

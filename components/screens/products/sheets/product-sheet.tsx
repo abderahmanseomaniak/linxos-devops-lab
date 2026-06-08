@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -27,6 +27,7 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
   const [description, setDescription] = useState(product?.description ?? "")
   const [isActive, setIsActive] = useState(product?.is_active ?? true)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!open) return
     setName(product?.name ?? "")
@@ -34,6 +35,7 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
     setDescription(product?.description ?? "")
     setIsActive(product?.is_active ?? true)
   }, [product, open])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")

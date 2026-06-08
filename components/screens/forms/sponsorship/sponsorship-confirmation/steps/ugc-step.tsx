@@ -14,9 +14,8 @@ import {
 } from "@/components/screens/forms/sponsorship/sponsorship-confirmation/lib/schema"
 
 export function UgcStep() {
-  const { control, watch } = useFormContext<ConfirmationFormValues>()
+  const { control } = useFormContext<ConfirmationFormValues>()
   const { fields, append } = useFieldArray({ control, name: "ugcUrls" })
-  const hasUgc = watch("hasUgc")
 
   return (
     <Card>

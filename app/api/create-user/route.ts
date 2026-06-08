@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, user_id: authUser.user.id })
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 })
   }
 }

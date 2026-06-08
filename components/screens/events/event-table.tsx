@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useId, useState } from "react"
+import React, { useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -84,7 +84,6 @@ function getInitials(name: string): string {
     .slice(0, 2)
 }
 
-const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: 10 }
 
 interface EventTableProps {
   data: EventOverviewRow[]
@@ -107,7 +106,6 @@ export function EventTable({
   filters, onFilterChange, onClearFilters, onRefresh,
   onSelectEvent, selectedEvent, detailOpen, onDetailOpenChange,
 }: EventTableProps) {
-  const id = useId()
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([DEFAULT_SORTING])
   const [rowSelection, setRowSelection] = useState({})

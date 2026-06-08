@@ -8,7 +8,6 @@ import {
   IconFileDescription,
   IconPhoto,
   IconStack2,
-  IconVideo,
 } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"

@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { supabase } from "@/services/supabase/client"
 import { clubsService } from "@/services/clubs.service"
 import type { Club } from "@/types/clubs.types"
 

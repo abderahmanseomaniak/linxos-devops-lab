@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { supabase } from "@/services/supabase/client"
 import { inventoryService } from "@/services/inventory.service"
 import type { Product, ProductCategory, CampaignStock, InventoryMovement } from "@/types/inventory.types"
 

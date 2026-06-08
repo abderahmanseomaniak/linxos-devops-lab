@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Calendar, MapPin, Hash, Building2, Megaphone, CheckCircle2, Truck, Cloud, Clock, AlertCircle, FileText, ExternalLink } from "lucide-react"
+import { Calendar, MapPin, Hash, Building2, Megaphone, CheckCircle2, Cloud, Clock, AlertCircle, FileText } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

@@ -2,7 +2,6 @@
 // Clubs & Club Contacts
 // ──────────────────────────────────────────────
 import { z } from 'zod';
-import type { Profile } from './profiles.types';
 
 // ── Club ──────────────────────────────────────
 export interface ClubRow {

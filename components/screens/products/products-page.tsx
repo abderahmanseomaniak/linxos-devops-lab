@@ -13,6 +13,7 @@ import type { Product, ProductInsert, ProductUpdate, ProductCategory } from "@/t
 import { toast } from "sonner"
 import { IconPlus, IconPencil, IconRefresh } from "@tabler/icons-react"
 import { ProductSheet } from "./sheets/product-sheet"
+import { Typography } from "@/components/ui/typography"
 
 export function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -56,7 +57,7 @@ export function ProductsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Produits</h1>
+        <Typography variant="h1" className="text-xl font-semibold">Produits</Typography>
         <div className="flex items-center gap-2">
           <Input placeholder="Rechercher..." className="h-8 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
           <Button variant="outline" className="h-8" onClick={fetch}><IconRefresh className="size-3.5" /></Button>

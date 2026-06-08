@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { IconPlus, IconX, IconDeviceFloppy } from "@tabler/icons-react"
+import { IconPlus, IconX } from "@tabler/icons-react"
 
 import { configService } from "@/services/config.service"
 import type { Campaign } from "@/types/campaigns.types"
@@ -105,16 +105,22 @@ export function PlatformConfig() {
     })
   }, [])
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!selectedCampaignId) return
     const sp = profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null
     setProfile(sp)
-    if (sp) {
-      configService.listRulesByProfile(sp.id).then(setRules)
+  }, [selectedCampaignId, profiles])
+
+  useEffect(() => {
+    if (!selectedCampaignId) return
+    if (profile) {
+      configService.listRulesByProfile(profile.id).then(setRules)
     } else {
       setRules([])
     }
-  }, [selectedCampaignId, profiles])
+  }, [selectedCampaignId, profile])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId)
   const totalWeight = rules.reduce((sum, r) => sum + r.weight, 0)
@@ -178,7 +184,7 @@ export function PlatformConfig() {
       <div className="space-y-2">
         <Typography variant="h2">Configuration IA</Typography>
         <Typography variant="muted">
-          Gérez les profils de scoring et les règles utilisés par l'IA pour évaluer les événements.
+          Gérez les profils de scoring et les règles utilisés par l&apos;IA pour évaluer les événements.
         </Typography>
       </div>
 
@@ -226,7 +232,7 @@ export function PlatformConfig() {
                 <CardHeader>
                   <CardTitle className="text-lg">Seuils de scoring</CardTitle>
                   <CardDescription>
-                    Définissez les seuils utilisés par l'IA pour classer les événements.
+                    Définissez les seuils utilisés par l&apos;IA pour classer les événements.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -278,7 +284,7 @@ export function PlatformConfig() {
                 <CardHeader>
                   <CardTitle className="text-lg">Règles de scoring</CardTitle>
                   <CardDescription>
-                    Pondérations des critères d'évaluation utilisés par l'IA.
+                    Pondérations des critères d&apos;évaluation utilisés par l&apos;IA.
                     Le total doit être égal à 100.
                   </CardDescription>
                 </CardHeader>

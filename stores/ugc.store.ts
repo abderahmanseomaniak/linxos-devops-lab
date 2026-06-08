@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { supabase } from "@/services/supabase/client"
 import { ugcService } from "@/services/ugc.service"
 import type { UGCContent, DriveFolder, EventMetric, ContentVerification } from "@/types/ugc.types"
 
@@ -28,7 +27,7 @@ interface UGCActions {
 
 type UGCStore = UGCState & UGCActions
 
-export const useUGCStore = create<UGCStore>((set, get) => ({
+export const useUGCStore = create<UGCStore>((set) => ({
   ugcContents: [],
   driveFolder: null,
   metrics: null,

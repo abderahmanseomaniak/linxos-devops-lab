@@ -58,7 +58,7 @@ export function EditUserSheet({ open, onOpenChange, user, onUpdated }: EditUserS
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md">
         <SheetHeader className="mb-6">
-          <SheetTitle>Modifier l'utilisateur</SheetTitle>
+          <SheetTitle>Modifier l&apos;utilisateur</SheetTitle>
           <SheetDescription>Mettre à jour les informations</SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 px-8">

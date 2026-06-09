@@ -91,13 +91,18 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                bat '''
-                    echo === Build ===
-                    %BUN% run build
-                '''
-            }
+    steps {
+        withCredentials([
+            string(credentialsId: 'SUPABASE_URL', variable: 'NEXT_PUBLIC_SUPABASE_URL'),
+            string(credentialsId: 'SUPABASE_ANON_KEY', variable: 'NEXT_PUBLIC_SUPABASE_ANON_KEY')
+        ]) {
+            bat '''
+                echo === Build ===
+                %BUN% run build
+            '''
         }
+    }
+}
 
         stage('Deploy (Vercel)') {
             steps {

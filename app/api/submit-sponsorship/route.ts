@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const SUBMITTED_STATE_CODE = "SUBMITTED";
 
@@ -18,7 +18,7 @@ function getAdmin() {
   );
 }
 
-async function handleSponsorshipDemande(admin: any, formData: Record<string, unknown>) {
+async function handleSponsorshipDemande(admin: SupabaseClient, formData: Record<string, unknown>) {
   const { data: club, error: clubError } = await admin
     .from("clubs")
     .insert({
@@ -117,7 +117,7 @@ async function handleSponsorshipDemande(admin: any, formData: Record<string, unk
   return { tracking_code: trackingCode, event_id: event.id, application_form_id: appForm.id, club_id: club.id };
 }
 
-async function handleConfirmationForm(admin: any, formData: Record<string, unknown>) {
+async function handleConfirmationForm(admin: SupabaseClient, formData: Record<string, unknown>) {
   const trackingCode = formData.trackingCode as string;
   if (!trackingCode) {
     throw new Error("Code de suivi requis");

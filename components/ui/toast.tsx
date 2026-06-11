@@ -1,7 +1,6 @@
 // components/ui/toast.ts
 import { toast as sonnerToast } from "sonner";
 
-
 const baseStyle = {
   borderRadius: "8px",
 };

@@ -90,21 +90,22 @@ async function createUgcProfile(data: {
 }
 
 async function createOrUpdateDriveFolder(eventId: string, driveUrl: string): Promise<{ id: string; event_id: string; drive_url: string | null; [key: string]: unknown }> {
-  const { data: existing } = await (supabase as any)
+  const { data: existing } = await supabase
     .from("drive_folders")
     .select("*")
     .eq("event_id", eventId)
     .single()
 
   if (existing) {
-    const { data: updated, error } = await (supabase as any)
+    const record = existing as { id: string }
+    const { data: updated, error } = await supabase
       .from("drive_folders")
-      .update({ drive_url: driveUrl })
-      .eq("id", existing.id)
+      .update({ drive_url: driveUrl } as never)
+      .eq("id", record.id)
       .select("*")
       .single()
     if (error) throw error
-    return updated as { id: string; event_id: string; drive_url: string | null; [key: string]: unknown }
+    return updated as unknown as { id: string; event_id: string; drive_url: string | null; [key: string]: unknown }
   }
 
   const { data: created, error } = await supabase

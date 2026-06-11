@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/client"
+import { logAudit } from "@/lib/audit-logger"
 import type { Profile, ProfileInsert, ProfileUpdate } from "@/types/profiles.types"
 
 // ── Types ─────────────────────────────────────────
@@ -73,6 +74,15 @@ async function create(data: ProfileInsert): Promise<Profile> {
     .single()
 
   if (error) throw error
+
+  logAudit({
+    action: "CREATE",
+    module: "USERS",
+    entity_type: "user",
+    entity_id: (created as { id: string }).id,
+    description: `Création du compte utilisateur ${(created as { id: string; email: string }).email}`,
+  })
+
   return created as Profile
 }
 
@@ -87,6 +97,15 @@ async function update(id: string, data: ProfileUpdate): Promise<Profile> {
     .single()
 
   if (error) throw error
+
+  logAudit({
+    action: "UPDATE",
+    module: "USERS",
+    entity_type: "user",
+    entity_id: id,
+    description: `Modification de l'utilisateur`,
+  })
+
   return updated as Profile
 }
 
@@ -95,6 +114,14 @@ async function update(id: string, data: ProfileUpdate): Promise<Profile> {
 async function remove(id: string): Promise<void> {
   const { error } = await supabase.from("profiles").delete().eq("id", id)
   if (error) throw error
+
+  logAudit({
+    action: "DELETE",
+    module: "USERS",
+    entity_type: "user",
+    entity_id: id,
+    description: `Suppression du compte utilisateur`,
+  })
 }
 
 // ── Export ────────────────────────────────────────

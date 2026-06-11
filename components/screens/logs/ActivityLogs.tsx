@@ -40,9 +40,8 @@ export function ActivityLogs() {
   const [selectedActions, setSelectedActions] = useState<string[]>([])
 
   const columns = createLogsColumns()
-  const data = logsData.logs as ActivityLog[]
+  const data = logsData.logs as unknown as ActivityLog[]
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
     data,

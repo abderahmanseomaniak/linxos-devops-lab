@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { Registry, collectDefaultMetrics } from "prom-client";
 
+import { collectDefaultMetrics, Registry } from "prom-client";
 const register = new Registry();
 
 collectDefaultMetrics({
@@ -18,7 +18,7 @@ export async function GET() {
         "Content-Type": register.contentType,
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to collect metrics" },
       { status: 500 }

@@ -5,13 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+import { Typography } from "@/components/ui/typography"
 import { supabase } from "@/services/supabase/client"
 import { analyticsService } from "@/services/analytics.service"
+import type { ScoringProfile } from "@/types/analytics.types"
 import { IconRefresh } from "@tabler/icons-react"
-import { toast } from "sonner"
 import {
   Table,
   TableBody,
@@ -23,17 +21,17 @@ import {
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
-  const [profiles, setProfiles] = useState<any[]>([])
-  const [rules, setRules] = useState<any[]>([])
-  const [states, setStates] = useState<any[]>([])
+  const [profiles, setProfiles] = useState<ScoringProfile[]>([])
+  const [rules, setRules] = useState<Array<{ id: string; name: string; rule_type: string; weight: number }>>([])
+  const [states, setStates] = useState<Array<{ id: string; code: string; label: string }>>([])
 
   const fetch = useCallback(async () => {
     setLoading(true)
     try {
       const [p, r, s] = await Promise.all([
         analyticsService.listScoringProfiles().catch(() => []),
-        supabase.from("scoring_rules").select("*").order("name").then((d) => d.data ?? []),
-        supabase.from("workflow_states").select("*").order("code").then((d) => d.data ?? []),
+        supabase.from("scoring_rules").select("id, name, weight").order("name").then((d) => (d.data ?? []) as never),
+        supabase.from("workflow_states").select("id, code, label").order("code").then((d) => (d.data ?? []) as never),
       ])
       setProfiles(p)
       setRules(r)
@@ -46,7 +44,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Configuration</h1>
+        <Typography variant="h1" className="text-xl font-semibold">Configuration</Typography>
         <Button variant="outline" className="h-8" onClick={fetch}><IconRefresh className="size-3.5" /></Button>
       </div>
 
@@ -58,13 +56,13 @@ export default function SettingsPage() {
             <CardHeader><CardTitle className="text-sm">Profils de scoring</CardTitle></CardHeader>
             <CardContent>
               {profiles.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Aucun profil configuré</p>
+                <Typography variant="p" className="text-sm text-muted-foreground">Aucun profil configuré</Typography>
               ) : (
                 <div className="space-y-2">
-                  {profiles.map((p: any) => (
+                  {profiles.map((p) => (
                     <div key={p.id} className="flex justify-between items-center text-sm border-b pb-2">
-                      <span>{p.name}</span>
-                      <Badge variant={p.is_active ? "default" : "secondary"}>{p.is_active ? "Actif" : "Inactif"}</Badge>
+                      <span>{p.campaign?.name ?? p.campaign_id}</span>
+                      <Badge variant="outline">Seuil: {p.score_minimum ?? "—"}</Badge>
                     </div>
                   ))}
                 </div>
@@ -76,7 +74,7 @@ export default function SettingsPage() {
             <CardHeader><CardTitle className="text-sm">Règles de scoring</CardTitle></CardHeader>
             <CardContent>
               {rules.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Aucune règle configurée</p>
+                <Typography variant="p" className="text-sm text-muted-foreground">Aucune règle configurée</Typography>
               ) : (
                 <Table>
                   <TableHeader>
@@ -87,7 +85,7 @@ export default function SettingsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rules.map((r: any) => (
+                    {rules.map((r) => (
                       <TableRow key={r.id}>
                         <TableCell>{r.name}</TableCell>
                         <TableCell>{r.rule_type}</TableCell>
@@ -111,7 +109,7 @@ export default function SettingsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {states.map((s: any) => (
+                  {states.map((s) => (
                     <TableRow key={s.id}>
                       <TableCell className="font-mono text-xs">{s.code}</TableCell>
                       <TableCell>{s.label}</TableCell>

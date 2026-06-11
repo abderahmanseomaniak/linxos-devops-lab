@@ -7,7 +7,7 @@ scrape_configs:
       - targets: ["prometheus:9090"]
 
   - job_name: "linxos-app"
-    metrics_path: "/api/metrics"
+    metrics_path: "app/api/metrics"
     scheme: https
 
     static_configs:

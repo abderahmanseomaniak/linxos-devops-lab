@@ -43,8 +43,5 @@ next-env.d.ts
 # local dev
 /app/dev
 
-# vscode MCP secrets
-.vscode/mcp.json
-
 # TypeScript output logs
 ts-*.txt

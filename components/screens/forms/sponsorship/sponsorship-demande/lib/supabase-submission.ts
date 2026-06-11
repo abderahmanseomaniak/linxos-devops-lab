@@ -46,7 +46,7 @@ export async function submitSponsorshipDemande1Form(
   })
 
   // 3. Créer l'événement
-  const evt: any = await eventsService.create({
+  const evt = await eventsService.create({
     club_id: club.id,
     title: data.nomEvenement,
     city: data.lieu,

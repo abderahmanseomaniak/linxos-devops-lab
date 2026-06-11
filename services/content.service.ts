@@ -51,9 +51,9 @@ async function updateContentVerification(
     payload.verified_by = data.verified_by
   }
 
-  const { data: updated, error } = await (supabase as any)
+  const { data: updated, error } = await supabase
     .from("content_verifications")
-    .update(payload)
+    .update(payload as never)
     .eq("id", id)
     .select(
       `

@@ -1,11 +1,17 @@
 "use client"
+import { useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
-import { type DashboardData, type DashboardGlobalProps } from "@/types/dashboard-types"
+import { Spinner } from "@/components/ui/spinner"
+import { type DashboardData, type DashboardStats, type DashboardGlobalProps } from "@/types/dashboard-types"
 import dashboardData from "@/data/dashboard-data.json"
-import { IconCalendar, IconCircleCheckFilled, IconClock, IconPackage, IconTrendingUp, IconPlus, IconFileText, IconTruck, IconPhoto, IconUsers } from "@tabler/icons-react"
+import { dashboardService } from "@/services/dashboard.service"
+import type { RecentEventRaw, PipelineStageRaw, UpcomingEventRaw, StockSummaryRaw } from "@/types/dashboard-types"
+import { useMountEffect } from "@/hooks/use-mount-effect"
+import { IconCalendar, IconCircleCheckFilled, IconClock, IconPackage, IconTrendingUp, IconPlus, IconFileText, IconPhoto, IconUsers } from "@tabler/icons-react"
+
 const iconComponentMap: Record<string, React.ElementType> = {
   IconPackage,
   IconCalendar,
@@ -13,7 +19,34 @@ const iconComponentMap: Record<string, React.ElementType> = {
   IconCircleCheckFilled,
   IconTrendingUp,
 }
+
 const data = dashboardData as DashboardData
+
+const STATE_BADGE_COLORS: Record<string, string> = {
+  SUBMITTED: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  UNDER_REVIEW: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  APPROVED: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  CONFIRMED: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+  SHIPPED: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  COMPLETED: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  REJECTED: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+}
+
+function formatRelativeTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  const days = Math.floor(hours / 24)
+  return `${days}d`
+}
+
+function formatDate(dateStr: string | null): string {
+  if (!dateStr) return "—"
+  return new Date(dateStr).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })
+}
+
 const KPISection = ({ kpi, stats }: { kpi: DashboardData["kpi"]; stats: DashboardData["stats"] }) => (
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
     {kpi.map((k) => {
@@ -39,6 +72,7 @@ const KPISection = ({ kpi, stats }: { kpi: DashboardData["kpi"]; stats: Dashboar
     })}
   </div>
 )
+
 const OverviewSection = ({ overview }: { overview: DashboardData["overview"] }) => (
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
     {overview.map((item) => (
@@ -56,33 +90,44 @@ const OverviewSection = ({ overview }: { overview: DashboardData["overview"] }) 
     ))}
   </div>
 )
-const RecentActivitySection = () => {
-  const activities = [
-    { id: 1, message: 'Event "Paris Cup 2026" created', timestamp: '2h ago', type: 'event' as const },
-    { id: 2, message: 'UGC received from creator @johndoe', timestamp: '4h ago', type: 'ugc' as const },
-    { id: 3, message: 'Delivery shipped to Lyon', timestamp: '5h ago', type: 'delivery' as const },
-    { id: 4, message: 'Status updated for "Nice Tournament"', timestamp: '1d ago', type: 'status' as const },
-  ]
-  const typeIcons = {
-    event: <IconCalendar className="size-4 text-blue-500" />,
-    ugc: <IconPhoto className="size-4 text-purple-500" />,
-    delivery: <IconTruck className="size-4 text-amber-500" />,
-    status: <IconCircleCheckFilled className="size-4 text-green-500" />,
+
+const RecentEventsSection = ({ events }: { events: RecentEventRaw[] }) => {
+  if (events.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle><Typography variant="h4">Activité récente</Typography></CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Typography variant="muted" className="text-sm">Aucun événement récent</Typography>
+        </CardContent>
+      </Card>
+    )
   }
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <Typography variant="h4">Recent Activity</Typography>
-        </CardTitle>
+        <CardTitle><Typography variant="h4">Activité récente</Typography></CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-3">
-            <div className="mt-0.5">{typeIcons[activity.type]}</div>
+        {events.map((e) => (
+          <div key={e.id} className="flex items-start gap-3">
+            <div className="mt-0.5 rounded-full bg-blue-100 p-1.5 dark:bg-blue-900/30">
+              <IconCalendar className="size-3.5 text-blue-600 dark:text-blue-400" />
+            </div>
             <div className="flex-1 min-w-0">
-              <Typography variant="small">{activity.message}</Typography>
-              <Typography variant="code" className="text-muted-foreground">{activity.timestamp}</Typography>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Typography variant="small" className="font-medium">{e.title}</Typography>
+                {e.state_code && (
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${STATE_BADGE_COLORS[e.state_code] ?? "bg-gray-100 text-gray-700"}`}>
+                    {e.state_label ?? e.state_code}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                {e.club_name && <Typography variant="code" className="text-muted-foreground">{e.club_name}</Typography>}
+                <Typography variant="code" className="text-muted-foreground">{formatRelativeTime(e.created_at)}</Typography>
+              </div>
             </div>
           </div>
         ))}
@@ -90,29 +135,37 @@ const RecentActivitySection = () => {
     </Card>
   )
 }
-const PipelineSection = () => {
-  const pipeline = [
-    { stage: 'Validée', count: 12, percentage: 65, color: 'bg-blue-500' },
-    { stage: 'Préparation', count: 8, percentage: 40, color: 'bg-amber-500' },
-    { stage: 'Logistique', count: 4, percentage: 20, color: 'bg-purple-500' },
-    { stage: 'Livré', count: 2, percentage: 10, color: 'bg-cyan-500' },
-  ]
+
+const PipelineSection = ({ stages }: { stages: PipelineStageRaw[] }) => {
+  const maxCount = Math.max(...stages.map((s) => s.count), 1)
+
+  if (stages.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle><Typography variant="h4">Pipeline</Typography></CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Typography variant="muted" className="text-sm">Aucune donnée de pipeline</Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <Typography variant="h4">Sponsorship Pipeline</Typography>
-        </CardTitle>
+        <CardTitle><Typography variant="h4">Pipeline</Typography></CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {pipeline.map((item) => (
-          <div key={item.stage} className="space-y-1">
+        {stages.map((item) => (
+          <div key={item.code} className="space-y-1">
             <div className="flex items-center justify-between">
               <Typography variant="small">{item.stage}</Typography>
               <Typography variant="small" className="font-medium">{item.count}</Typography>
             </div>
             <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-              <div className={`h-full rounded-full ${item.color} transition-all`} style={{ width: `${item.percentage}%` }} />
+              <div className={`h-full rounded-full ${item.color} transition-all`} style={{ width: `${(item.count / maxCount) * 100}%` }} />
             </div>
           </div>
         ))}
@@ -120,28 +173,36 @@ const PipelineSection = () => {
     </Card>
   )
 }
-const UpcomingEventsSection = () => {
-  const events = [
-    { id: 1, name: 'Paris Cup 2026', date: 'Jan 15, 2026', daysUntil: 5 },
-    { id: 2, name: 'Lyon Open', date: 'Jan 22, 2026', daysUntil: 12 },
-    { id: 3, name: 'Nice Tournament', date: 'Feb 1, 2026', daysUntil: 22 },
-  ]
+
+const UpcomingEventsSection = ({ events }: { events: UpcomingEventRaw[] }) => {
+  if (events.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle><Typography variant="h4">Événements à venir</Typography></CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Typography variant="muted" className="text-sm">Aucun événement planifié</Typography>
+        </CardContent>
+      </Card>
+    )
+  }
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <Typography variant="h4">Upcoming Events</Typography>
-        </CardTitle>
+        <CardTitle><Typography variant="h4">Événements à venir</Typography></CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {events.map((event) => (
           <div key={event.id} className="flex items-center justify-between py-2 border-b last:border-0">
             <div>
-              <Typography variant="small" className="font-medium">{event.name}</Typography>
-              <Typography variant="code" className="text-muted-foreground">{event.date}</Typography>
+              <Typography variant="small" className="font-medium">{event.title}</Typography>
+              <Typography variant="code" className="text-muted-foreground">
+                {event.city ? `${event.city} — ` : ""}{formatDate(event.start_date)}
+              </Typography>
             </div>
-            <Badge variant="outline" className="text-xs">
-              {event.daysUntil}d
+            <Badge variant="outline" className="text-xs shrink-0">
+              {event.daysUntil > 0 ? `J-${event.daysUntil}` : "Aujourd'hui"}
             </Badge>
           </div>
         ))}
@@ -149,19 +210,61 @@ const UpcomingEventsSection = () => {
     </Card>
   )
 }
+
+const StockOverviewSection = ({ stocks }: { stocks: StockSummaryRaw[] }) => {
+  if (stocks.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle><Typography variant="h4">Aperçu des stocks</Typography></CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Typography variant="muted" className="text-sm">Aucun stock disponible</Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle><Typography variant="h4">Aperçu des stocks</Typography></CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {stocks.map((s, i) => (
+          <div key={i} className="space-y-1">
+            <div className="flex items-center justify-between">
+              <Typography variant="small" className="font-medium">{s.product_name}</Typography>
+              <Typography variant="small">{s.available}/{s.total}</Typography>
+            </div>
+            <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all"
+                style={{ width: `${s.total > 0 ? (s.available / s.total) * 100 : 0}%` }}
+              />
+            </div>
+            {s.reserved > 0 && (
+              <Typography variant="code" className="text-muted-foreground">
+                {s.reserved} réservé(s)
+              </Typography>
+            )}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
 const QuickActionsSection = () => {
   const actions = [
-    { id: 'new-event', label: 'New Event', icon: IconPlus, variant: 'default' as const },
-    { id: 'new-sponsor', label: 'New Sponsor', icon: IconUsers, variant: 'outline' as const },
-    { id: 'new-ugc', label: 'New UGC', icon: IconPhoto, variant: 'outline' as const },
-    { id: 'reports', label: 'Reports', icon: IconFileText, variant: 'outline' as const },
+    { id: "new-event", label: "New Event", icon: IconPlus, variant: "default" as const },
+    { id: "new-sponsor", label: "New Sponsor", icon: IconUsers, variant: "outline" as const },
+    { id: "new-ugc", label: "New UGC", icon: IconPhoto, variant: "outline" as const },
+    { id: "reports", label: "Reports", icon: IconFileText, variant: "outline" as const },
   ]
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <Typography variant="h4">Quick Actions</Typography>
-        </CardTitle>
+        <CardTitle><Typography variant="h4">Quick Actions</Typography></CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-2">
@@ -176,26 +279,92 @@ const QuickActionsSection = () => {
     </Card>
   )
 }
+
 export function Main({ data: customData }: DashboardGlobalProps) {
+  const [loading, setLoading] = useState(true)
+  const [recentEvents, setRecentEvents] = useState<RecentEventRaw[]>([])
+  const [pipelineStages, setPipelineStages] = useState<PipelineStageRaw[]>([])
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEventRaw[]>([])
+  const [stockSummary, setStockSummary] = useState<StockSummaryRaw[]>([])
+  const [liveOverview, setLiveOverview] = useState({ totalEvents: 0, activeEvents: 0, pendingDelivery: 0, completionRate: "0" })
+
+  const fetchDashboard = useCallback(async () => {
+    setLoading(true)
+    try {
+      const [overview, pipeline, recent, upcoming, stocks] = await Promise.all([
+        dashboardService.getOverview(),
+        dashboardService.getPipeline(),
+        dashboardService.getRecentEvents(),
+        dashboardService.getUpcomingEvents(),
+        dashboardService.getStockSummary(),
+      ])
+
+      setLiveOverview(overview)
+      setPipelineStages(
+        pipeline.map((p) => ({
+          stage: p.state.label,
+          code: p.state.code,
+          count: p.count,
+          color: p.color,
+        }))
+      )
+      setRecentEvents(recent)
+      setUpcomingEvents(upcoming)
+      setStockSummary(stocks)
+    } catch (err) {
+      console.error("[dashboard] fetch failed:", err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useMountEffect(fetchDashboard)
+
   const kpi = customData?.kpi ?? data.kpi
-  const stats = customData?.stats ?? data.stats
+  const stats: DashboardStats = customData?.stats ?? {
+    ...data.stats,
+    total: liveOverview.totalEvents,
+    activeEvents: liveOverview.activeEvents,
+    pendingDelivery: liveOverview.pendingDelivery,
+    completionRate: liveOverview.completionRate,
+  }
   const overview = customData?.overview ?? data.overview
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-8">
+        <div className="space-y-1">
+          <Typography variant="h3">Global Operations Dashboard</Typography>
+          <Typography variant="lead">Vue globale du système</Typography>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <Spinner className="size-6" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="space-y-1">
         <Typography variant="h3">Global Operations Dashboard</Typography>
         <Typography variant="lead">Vue globale du système</Typography>
       </div>
+
       <KPISection kpi={kpi} stats={stats} />
       <OverviewSection overview={overview} />
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <RecentActivitySection />
-        <PipelineSection />
+        <RecentEventsSection events={recentEvents} />
+        <PipelineSection stages={pipelineStages} />
       </div>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <UpcomingEventsSection />
-        <QuickActionsSection />
+        <UpcomingEventsSection events={upcomingEvents} />
+        <StockOverviewSection stocks={stockSummary} />
       </div>
+
+      <QuickActionsSection />
     </div>
   )
 }

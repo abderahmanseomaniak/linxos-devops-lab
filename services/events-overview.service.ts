@@ -15,8 +15,8 @@ async function list(filters: EventListFilters = {}): Promise<EventListResult> {
   if (search) {
     query = query.or(`event_title.ilike.%${search}%,club_name.ilike.%${search}%`)
   }
-  if (workflow_code) {
-    query = query.eq("workflow_code", workflow_code)
+  if (workflow_code && workflow_code.length > 0) {
+    query = query.in("workflow_code", workflow_code)
   }
   if (campaign_id) {
     query = query.eq("campaign_id", campaign_id)
@@ -27,8 +27,8 @@ async function list(filters: EventListFilters = {}): Promise<EventListResult> {
   if (confirmation_completed !== undefined) {
     query = query.eq("confirmation_completed", confirmation_completed)
   }
-  if (shipment_status) {
-    query = query.eq("shipment_status", shipment_status)
+  if (shipment_status && shipment_status.length > 0) {
+    query = query.in("shipment_status", shipment_status)
   }
   if (drive_submitted !== undefined) {
     query = query.eq("drive_submitted", drive_submitted)

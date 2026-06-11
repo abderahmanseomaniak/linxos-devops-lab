@@ -178,7 +178,7 @@ export function GeneralInfoStep() {
           </FieldGroup>
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => append({ url: "" })}
             className="self-start"

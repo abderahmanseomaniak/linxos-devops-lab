@@ -163,11 +163,11 @@ export interface EventsOverviewStats {
 
 export interface EventListFilters {
   search?: string
-  workflow_code?: string
+  workflow_code?: string[]
   campaign_id?: string
   city?: string
   confirmation_completed?: boolean
-  shipment_status?: string
+  shipment_status?: string[]
   drive_submitted?: boolean
   page?: number
   pageSize?: number

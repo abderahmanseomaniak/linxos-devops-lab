@@ -5,10 +5,10 @@ import { UsersTable } from "@/components/screens/users/users-table"
 import { usersService } from "@/services/users.service"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
+import { Typography } from "@/components/ui/typography"
 import { AddUserSheet } from "@/components/screens/users/sheet/add-user-sheet"
 import { EditUserSheet } from "@/components/screens/users/sheet/edit-user-sheet"
 import { UserDetailsSheet } from "@/components/screens/users/sheet/details-user-sheet"
-import { Typography } from "@/components/ui/typography"
 import type { Profile } from "@/types/profiles.types"
 
 export default function UsersPage() {

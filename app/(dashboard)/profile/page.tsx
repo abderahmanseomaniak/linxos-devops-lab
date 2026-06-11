@@ -34,15 +34,15 @@ export default function ProfilePage() {
   }
 
   if (!profile) {
-    return <p className="text-muted-foreground text-sm">Profil introuvable</p>
+    return <Typography variant="p" className="text-muted-foreground text-sm">Profil introuvable</Typography>
   }
 
   const handleSave = async () => {
     if (!fullName.trim() || fullName === profile.full_name) return
     setSaving(true)
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName.trim() })
+      .update({ full_name: fullName.trim() } as never)
       .eq("id", profile.id)
     setSaving(false)
     if (error) {

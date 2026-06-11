@@ -194,6 +194,11 @@ async function getStocksByProduct(productId: string): Promise<CampaignStock[]> {
   return (data ?? []) as unknown as CampaignStock[]
 }
 
+async function removeCampaignStock(id: string): Promise<void> {
+  const { error } = await supabase.from("campaign_stocks").delete().eq("id", id)
+  if (error) throw error
+}
+
 async function updateStock(id: string, data: CampaignStockUpdate): Promise<CampaignStock> {
   const { data: updated, error } = await supabase
     .from("campaign_stocks")
@@ -303,15 +308,15 @@ async function createMovement(data: InventoryMovementInsert): Promise<InventoryM
           updates.available_quantity = (e.available_quantity ?? 0) + qty
           updates.reserved_quantity = Math.max(0, (e.reserved_quantity ?? 0) - qty)
         }
-        await (supabase as any).from("campaign_stocks").update(updates).eq("id", e.id)
+        await supabase.from("campaign_stocks").update(updates as never).eq("id", e.id)
       } else if (type === "IN") {
-        await (supabase as any).from("campaign_stocks").insert({
+        await supabase.from("campaign_stocks").insert({
           campaign_id: data.campaign_id,
           product_id: data.product_id,
           total_quantity: qty,
           available_quantity: qty,
           reserved_quantity: 0,
-        })
+        } as never)
       }
     }
   } catch {
@@ -336,6 +341,7 @@ export const inventoryService = {
   // Stocks
   getStocksByCampaign,
   getStocksByProduct,
+  removeCampaignStock,
   updateStock,
   // Movements
   listMovements,

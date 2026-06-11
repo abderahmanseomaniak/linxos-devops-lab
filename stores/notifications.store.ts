@@ -95,6 +95,7 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
           table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
+         
         (payload: { new: Record<string, unknown>; old: Record<string, unknown> }) => {
           const newNotification = payload.new as unknown as Notification
           set((state) => ({

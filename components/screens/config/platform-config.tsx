@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
@@ -87,7 +87,6 @@ export function PlatformConfig() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [profiles, setProfiles] = useState<ScoringProfile[]>([])
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>("")
-  const [profile, setProfile] = useState<ScoringProfile | null>(null)
   const [rules, setRules] = useState<ScoringRule[]>([])
   const [newRuleName, setNewRuleName] = useState("")
   const [saved, setSaved] = useState(false)
@@ -105,22 +104,27 @@ export function PlatformConfig() {
     })
   }, [])
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!selectedCampaignId) return
-    const sp = profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null
-    setProfile(sp)
-  }, [selectedCampaignId, profiles])
+  const profile = useMemo(
+    () => profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null,
+    [selectedCampaignId, profiles]
+  )
+
+  const rulesLoadedRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!selectedCampaignId) return
-    if (profile) {
-      configService.listRulesByProfile(profile.id).then(setRules)
-    } else {
-      setRules([])
+    if (!selectedCampaignId) {
+      rulesLoadedRef.current = null
+      return
     }
-  }, [selectedCampaignId, profile])
-  /* eslint-enable react-hooks/set-state-in-effect */
+    const sp = profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null
+    if (!sp) {
+      rulesLoadedRef.current = null
+      return
+    }
+    if (sp.id === rulesLoadedRef.current) return
+    rulesLoadedRef.current = sp.id
+    configService.listRulesByProfile(sp.id).then(setRules)
+  }, [selectedCampaignId, profiles])
 
   const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId)
   const totalWeight = rules.reduce((sum, r) => sum + r.weight, 0)
@@ -128,14 +132,14 @@ export function PlatformConfig() {
 
   const updateProfile = useCallback(
     async (updates: Partial<ScoringProfile>) => {
-      if (!profile || !selectedCampaignId) return
-      const updated = await configService.updateScoringProfile(profile.id, updates)
-      setProfile(updated)
+      const current = profiles.find((p) => p.campaign_id === selectedCampaignId)
+      if (!current || !selectedCampaignId) return
+      const updated = await configService.updateScoringProfile(current.id, updates)
       setProfiles((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
       setSaved(true)
       setTimeout(() => setSaved(false), 1500)
     },
-    [profile, selectedCampaignId]
+    [profiles, selectedCampaignId]
   )
 
   const createProfile = useCallback(async () => {
@@ -147,7 +151,6 @@ export function PlatformConfig() {
       escalation_threshold: 60,
       rejection_threshold: 40,
     })
-    setProfile(sp)
     setProfiles((prev) => [...prev, sp])
   }, [selectedCampaignId])
 
@@ -184,7 +187,7 @@ export function PlatformConfig() {
       <div className="space-y-2">
         <Typography variant="h2">Configuration IA</Typography>
         <Typography variant="muted">
-          Gérez les profils de scoring et les règles utilisés par l&apos;IA pour évaluer les événements.
+           Gérez les profils de scoring et les règles utilisés par l&apos;IA pour évaluer les événements.
         </Typography>
       </div>
 
@@ -241,7 +244,9 @@ export function PlatformConfig() {
                     description="Score en dessous duquel l'événement est automatiquement rejeté"
                     value={profile.score_minimum ?? 0}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, score_minimum: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, score_minimum: v } : p
+                      ))
                       updateProfile({ score_minimum: v })
                     }}
                   />
@@ -250,7 +255,9 @@ export function PlatformConfig() {
                     description="Au-dessus de ce score, l'événement est accepté"
                     value={profile.acceptance_threshold ?? 80}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, acceptance_threshold: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, acceptance_threshold: v } : p
+                      ))
                       updateProfile({ acceptance_threshold: v })
                     }}
                   />
@@ -259,7 +266,9 @@ export function PlatformConfig() {
                     description="Entre ce seuil et l'acceptation, l'événement nécessite une révision manuelle"
                     value={profile.escalation_threshold ?? 60}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, escalation_threshold: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, escalation_threshold: v } : p
+                      ))
                       updateProfile({ escalation_threshold: v })
                     }}
                   />
@@ -268,7 +277,9 @@ export function PlatformConfig() {
                     description="En dessous de ce seuil, l'événement est rejeté"
                     value={profile.rejection_threshold ?? 40}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, rejection_threshold: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, rejection_threshold: v } : p
+                      ))
                       updateProfile({ rejection_threshold: v })
                     }}
                   />

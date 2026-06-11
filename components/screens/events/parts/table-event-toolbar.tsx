@@ -27,11 +27,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { EventListFilters, EventOverviewRow } from "@/types/events-overview"
 
 const WORKFLOW_OPTIONS = [
-  { value: "", label: "Tous" },
   { value: "UNDER_REVIEW", label: "En révision" },
   { value: "APPROVED", label: "Approuvé" },
   { value: "REJECTED", label: "Rejeté" },
@@ -42,7 +40,6 @@ const WORKFLOW_OPTIONS = [
 ]
 
 const SHIPMENT_OPTIONS = [
-  { value: "", label: "Tous" },
   { value: "PENDING", label: "En attente" },
   { value: "PREPARING", label: "En préparation" },
   { value: "IN_DELIVERY", label: "En livraison" },
@@ -65,13 +62,12 @@ export function EventTableToolbar({
   onRefresh,
   onClearFilters,
   columnVisibility,
-  onColumnVisibilityChange,
   filters,
   onFilterChange,
 }: EventTableToolbarProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const hasFilters = !!filters.search || !!filters.workflow_code || !!filters.shipment_status ||
+  const hasFilters = !!filters.search || (filters.workflow_code?.length ?? 0) > 0 || (filters.shipment_status?.length ?? 0) > 0 ||
     filters.confirmation_completed !== undefined || filters.drive_submitted !== undefined
 
   return (
@@ -106,13 +102,13 @@ export function EventTableToolbar({
         </div>
 
         <StatusFilterPopover
-          value={filters.workflow_code ?? ""}
-          onChange={(v) => onFilterChange("workflow_code", v || undefined)}
+          values={filters.workflow_code}
+          onChange={(v) => onFilterChange("workflow_code", v)}
         />
 
         <ShipmentFilterPopover
-          value={filters.shipment_status ?? ""}
-          onChange={(v) => onFilterChange("shipment_status", v || undefined)}
+          values={filters.shipment_status}
+          onChange={(v) => onFilterChange("shipment_status", v)}
         />
 
         <Popover>
@@ -168,58 +164,116 @@ export function EventTableToolbar({
   )
 }
 
-function StatusFilterPopover({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function StatusFilterPopover({ values = [], onChange }: { values?: string[]; onChange: (v: string[] | undefined) => void }) {
+  const isAllChecked = values.length === 0 || values.length === WORKFLOW_OPTIONS.length
+
+  const handleAllChange = (checked: boolean) => {
+    if (checked) {
+      onChange(undefined)
+    } else {
+      onChange(WORKFLOW_OPTIONS.map((o) => o.value))
+    }
+  }
+
+  const handleOptionChange = (optionValue: string, checked: boolean) => {
+    if (checked) {
+      const next = [...values, optionValue]
+      if (next.length === WORKFLOW_OPTIONS.length) {
+        onChange(undefined)
+      } else {
+        onChange(next)
+      }
+    } else {
+      onChange(values.filter((v) => v !== optionValue))
+    }
+  }
+
+  const filterCount = values.length
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-8 text-xs">
           <IconFilter className="-ms-1 opacity-60" size={14} />
           Statut
-          {value && <span className="-me-1 inline-flex h-4 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">1</span>}
+          {filterCount > 0 && (
+            <span className="-me-1 inline-flex h-4 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">{filterCount}</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto min-w-44 p-3">
         <div className="space-y-3">
           <Typography variant="small" className="font-medium">Statut workflow</Typography>
-          <Select value={value} onValueChange={onChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Tous" />
-            </SelectTrigger>
-            <SelectContent>
-              {WORKFLOW_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox checked={isAllChecked} id="evt-wf-all" onCheckedChange={handleAllChange} />
+              <Label htmlFor="evt-wf-all" className="cursor-pointer font-normal">Tous</Label>
+            </div>
+            {WORKFLOW_OPTIONS.map((opt) => (
+              <div key={opt.value} className="flex items-center gap-2">
+                <Checkbox checked={values.includes(opt.value)} id={`evt-wf-${opt.value}`} onCheckedChange={(checked) => handleOptionChange(opt.value, !!checked)} />
+                <Label htmlFor={`evt-wf-${opt.value}`} className="cursor-pointer font-normal">{opt.label}</Label>
+              </div>
+            ))}
+          </div>
         </div>
       </PopoverContent>
     </Popover>
   )
 }
 
-function ShipmentFilterPopover({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function ShipmentFilterPopover({ values = [], onChange }: { values?: string[]; onChange: (v: string[] | undefined) => void }) {
+  const isAllChecked = values.length === 0 || values.length === SHIPMENT_OPTIONS.length
+
+  const handleAllChange = (checked: boolean) => {
+    if (checked) {
+      onChange(undefined)
+    } else {
+      onChange(SHIPMENT_OPTIONS.map((o) => o.value))
+    }
+  }
+
+  const handleOptionChange = (optionValue: string, checked: boolean) => {
+    if (checked) {
+      const next = [...values, optionValue]
+      if (next.length === SHIPMENT_OPTIONS.length) {
+        onChange(undefined)
+      } else {
+        onChange(next)
+      }
+    } else {
+      onChange(values.filter((v) => v !== optionValue))
+    }
+  }
+
+  const filterCount = values.length
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-8 text-xs">
           <IconFilter className="-ms-1 opacity-60" size={14} />
           Expédition
-          {value && <span className="-me-1 inline-flex h-4 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">1</span>}
+          {filterCount > 0 && (
+            <span className="-me-1 inline-flex h-4 max-h-full items-center rounded border bg-background px-1 font-[inherit] font-medium text-[0.625rem] text-muted-foreground/70">{filterCount}</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto min-w-44 p-3">
         <div className="space-y-3">
           <Typography variant="small" className="font-medium">Statut expédition</Typography>
-          <Select value={value} onValueChange={onChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Tous" />
-            </SelectTrigger>
-            <SelectContent>
-              {SHIPMENT_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox checked={isAllChecked} id="evt-sh-all" onCheckedChange={handleAllChange} />
+              <Label htmlFor="evt-sh-all" className="cursor-pointer font-normal">Tous</Label>
+            </div>
+            {SHIPMENT_OPTIONS.map((opt) => (
+              <div key={opt.value} className="flex items-center gap-2">
+                <Checkbox checked={values.includes(opt.value)} id={`evt-sh-${opt.value}`} onCheckedChange={(checked) => handleOptionChange(opt.value, !!checked)} />
+                <Label htmlFor={`evt-sh-${opt.value}`} className="cursor-pointer font-normal">{opt.label}</Label>
+              </div>
+            ))}
+          </div>
         </div>
       </PopoverContent>
     </Popover>

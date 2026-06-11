@@ -84,7 +84,6 @@ function getInitials(name: string): string {
     .slice(0, 2)
 }
 
-
 interface EventTableProps {
   data: EventOverviewRow[]
   total: number

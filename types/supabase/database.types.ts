@@ -1,6 +1,16 @@
 // ──────────────────────────────────────────────
 // Database – Base Supabase generated types
 // ──────────────────────────────────────────────
+import type { ProfileRow, ProfileInsert, ProfileUpdate } from '../profiles.types'
+import type { ClubRow, ClubInsert, ClubUpdate, ClubContactRow, ClubContactInsert, ClubContactUpdate } from '../clubs.types'
+import type { EventRow, EventInsert, EventUpdate, ApplicationFormRow, ApplicationFormInsert, ApplicationFormUpdate, ApplicationUgcProfileRow, ApplicationUgcProfileInsert, ApplicationUgcProfileUpdate, EventAttachmentRow, EventAttachmentInsert, EventAttachmentUpdate } from '../events.types'
+import type { CampaignRow, CampaignInsert, CampaignUpdate } from '../campaigns.types'
+import type { WorkflowStateRow, WorkflowStateInsert, WorkflowStateUpdate, WorkflowHistoryRow, WorkflowHistoryInsert, WorkflowHistoryUpdate } from '../workflow.types'
+import type { ProductCategoryRow, ProductCategoryInsert, ProductCategoryUpdate, ProductRow, ProductInsert, ProductUpdate, CampaignStockRow, CampaignStockInsert, CampaignStockUpdate, InventoryMovementRow, InventoryMovementInsert, InventoryMovementUpdate } from '../inventory.types'
+import type { AllocationRow, AllocationInsert, AllocationUpdate, ShipmentRow, ShipmentInsert, ShipmentUpdate, ShipmentItemRow, ShipmentItemInsert, ShipmentItemUpdate, DeliveryProofRow, DeliveryProofInsert, DeliveryProofUpdate } from '../shipments.types'
+import type { UGCContentRow, UGCContentInsert, UGCContentUpdate, ContentVerificationRow, ContentVerificationInsert, ContentVerificationUpdate, DriveFolderRow, DriveFolderInsert, DriveFolderUpdate, EventMetricRow, EventMetricInsert, EventMetricUpdate } from '../ugc.types'
+import type { ScoringProfileRow, ScoringProfileInsert, ScoringProfileUpdate, ScoringRuleRow, ScoringRuleInsert, ScoringRuleUpdate, AIAnalysisRow, AIAnalysisInsert, AIAnalysisUpdate } from '../analytics.types'
+import type { NotificationRow, NotificationInsert, NotificationUpdate, EmailLogRow, EmailLogInsert, EmailLogUpdate } from '../notifications.types'
 
 export type Json =
   | string
@@ -14,144 +24,400 @@ export interface Database {
   public: {
     Tables: {
       profiles: {
-        Row: import('../profiles.types').ProfileRow;
-        Insert: import('../profiles.types').ProfileInsert;
-        Update: import('../profiles.types').ProfileUpdate;
+        Row: ProfileRow;
+        Insert: ProfileInsert;
+        Update: ProfileUpdate;
+        Relationships: [];
       };
       clubs: {
-        Row: import('../clubs.types').ClubRow;
-        Insert: import('../clubs.types').ClubInsert;
-        Update: import('../clubs.types').ClubUpdate;
+        Row: ClubRow;
+        Insert: ClubInsert;
+        Update: ClubUpdate;
+        Relationships: [];
       };
       club_contacts: {
-        Row: import('../clubs.types').ClubContactRow;
-        Insert: import('../clubs.types').ClubContactInsert;
-        Update: import('../clubs.types').ClubContactUpdate;
+        Row: ClubContactRow;
+        Insert: ClubContactInsert;
+        Update: ClubContactUpdate;
+        Relationships: [];
       };
       events: {
-        Row: import('../events.types').EventRow;
-        Insert: import('../events.types').EventInsert;
-        Update: import('../events.types').EventUpdate;
+        Row: EventRow;
+        Insert: EventInsert;
+        Update: EventUpdate;
+        Relationships: [];
       };
       application_forms: {
-        Row: import('../events.types').ApplicationFormRow;
-        Insert: import('../events.types').ApplicationFormInsert;
-        Update: import('../events.types').ApplicationFormUpdate;
+        Row: ApplicationFormRow;
+        Insert: ApplicationFormInsert;
+        Update: ApplicationFormUpdate;
+        Relationships: [];
       };
       application_ugc_profiles: {
-        Row: import('../events.types').ApplicationUgcProfileRow;
-        Insert: import('../events.types').ApplicationUgcProfileInsert;
-        Update: import('../events.types').ApplicationUgcProfileUpdate;
+        Row: ApplicationUgcProfileRow;
+        Insert: ApplicationUgcProfileInsert;
+        Update: ApplicationUgcProfileUpdate;
+        Relationships: [];
       };
       event_attachments: {
-        Row: import('../events.types').EventAttachmentRow;
-        Insert: import('../events.types').EventAttachmentInsert;
-        Update: import('../events.types').EventAttachmentUpdate;
+        Row: EventAttachmentRow;
+        Insert: EventAttachmentInsert;
+        Update: EventAttachmentUpdate;
+        Relationships: [];
       };
       campaigns: {
-        Row: import('../campaigns.types').CampaignRow;
-        Insert: import('../campaigns.types').CampaignInsert;
-        Update: import('../campaigns.types').CampaignUpdate;
+        Row: CampaignRow;
+        Insert: CampaignInsert;
+        Update: CampaignUpdate;
+        Relationships: [];
       };
-
       workflow_states: {
-        Row: import('../workflow.types').WorkflowStateRow;
-        Insert: import('../workflow.types').WorkflowStateInsert;
-        Update: import('../workflow.types').WorkflowStateUpdate;
+        Row: WorkflowStateRow;
+        Insert: WorkflowStateInsert;
+        Update: WorkflowStateUpdate;
+        Relationships: [];
       };
       workflow_history: {
-        Row: import('../workflow.types').WorkflowHistoryRow;
-        Insert: import('../workflow.types').WorkflowHistoryInsert;
-        Update: import('../workflow.types').WorkflowHistoryUpdate;
+        Row: WorkflowHistoryRow;
+        Insert: WorkflowHistoryInsert;
+        Update: WorkflowHistoryUpdate;
+        Relationships: [];
       };
       product_categories: {
-        Row: import('../inventory.types').ProductCategoryRow;
-        Insert: import('../inventory.types').ProductCategoryInsert;
-        Update: import('../inventory.types').ProductCategoryUpdate;
+        Row: ProductCategoryRow;
+        Insert: ProductCategoryInsert;
+        Update: ProductCategoryUpdate;
+        Relationships: [];
       };
       products: {
-        Row: import('../inventory.types').ProductRow;
-        Insert: import('../inventory.types').ProductInsert;
-        Update: import('../inventory.types').ProductUpdate;
+        Row: ProductRow;
+        Insert: ProductInsert;
+        Update: ProductUpdate;
+        Relationships: [];
+      };
+      audit_logs: {
+        Row: {
+          id: string;
+          user_id: string;
+          action: string;
+          module: string | null;
+          entity_type: string | null;
+          entity_id: string | null;
+          description: string | null;
+          ip_address: string | null;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          action: string;
+          module?: string | null;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          description?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          action?: string;
+          module?: string | null;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          description?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
       };
       campaign_stocks: {
-        Row: import('../inventory.types').CampaignStockRow;
-        Insert: import('../inventory.types').CampaignStockInsert;
-        Update: import('../inventory.types').CampaignStockUpdate;
+        Row: CampaignStockRow;
+        Insert: CampaignStockInsert;
+        Update: CampaignStockUpdate;
+        Relationships: [];
       };
       inventory_movements: {
-        Row: import('../inventory.types').InventoryMovementRow;
-        Insert: import('../inventory.types').InventoryMovementInsert;
-        Update: import('../inventory.types').InventoryMovementUpdate;
+        Row: InventoryMovementRow;
+        Insert: InventoryMovementInsert;
+        Update: InventoryMovementUpdate;
+        Relationships: [];
       };
       allocations: {
-        Row: import('../shipments.types').AllocationRow;
-        Insert: import('../shipments.types').AllocationInsert;
-        Update: import('../shipments.types').AllocationUpdate;
+        Row: AllocationRow;
+        Insert: AllocationInsert;
+        Update: AllocationUpdate;
+        Relationships: [];
       };
       shipments: {
-        Row: import('../shipments.types').ShipmentRow;
-        Insert: import('../shipments.types').ShipmentInsert;
-        Update: import('../shipments.types').ShipmentUpdate;
+        Row: ShipmentRow;
+        Insert: ShipmentInsert;
+        Update: ShipmentUpdate;
+        Relationships: [];
       };
       shipment_items: {
-        Row: import('../shipments.types').ShipmentItemRow;
-        Insert: import('../shipments.types').ShipmentItemInsert;
-        Update: import('../shipments.types').ShipmentItemUpdate;
+        Row: ShipmentItemRow;
+        Insert: ShipmentItemInsert;
+        Update: ShipmentItemUpdate;
+        Relationships: [];
       };
       delivery_proofs: {
-        Row: import('../shipments.types').DeliveryProofRow;
-        Insert: import('../shipments.types').DeliveryProofInsert;
-        Update: import('../shipments.types').DeliveryProofUpdate;
+        Row: DeliveryProofRow;
+        Insert: DeliveryProofInsert;
+        Update: DeliveryProofUpdate;
+        Relationships: [];
       };
       ugc_contents: {
-        Row: import('../ugc.types').UGCContentRow;
-        Insert: import('../ugc.types').UGCContentInsert;
-        Update: import('../ugc.types').UGCContentUpdate;
+        Row: UGCContentRow;
+        Insert: UGCContentInsert;
+        Update: UGCContentUpdate;
+        Relationships: [];
       };
       content_verifications: {
-        Row: import('../ugc.types').ContentVerificationRow;
-        Insert: import('../ugc.types').ContentVerificationInsert;
-        Update: import('../ugc.types').ContentVerificationUpdate;
+        Row: ContentVerificationRow;
+        Insert: ContentVerificationInsert;
+        Update: ContentVerificationUpdate;
+        Relationships: [];
       };
       drive_folders: {
-        Row: import('../ugc.types').DriveFolderRow;
-        Insert: import('../ugc.types').DriveFolderInsert;
-        Update: import('../ugc.types').DriveFolderUpdate;
+        Row: DriveFolderRow;
+        Insert: DriveFolderInsert;
+        Update: DriveFolderUpdate;
+        Relationships: [];
       };
       event_metrics: {
-        Row: import('../ugc.types').EventMetricRow;
-        Insert: import('../ugc.types').EventMetricInsert;
-        Update: import('../ugc.types').EventMetricUpdate;
+        Row: EventMetricRow;
+        Insert: EventMetricInsert;
+        Update: EventMetricUpdate;
+        Relationships: [];
       };
       scoring_profiles: {
-        Row: import('../analytics.types').ScoringProfileRow;
-        Insert: import('../analytics.types').ScoringProfileInsert;
-        Update: import('../analytics.types').ScoringProfileUpdate;
+        Row: ScoringProfileRow;
+        Insert: ScoringProfileInsert;
+        Update: ScoringProfileUpdate;
+        Relationships: [];
       };
       scoring_rules: {
-        Row: import('../analytics.types').ScoringRuleRow;
-        Insert: import('../analytics.types').ScoringRuleInsert;
-        Update: import('../analytics.types').ScoringRuleUpdate;
+        Row: ScoringRuleRow;
+        Insert: ScoringRuleInsert;
+        Update: ScoringRuleUpdate;
+        Relationships: [];
       };
       ai_analyses: {
-        Row: import('../analytics.types').AIAnalysisRow;
-        Insert: import('../analytics.types').AIAnalysisInsert;
-        Update: import('../analytics.types').AIAnalysisUpdate;
+        Row: AIAnalysisRow;
+        Insert: AIAnalysisInsert;
+        Update: AIAnalysisUpdate;
+        Relationships: [];
       };
       notifications: {
-        Row: import('../notifications.types').NotificationRow;
-        Insert: import('../notifications.types').NotificationInsert;
-        Update: import('../notifications.types').NotificationUpdate;
+        Row: NotificationRow;
+        Insert: NotificationInsert;
+        Update: NotificationUpdate;
+        Relationships: [];
       };
       email_logs: {
-        Row: import('../notifications.types').EmailLogRow;
-        Insert: import('../notifications.types').EmailLogInsert;
-        Update: import('../notifications.types').EmailLogUpdate;
+        Row: EmailLogRow;
+        Insert: EmailLogInsert;
+        Update: EmailLogUpdate;
+        Relationships: [];
+      };
+      confirmation_forms: {
+        Row: {
+          id: string;
+          event_id: string;
+          official_instagram: string | null;
+          confirmed_cans: number;
+          main_contact_name: string;
+          main_contact_phone: string;
+          main_contact_email: string | null;
+          logistics_contact_name: string | null;
+          logistics_contact_phone: string | null;
+          delivery_address: string | null;
+          delivery_date: string | null;
+          reception_time: string | null;
+          commitment: boolean;
+          comment: string | null;
+          created_at?: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          official_instagram?: string | null;
+          confirmed_cans: number;
+          main_contact_name: string;
+          main_contact_phone: string;
+          main_contact_email?: string | null;
+          logistics_contact_name?: string | null;
+          logistics_contact_phone?: string | null;
+          delivery_address?: string | null;
+          delivery_date?: string | null;
+          reception_time?: string | null;
+          commitment: boolean;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          event_id?: string;
+          official_instagram?: string | null;
+          confirmed_cans?: number;
+          main_contact_name?: string;
+          main_contact_phone?: string;
+          main_contact_email?: string | null;
+          logistics_contact_name?: string | null;
+          logistics_contact_phone?: string | null;
+          delivery_address?: string | null;
+          delivery_date?: string | null;
+          reception_time?: string | null;
+          commitment?: boolean;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      confirmation_ugc_profiles: {
+        Row: {
+          confirmation_form_id: string;
+          instagram_url: string | null;
+          tiktok_url: string | null;
+        };
+        Insert: {
+          confirmation_form_id: string;
+          instagram_url?: string | null;
+          tiktok_url?: string | null;
+        };
+        Update: {
+          confirmation_form_id?: string;
+          instagram_url?: string | null;
+          tiktok_url?: string | null;
+        };
+        Relationships: [];
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Views: {
+      event_overview_view: {
+        Row: {
+          event_id: string;
+          event_title: string;
+          club_name: string;
+          club_id: string;
+          city: string | null;
+          campaign_name: string | null;
+          campaign_id: string | null;
+          workflow_label: string | null;
+          workflow_code: string | null;
+          state_id: string | null;
+          score_ai: number | null;
+          ai_score: number | null;
+          ai_recommendation: string | null;
+          date_confirme: string | null;
+          allocated_quantity: number | null;
+          confirmation_completed: boolean | null;
+          shipment_status: string | null;
+          drive_submitted: boolean | null;
+          ugc_count: number | null;
+          created_at: string;
+          tracking_code: string;
+          start_date: string | null;
+          end_date: string | null;
+          applicant_email: string;
+        };
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+    };
+    Functions: {
+      reject_event: {
+        Args: {
+          p_event_id: string;
+          p_user_id: string;
+          p_comment: string | null;
+        };
+        Returns: unknown;
+      };
+      ask_clarification: {
+        Args: {
+          p_event_id: string;
+          p_user_id: string;
+          p_comment: string | null;
+        };
+        Returns: unknown;
+      };
+      create_allocation: {
+        Args: {
+          p_event_id: string;
+          p_campaign_id: string;
+          p_quantity: number;
+          p_user_id: string;
+        };
+        Returns: unknown;
+      };
+      create_shipment: {
+        Args: {
+          p_event_id: string;
+          p_allocation_id: string | null;
+          p_tracking_code: string;
+          p_items: string;
+        };
+        Returns: unknown;
+      };
+      update_shipment_status: {
+        Args: {
+          p_shipment_id: string;
+          p_status: string;
+        };
+        Returns: unknown;
+      };
+      report_problem: {
+        Args: {
+          p_shipment_id: string;
+          p_description: string;
+        };
+        Returns: unknown;
+      };
+      verify_content: {
+        Args: {
+          p_ugc_content_id: string;
+          p_user_id: string;
+          p_visibility_score: number | null;
+          p_quality_score: number | null;
+          p_engagement_score: number | null;
+          p_global_score: number | null;
+          p_comment: string | null;
+        };
+        Returns: unknown;
+      };
+      track_application: {
+        Args: {
+          p_code: string;
+          p_email: string | null;
+        };
+        Returns: unknown;
+      };
+      submit_confirmation_form: {
+        Args: {
+          p_tracking_code: string;
+          p_official_instagram: string;
+          p_confirmed_cans: number;
+          p_main_contact_name: string;
+          p_main_contact_phone: string;
+          p_main_contact_email: string | null;
+          p_logistics_contact_name: string | null;
+          p_logistics_contact_phone: string | null;
+          p_delivery_address: string | null;
+          p_delivery_date: string | null;
+          p_reception_time: string | null;
+          p_commitment: boolean;
+          p_comment: string | null;
+          p_drive_url: string | null;
+        };
+        Returns: unknown;
+      };
+    };
     Enums: {
       user_role: 'ADMIN' | 'SPONSORING_MANAGER' | 'LOGISTICS_MANAGER' | 'CONTENT_MANAGER';
       movement_type: 'IN' | 'OUT' | 'RESERVATION' | 'RETURN' | 'ADJUSTMENT';

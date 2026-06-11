@@ -8,7 +8,8 @@ async function trackApplication(
   const fallback: TrackApplicationData = { found: false }
 
   try {
-    const { data, error } = await (supabase as any).rpc("track_application", {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.rpc as any)("track_application", {
       p_code: code,
       p_email: email ?? null,
     })

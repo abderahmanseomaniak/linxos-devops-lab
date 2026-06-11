@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/client"
+import { logAudit } from "@/lib/audit-logger"
 import type { Event, EventInsert, EventUpdate } from "@/types/events.types"
 
 function generateTrackingCode(): string {
@@ -111,6 +112,15 @@ async function create(
     .single()
 
   if (error) throw error
+
+  logAudit({
+    action: "CREATE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: (created as { id: string }).id,
+    description: `Création de l'événement "${(created as { id: string; title: string }).title}"`,
+  })
+
   return created as unknown as Event
 }
 
@@ -133,12 +143,29 @@ async function update(
     .single()
 
   if (error) throw error
+
+  logAudit({
+    action: "UPDATE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: id,
+    description: `Modification de l'événement`,
+  })
+
   return updated as unknown as Event
 }
 
 async function remove(id: string): Promise<void> {
   const { error } = await supabase.from("events").delete().eq("id", id)
   if (error) throw error
+
+  logAudit({
+    action: "DELETE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: id,
+    description: `Suppression de l'événement`,
+  })
 }
 
 async function createApplicationForm(data: {

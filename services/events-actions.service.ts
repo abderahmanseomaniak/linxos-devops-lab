@@ -1,12 +1,18 @@
 import { supabase } from "@/services/supabase/client"
+import { logAudit } from "@/lib/audit-logger"
+
+function rpc(fn: string, args: Record<string, unknown>) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (supabase.rpc as any)(fn, args) as { data: unknown; error: unknown }
+}
 
 async function getStateId(code: string): Promise<string | null> {
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from("workflow_states")
     .select("id")
     .eq("code", code)
     .maybeSingle()
-  return data?.id ?? null
+  return (data as { id: string } | null)?.id ?? null
 }
 
 async function transitionEventState(eventId: string, newCode: string, userId: string, comment?: string) {
@@ -21,14 +27,14 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
 
   const oldStateId: string | null = (oldState as { state_id: string | null } | null)?.state_id ?? null
 
-  const { error: updateError } = await (supabase as any)
+  const { error: updateError } = await supabase
     .from("events")
-    .update({ state_id: newStateId })
+    .update({ state_id: newStateId } as never)
     .eq("id", eventId)
 
   if (updateError) throw updateError
 
-  const { error: historyError } = await (supabase as any)
+  const { error: historyError } = await supabase
     .from("workflow_history")
     .insert({
       event_id: eventId,
@@ -36,7 +42,7 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
       new_state_id: newStateId,
       changed_by: userId,
       comment: comment ?? null,
-    })
+    } as never)
 
   if (historyError) throw historyError
 }
@@ -44,17 +50,26 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
 export async function acceptEvent(eventId: string, userId: string, comment?: string) {
   await transitionEventState(eventId, "VALIDATED", userId, comment)
 
+  logAudit({
+    action: "APPROVE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: eventId,
+    description: `Approbation de l'événement`,
+  })
+
   // Send confirmation email to applicant
   try {
-    const { data: event } = await (supabase as any)
+    const { data: event } = await supabase
       .from("events")
       .select("applicant_email, tracking_code")
       .eq("id", eventId)
       .single()
 
-    if (event?.applicant_email) {
+    const ev = event as { applicant_email: string; tracking_code: string } | null
+    if (ev?.applicant_email) {
       const { sendConfirmationLinkEmail } = await import("@/services/email/send-email")
-      sendConfirmationLinkEmail(eventId, event.applicant_email, event.tracking_code)
+      sendConfirmationLinkEmail(eventId, ev.applicant_email, ev.tracking_code)
     }
   } catch (emailErr) {
     console.error("[acceptEvent] Failed to send email:", emailErr)
@@ -62,7 +77,7 @@ export async function acceptEvent(eventId: string, userId: string, comment?: str
 }
 
 export async function rejectEvent(eventId: string, userId: string, comment?: string) {
-  const { error } = await (supabase as any).rpc("reject_event", {
+  const { error } = await rpc("reject_event", {
     p_event_id: eventId,
     p_user_id: userId,
     p_comment: comment ?? null,
@@ -70,10 +85,18 @@ export async function rejectEvent(eventId: string, userId: string, comment?: str
   if (error) {
     await transitionEventState(eventId, "REJECTED", userId, comment)
   }
+
+  logAudit({
+    action: "REJECT",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: eventId,
+    description: `Rejet de l'événement`,
+  })
 }
 
 export async function askClarification(eventId: string, userId: string, comment?: string) {
-  const { error } = await (supabase as any).rpc("ask_clarification", {
+  const { error } = await rpc("ask_clarification", {
     p_event_id: eventId,
     p_user_id: userId,
     p_comment: comment ?? null,
@@ -89,19 +112,19 @@ export async function createAllocation(
   allocatedQuantity: number,
   userId: string,
 ) {
-  const { error } = await (supabase as any).rpc("create_allocation", {
+  const { error } = await rpc("create_allocation", {
     p_event_id: eventId,
     p_campaign_id: campaignId,
     p_quantity: allocatedQuantity,
     p_user_id: userId,
   })
   if (error) {
-    const { error: insertError } = await (supabase as any).from("allocations").insert({
+    const { error: insertError } = await supabase.from("allocations").insert({
       event_id: eventId,
       campaign_id: campaignId,
       allocated_quantity: allocatedQuantity,
       approved_by: userId,
-    })
+    } as never)
     if (insertError) throw insertError
   }
 }
@@ -112,21 +135,21 @@ export async function createShipment(
   trackingCode: string,
   items: Array<{ product_id: string; quantity: number }>,
 ) {
-  const { error } = await (supabase as any).rpc("create_shipment", {
+  const { error } = await rpc("create_shipment", {
     p_event_id: eventId,
     p_allocation_id: allocationId,
     p_tracking_code: trackingCode,
     p_items: JSON.stringify(items),
   })
   if (error) {
-    const { data: shipment, error: shipmentError } = await (supabase as any)
+    const { data: shipment, error: shipmentError } = await supabase
       .from("shipments")
       .insert({
         event_id: eventId,
         allocation_id: allocationId,
         tracking_code: trackingCode,
         status: "PREPARING",
-      })
+      } as never)
       .select()
       .single()
 
@@ -139,13 +162,13 @@ export async function createShipment(
       quantity: item.quantity,
     }))
 
-    const { error: itemsError } = await (supabase as any).from("shipment_items").insert(shipmentItems)
+    const { error: itemsError } = await supabase.from("shipment_items").insert(shipmentItems as never)
     if (itemsError) throw itemsError
   }
 }
 
 export async function updateShipmentStatus(shipmentId: string, status: string) {
-  const { error } = await (supabase as any).rpc("update_shipment_status", {
+  const { error } = await rpc("update_shipment_status", {
     p_shipment_id: shipmentId,
     p_status: status,
   })
@@ -156,9 +179,9 @@ export async function updateShipmentStatus(shipmentId: string, status: string) {
     } else if (status === "DELIVERED") {
       update.delivered_at = new Date().toISOString()
     }
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from("shipments")
-      .update(update)
+      .update(update as never)
       .eq("id", shipmentId)
     if (updateError) throw updateError
   }
@@ -169,14 +192,14 @@ export async function deliverShipment(shipmentId: string) {
 }
 
 export async function reportProblem(shipmentId: string, description: string) {
-  const { error } = await (supabase as any).rpc("report_problem", {
+  const { error } = await rpc("report_problem", {
     p_shipment_id: shipmentId,
     p_description: description,
   })
   if (error) {
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from("shipments")
-      .update({ status: "PROBLEM", problem_description: description })
+      .update({ status: "PROBLEM", problem_description: description } as never)
       .eq("id", shipmentId)
     if (updateError) throw updateError
   }
@@ -193,7 +216,7 @@ export async function verifyContent(
   },
   comment?: string,
 ) {
-  const { error } = await (supabase as any).rpc("verify_content", {
+  const { error } = await rpc("verify_content", {
     p_ugc_content_id: ugcContentId,
     p_user_id: userId,
     p_visibility_score: scores.visibility_score ?? null,
@@ -203,7 +226,7 @@ export async function verifyContent(
     p_comment: comment ?? null,
   })
   if (error) {
-    const { error: checkError } = await (supabase as any)
+    const { error: checkError } = await supabase
       .from("content_verifications")
       .select("id")
       .eq("ugc_content_id", ugcContentId)
@@ -221,9 +244,9 @@ export async function verifyContent(
       comment: comment ?? null,
     }
 
-    const { error: upsertError } = await (supabase as any)
+    const { error: upsertError } = await supabase
       .from("content_verifications")
-      .upsert(verificationData, { onConflict: "ugc_content_id" })
+      .upsert(verificationData as never, { onConflict: "ugc_content_id" })
 
     if (upsertError) throw upsertError
   }

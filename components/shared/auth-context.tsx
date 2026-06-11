@@ -43,38 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true)
   const supabase = createClient()
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        loadProfile(session.user.id)
-      }
-      
-      setLoading(false)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setSession(newSession)
-      setUser(newSession?.user ?? null)
-      
-      if (newSession?.user) {
-        await loadProfile(newSession.user.id)
-      } else {
-        setProfile(null)
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [supabase])
-
   async function loadProfile(userId: string) {
     try {
       const { data, error } = await supabase
@@ -90,6 +58,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(null)
     }
   }
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+
+      if (session?.user) {
+        loadProfile(session.user.id)
+      }
+
+      setLoading(false)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setSession(newSession)
+      setUser(newSession?.user ?? null)
+
+      if (newSession?.user) {
+        await loadProfile(newSession.user.id)
+      } else {
+        setProfile(null)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase])
 
   async function signIn(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({

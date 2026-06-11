@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       { auth: { persistSession: false } }
     )
 
-    await (admin as any).from("email_logs").insert({
+    await admin.from("email_logs").insert({
       event_id,
       recipient_email,
       recipient_type: recipient_type ?? "APPLICANT",

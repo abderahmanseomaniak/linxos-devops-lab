@@ -3,9 +3,7 @@ import type {
   WorkflowState,
   WorkflowStateRow,
   WorkflowHistory,
-  WorkflowHistoryRow,
   WorkflowHistoryInsert,
-  WorkflowCode,
 } from "@/types/workflow.types"
 
 export const TRANSITIONS_MAP: Record<string, string[]> = {
@@ -53,7 +51,7 @@ async function transition(
   comment?: string
 ): Promise<WorkflowHistory> {
   // 1. Get current event state
-  const { data: event, error: eventError } = await (supabase as any)
+  const { data: event, error: eventError } = await supabase
     .from("events")
     .select("state_id, state:workflow_states(*)")
     .eq("id", eventId)
@@ -62,21 +60,22 @@ async function transition(
   if (eventError) throw eventError
   if (!event) throw new Error("Event not found")
 
-  const oldStateId = event.state_id
-  const currentState = event.state as WorkflowStateRow | null
+  const ev = event as { state_id: string | null; state: WorkflowStateRow | null }
+  const oldStateId = ev.state_id
+  const currentState = ev.state
 
   // 2. Validate transition is allowed
   if (currentState) {
     const validNextCodes = TRANSITIONS_MAP[currentState.code] ?? []
-    const { data: newState } = await (supabase as any)
+    const { data: newState } = await supabase
       .from("workflow_states")
       .select("code")
       .eq("id", newStateId)
       .single()
 
-    if (newState && !validNextCodes.includes(newState.code)) {
+    if (newState && !validNextCodes.includes((newState as { code: string }).code)) {
       throw new Error(
-        `Transition from ${currentState.code} to ${newState.code} is not allowed`
+        `Transition from ${currentState.code} to ${(newState as { code: string }).code} is not allowed`
       )
     }
   }
@@ -90,9 +89,9 @@ async function transition(
     comment: comment ?? null,
   }
 
-  const { data: historyEntry, error: historyError } = await (supabase as any)
+  const { data: historyEntry, error: historyError } = await supabase
     .from("workflow_history")
-    .insert(historyInsert)
+    .insert(historyInsert as never)
     .select(
       `
       *,
@@ -106,10 +105,9 @@ async function transition(
   if (historyError) throw historyError
 
   // 4. Update events.state_id
-  const { error: updateError } = await (supabase as any)
+  const { error: updateError } = await supabase
     .from("events")
-    .update({ state_id: newStateId })
-    .eq("id", eventId)
+    .update({ state_id: newStateId } as never)
     .eq("id", eventId)
 
   if (updateError) throw updateError

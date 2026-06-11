@@ -9,8 +9,6 @@ import type {
   DriveFolderInsert,
   DriveFolderUpdate,
   EventMetric,
-  EventMetricInsert,
-  EventMetricUpdate,
 } from "@/types/ugc.types"
 
 // ── UGC Contents ─────────────────────────────────
@@ -183,14 +181,14 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
       ? Math.round(((totalLikes + totalComments) / totalViews) * 10000) / 100
       : 0
 
-  const { data: existing } = await (supabase as any)
+  const { data: existing } = await supabase
     .from("event_metrics")
     .select("id")
     .eq("event_id", eventId)
     .single() as { data: { id: string } | null }
 
   if (existing) {
-    const { data: updated, error: updateError } = await (supabase as any)
+    const { data: updated, error: updateError } = await supabase
       .from("event_metrics")
       .update({
         total_views: totalViews,
@@ -198,7 +196,7 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
         total_comments: totalComments,
         content_count: contentCount,
         engagement_rate: engagementRate,
-      })
+      } as never)
       .eq("id", existing.id)
       .select("*")
       .single()
@@ -206,7 +204,7 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
     if (updateError) throw updateError
     return updated as EventMetric
   } else {
-    const { data: created, error: insertError } = await (supabase as any)
+    const { data: created, error: insertError } = await supabase
       .from("event_metrics")
       .insert({
         event_id: eventId,
@@ -215,7 +213,7 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
         total_comments: totalComments,
         content_count: contentCount,
         engagement_rate: engagementRate,
-      })
+      } as never)
       .select("*")
       .single()
 

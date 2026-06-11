@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -27,16 +27,6 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
   const [description, setDescription] = useState(product?.description ?? "")
   const [isActive, setIsActive] = useState(product?.is_active ?? true)
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!open) return
-    setName(product?.name ?? "")
-    setCategoryId(product?.category_id ?? "")
-    setDescription(product?.description ?? "")
-    setIsActive(product?.is_active ?? true)
-  }, [product, open])
-  /* eslint-enable react-hooks/set-state-in-effect */
-
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")
     if (!categoryId) return toast.error("La catégorie est requise")
@@ -46,6 +36,7 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <div key={String(open)}>
         <SheetHeader className="mb-6">
           <SheetTitle>{product ? "Modifier" : "Nouveau"} produit</SheetTitle>
           <SheetDescription>
@@ -79,6 +70,7 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
           <Button className="mt-2" onClick={handleSubmit}>
             {product ? "Mettre à jour" : "Créer"}
           </Button>
+        </div>
         </div>
       </SheetContent>
     </Sheet>

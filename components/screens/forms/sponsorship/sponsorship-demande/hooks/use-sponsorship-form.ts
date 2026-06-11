@@ -38,6 +38,15 @@ export type SponsorshipFormApi = {
   submissionError: string | null
   result: SubmissionResult
   reset: () => void
+  otpDialogOpen: boolean
+  otpValue: string
+  otpError: string | null
+  otpLoading: boolean
+  otpVerified: boolean
+  onOtpValueChange: (value: string) => void
+  onOtpVerify: () => void
+  onOtpClose: () => void
+  onOtpResend: () => void
 }
 
 export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
@@ -55,6 +64,12 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
   const [submitting, setSubmitting] = useState(false)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [result, setResult] = useState<SubmissionResult>(null)
+
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false)
+  const [otpValue, setOtpValue] = useState("")
+  const [otpError, setOtpError] = useState<string | null>(null)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpVerified, setOtpVerified] = useState(false)
 
   const uploadFile = useCallback(async (
     file: File,
@@ -139,7 +154,7 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
       const rpcData = trackedData
 
       // ── UGC Profiles ──
-      const ugcPromises: Promise<unknown>[] = []
+      const ugcPromises: unknown[] = []
 
       for (const ambassadeur of values.ambassadeurs ?? []) {
         if (ambassadeur.url) {
@@ -148,11 +163,11 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
           const tiktokUrl = ambassadeur.url.includes("tiktok")
             ? ambassadeur.url : null
           ugcPromises.push(
-            (supabase as any).from("application_ugc_profiles").insert({
+            supabase.from("application_ugc_profiles" as never).insert({
               application_form_id: rpcData.application_form_id,
               instagram_url: instagramUrl ?? (!tiktokUrl ? ambassadeur.url : null),
               tiktok_url: tiktokUrl,
-            })
+            } as never)
           )
         }
       }
@@ -160,7 +175,7 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
       for (const influencer of values.influencers ?? []) {
         if (influencer.nom || influencer.instagram || influencer.tiktok) {
           ugcPromises.push(
-            (supabase as any).from("application_ugc_profiles").insert({
+            supabase.from("application_ugc_profiles" as never).insert({
               application_form_id: rpcData.application_form_id,
               full_name: influencer.nom || null,
               instagram_url: influencer.instagram || null,
@@ -168,7 +183,7 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
               followers_count: Number(influencer.nbAbonnes) || null,
               content_type: influencer.typeContenu || null,
               available_for_shooting: influencer.disponibleTournage || false,
-            })
+            } as never)
           )
         }
       }
@@ -192,12 +207,12 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
 
       const uploadPromises = fileEntries.map(async ({ file, type }) => {
         const fileUrl = await uploadFile(file, rpcData.event_id, type)
-        await (supabase as any).from("event_attachments").insert({
+        await supabase.from("event_attachments").insert({
           event_id: rpcData.event_id,
           file_type: type,
           file_url: fileUrl,
           file_name: file.name,
-        })
+        } as never)
       })
 
       await Promise.allSettled(uploadPromises)
@@ -227,15 +242,95 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
     }
   }, [form, uploadFile])
 
+  const handleOtpClose = useCallback(() => {
+    setOtpDialogOpen(false)
+    setOtpValue("")
+    setOtpError(null)
+  }, [])
+
+  const handleSendOtp = useCallback(async () => {
+    const email = form.getValues("email")
+    if (!email) return
+
+    setOtpLoading(true)
+    setOtpError(null)
+
+    try {
+      const res = await fetch("/api/send-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur d'envoi")
+      }
+    } catch (err) {
+      console.error("[send-verification]", err)
+      setOtpError(err instanceof Error ? err.message : "Erreur d'envoi du code")
+    } finally {
+      setOtpLoading(false)
+    }
+  }, [form])
+
+  const handleOtpResend = useCallback(async () => {
+    await handleSendOtp()
+  }, [handleSendOtp])
+
+  const handleVerifyOtp = useCallback(async () => {
+    const email = form.getValues("email")
+    if (!email || otpValue.length < 6) return
+
+    setOtpLoading(true)
+    setOtpError(null)
+
+    try {
+      const res = await fetch("/api/verify-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code: otpValue }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Code invalide")
+      }
+
+      setOtpVerified(true)
+      setOtpDialogOpen(false)
+      setOtpValue("")
+
+      const values = form.getValues()
+      doSubmit(values)
+    } catch (err) {
+      console.error("[verify-code]", err)
+      setOtpError(err instanceof Error ? err.message : "Code invalide")
+    } finally {
+      setOtpLoading(false)
+    }
+  }, [form, otpValue, doSubmit])
+
   const submit = useCallback(() => {
-    const values = form.getValues()
-    doSubmit(values)
-  }, [form, doSubmit])
+    const email = form.getValues("email")
+    if (!email) return
+
+    setOtpValue("")
+    setOtpError(null)
+    setOtpDialogOpen(true)
+    handleSendOtp()
+  }, [form, handleSendOtp])
 
   const reset = useCallback(() => {
     form.reset(defaultSponsorshipDemande1Values)
     setResult(null)
     setSubmissionError(null)
+    setOtpVerified(false)
+    setOtpValue("")
+    setOtpError(null)
+    setOtpDialogOpen(false)
     setStep(1)
   }, [form, setStep])
 
@@ -255,5 +350,14 @@ export function useSponsorshipForm(totalSteps: number): SponsorshipFormApi {
     submissionError,
     result,
     reset,
+    otpDialogOpen,
+    otpValue,
+    otpError,
+    otpLoading,
+    otpVerified,
+    onOtpValueChange: setOtpValue,
+    onOtpVerify: handleVerifyOtp,
+    onOtpClose: handleOtpClose,
+    onOtpResend: handleOtpResend,
   }
 }

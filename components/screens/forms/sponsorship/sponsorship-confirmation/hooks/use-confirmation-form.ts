@@ -31,6 +31,15 @@ export type ConfirmationFormApi = {
   submissionError: string | null
   result: { confirmation_id: string; event_id: string } | null
   reset: () => void
+  otpDialogOpen: boolean
+  otpValue: string
+  otpError: string | null
+  otpLoading: boolean
+  otpVerified: boolean
+  onOtpValueChange: (value: string) => void
+  onOtpVerify: () => void
+  onOtpClose: () => void
+  onOtpResend: () => void
 }
 
 export function useConfirmationForm(
@@ -52,6 +61,12 @@ export function useConfirmationForm(
   const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [result, setResult] = useState<{ confirmation_id: string; event_id: string } | null>(null)
 
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false)
+  const [otpValue, setOtpValue] = useState("")
+  const [otpError, setOtpError] = useState<string | null>(null)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpVerified, setOtpVerified] = useState(false)
+
   const doSubmit = useCallback(
     async (values: ConfirmationFormValues) => {
       if (!trackingCode) {
@@ -68,7 +83,7 @@ export function useConfirmationForm(
 
         // Try RPC first
         try {
-          const { data, error } = await (supabase as any).rpc("submit_confirmation_form", {
+          const rpcArgs = {
             p_tracking_code: trackingCode,
             p_official_instagram: values.instagramUrl,
             p_confirmed_cans: values.cansConfirmed,
@@ -83,7 +98,8 @@ export function useConfirmationForm(
             p_commitment: values.commitUgc,
             p_comment: values.comment || null,
             p_drive_url: values.driveUrl || null,
-          })
+          } as const
+          const { data, error } = await (supabase.rpc("submit_confirmation_form", rpcArgs as never) as unknown as Promise<{ data: { success?: boolean; confirmation_id?: string; event_id?: string } | null; error: { message: string } | null }>)
 
           if (!error && data?.success) {
             confirmationId = (data as { confirmation_id: string }).confirmation_id
@@ -138,11 +154,11 @@ export function useConfirmationForm(
           const ugcPromises = values.ugcUrls
             .filter((u) => u.url?.trim())
             .map((u) =>
-              (supabase as any).from("confirmation_ugc_profiles").insert({
+              supabase.from("confirmation_ugc_profiles" as never).insert({
                 confirmation_form_id: confirmationId,
                 instagram_url: u.url.includes("instagram") ? u.url : null,
                 tiktok_url: u.url.includes("tiktok") ? u.url : null,
-              })
+              } as never)
             )
           await Promise.allSettled(ugcPromises)
         }
@@ -167,15 +183,95 @@ export function useConfirmationForm(
     [trackingCode]
   )
 
+  const handleOtpClose = useCallback(() => {
+    setOtpDialogOpen(false)
+    setOtpValue("")
+    setOtpError(null)
+  }, [])
+
+  const handleSendOtp = useCallback(async () => {
+    const email = form.getValues("email")
+    if (!email) return
+
+    setOtpLoading(true)
+    setOtpError(null)
+
+    try {
+      const res = await fetch("/api/send-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur d'envoi")
+      }
+    } catch (err) {
+      console.error("[send-verification]", err)
+      setOtpError(err instanceof Error ? err.message : "Erreur d'envoi du code")
+    } finally {
+      setOtpLoading(false)
+    }
+  }, [form])
+
+  const handleOtpResend = useCallback(async () => {
+    await handleSendOtp()
+  }, [handleSendOtp])
+
+  const handleVerifyOtp = useCallback(async () => {
+    const email = form.getValues("email")
+    if (!email || otpValue.length < 6) return
+
+    setOtpLoading(true)
+    setOtpError(null)
+
+    try {
+      const res = await fetch("/api/verify-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code: otpValue }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Code invalide")
+      }
+
+      setOtpVerified(true)
+      setOtpDialogOpen(false)
+      setOtpValue("")
+
+      const values = form.getValues()
+      doSubmit(values)
+    } catch (err) {
+      console.error("[verify-code]", err)
+      setOtpError(err instanceof Error ? err.message : "Code invalide")
+    } finally {
+      setOtpLoading(false)
+    }
+  }, [form, otpValue, doSubmit])
+
   const submit = useCallback(() => {
-    const values = form.getValues()
-    doSubmit(values)
-  }, [form, doSubmit])
+    const email = form.getValues("email")
+    if (!email) return
+
+    setOtpValue("")
+    setOtpError(null)
+    setOtpDialogOpen(true)
+    handleSendOtp()
+  }, [form, handleSendOtp])
 
   const reset = useCallback(() => {
     form.reset(defaultConfirmationValues)
     setResult(null)
     setSubmissionError(null)
+    setOtpVerified(false)
+    setOtpValue("")
+    setOtpError(null)
+    setOtpDialogOpen(false)
     setStep(1)
   }, [form, setStep])
 
@@ -195,5 +291,14 @@ export function useConfirmationForm(
     submissionError,
     result,
     reset,
+    otpDialogOpen,
+    otpValue,
+    otpError,
+    otpLoading,
+    otpVerified,
+    onOtpValueChange: setOtpValue,
+    onOtpVerify: handleVerifyOtp,
+    onOtpClose: handleOtpClose,
+    onOtpResend: handleOtpResend,
   }
 }

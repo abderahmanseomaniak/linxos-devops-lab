@@ -4,7 +4,6 @@
 import { z } from 'zod';
 import type { Campaign } from './campaigns.types';
 import type { Event } from './events.types';
-import type { Profile } from './profiles.types';
 
 // ── Scoring Profile ───────────────────────────
 export interface ScoringProfileRow {

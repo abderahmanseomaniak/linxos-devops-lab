@@ -10,11 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LogDetailsSheet } from "../sheet/log-details-sheet"
-import type { ActivityLog } from "@/types/logs"
+import type { LogEntry } from "@/types/logs"
 
 interface RowActionsProps {
   row: {
-    original: ActivityLog
+    original: LogEntry
   }
 }
 

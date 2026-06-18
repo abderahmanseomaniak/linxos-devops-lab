@@ -16,7 +16,7 @@ interface ShipmentsActions {
   fetchShipments: (filters?: Parameters<typeof shipmentsService.listShipments>[0]) => Promise<void>
   fetchShipmentById: (id: string) => Promise<void>
   createShipment: (data: Parameters<typeof shipmentsService.createShipment>[0]) => Promise<Shipment | null>
-  updateShipmentStatus: (id: string, status: ShipmentStatus, extra?: { shipped_at?: string; delivered_at?: string; problem_description?: string }) => Promise<void>
+  updateShipmentStatus: (id: string, status: ShipmentStatus, extra?: { shipped_at?: string; delivered_at?: string; problem_description?: string }) => Promise<Shipment>
   deleteShipment: (id: string) => Promise<void>
   addShipmentItem: (data: Parameters<typeof shipmentsService.addShipmentItem>[0]) => Promise<void>
   addDeliveryProof: (data: Parameters<typeof shipmentsService.addDeliveryProof>[0]) => Promise<void>
@@ -115,11 +115,10 @@ export const useShipmentsStore = create<ShipmentsStore>((set) => ({
         selectedShipment: state.selectedShipment?.id === id ? updated : state.selectedShipment,
         loading: false,
       }))
+      return updated
     } catch (err) {
-      set({
-        error: err instanceof Error ? err.message : "Failed to update shipment status",
-        loading: false,
-      })
+      set({ loading: false })
+      throw err // Let callers handle the error
     }
   },
 

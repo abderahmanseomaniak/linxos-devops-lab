@@ -1,6 +1,6 @@
 "use client"
 
-import NextImage from "next/image"
+import Image from "next/image"
 import { TrackSearch } from "@/components/screens/track/components/track-search"
 import { TrackCard } from "@/components/screens/track/components/track-card"
 import { TrackTimeline } from "@/components/screens/track/components/track-timeline"
@@ -11,22 +11,24 @@ import { Typography } from "@/components/ui/typography"
 
 const LOGO_WRAPPER = (
   <div className="mb-6 flex justify-center">
-    <NextImage
-      src="/assets/logos/logo-texte-noir.png"
-      alt="LinxOS Logo"
-      width={383}
-      height={95}
-      sizes="140px"
-      className="h-8 w-auto dark:hidden"
-    />
-    <NextImage
-      src="/assets/logos/logo-texte-blanc.png"
-      alt="LinxOS Logo"
-      width={383}
-      height={95}
-      sizes="140px"
-      className="hidden dark:block h-8 w-auto"
-    />
+    <div className="h-8 dark:hidden">
+      <Image
+        src="/assets/logos/logo-texte-noir.png"
+        alt="LinxOS Logo"
+        width={392}
+        height={148}
+        className="h-full w-auto"
+      />
+    </div>
+    <div className="h-8 hidden dark:block">
+      <Image
+        src="/assets/logos/logo-texte-blanc.png"
+        alt="LinxOS Logo"
+        width={392}
+        height={148}
+        className="h-full w-auto"
+      />
+    </div>
   </div>
 )
 

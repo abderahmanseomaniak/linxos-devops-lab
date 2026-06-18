@@ -1,3 +1,8 @@
+function getBaseUrl(): string {
+  if (typeof window !== "undefined") return window.location.origin
+  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+}
+
 async function sendEmail(params: {
   eventId: string
   recipientEmail: string
@@ -6,7 +11,8 @@ async function sendEmail(params: {
   recipientType?: string
 }) {
   try {
-    const res = await fetch("/api/send-email", {
+    const baseUrl = getBaseUrl()
+    const res = await fetch(`${baseUrl}/api/send-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -38,7 +44,7 @@ export function sendTrackingCodeEmail(eventId: string, email: string, trackingCo
       `Voici votre code de suivi : ${trackingCode}`,
       ``,
       `Vous pouvez suivre l'état de votre demande à tout moment sur :`,
-      `${typeof window !== "undefined" ? window.location.origin : ""}/track?code=${trackingCode}`,
+      `${getBaseUrl()}/track?code=${trackingCode}`,
       ``,
       `Nous vous recontacterons dès que votre dossier sera examiné.`,
       ``,
@@ -59,7 +65,7 @@ export function sendConfirmationLinkEmail(eventId: string, email: string, tracki
       ``,
       `Votre événement a été approuvé par notre équipe.`,
       `Veuillez remplir le formulaire de confirmation pour finaliser votre dossier :`,
-      `${typeof window !== "undefined" ? window.location.origin : ""}/forms/sponsorship/sponsorship-confirmation?code=${trackingCode}`,
+      `${getBaseUrl()}/forms/sponsorship/sponsorship-confirmation?code=${trackingCode}`,
       ``,
       `Code de suivi : ${trackingCode}`,
       ``,

@@ -8,15 +8,22 @@ export interface UGCNote {
 }
 
 export interface UGCCreator {
-  id: number
+  id: string
   name: string
   instagram?: string
   tiktok?: string
   followers: number
 }
 
+export interface UgcProfileLink {
+  id: string
+  instagram_url: string | null
+  tiktok_url: string | null
+}
+
 export interface UGCEvent {
-  id: number
+  id: string
+  eventId: string
   eventName: string
   clubName: string
   city: string
@@ -26,6 +33,7 @@ export interface UGCEvent {
   driveLink?: string
   contentStatus: ContentStatus
   creators: UGCCreator[]
+  confirmationUgcProfiles: UgcProfileLink[]
   notes: UGCNote[]
   contentReceivedAt?: string
   editingStartedAt?: string
@@ -50,8 +58,8 @@ export interface ContentDetailsModalProps {
   event: UGCEvent | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onStatusChange: (id: number, newStatus: ContentStatus) => void
-  onAddNote: (id: number, content: string) => void
+  onStatusChange: (id: string, newStatus: ContentStatus) => void
+  onAddNote: (id: string, content: string) => void
   onOpenDrive: (link?: string) => void
 }
 

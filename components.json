@@ -23,6 +23,8 @@
   },
   "registries": {
     "@tailark": "https://tailark.com/r/{name}.json",
-    "@bundui": "https://bundui.io/r/{name}.json"
+    "@bundui": "https://bundui.io/r/{name}.json",
+    "@watermelon": "https://registry.watermelon.sh/r/{name}.json",
+    "@shadcn-space": "https://shadcnspace.com/r/{name}.json"
   }
 }

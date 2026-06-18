@@ -82,6 +82,12 @@ export interface EventDetail {
     recommendation: string | null
     justification: string | null
     model_used: string | null
+    risk_level: string | null
+    strengths: unknown[] | null
+    weaknesses: unknown[] | null
+    suggested_allocation: Record<string, number> | null
+    status: string
+    error_message: string | null
     created_at: string
   } | null
   allocations: Array<{
@@ -163,11 +169,11 @@ export interface EventsOverviewStats {
 
 export interface EventListFilters {
   search?: string
-  workflow_code?: string
+  workflow_code?: string[]
   campaign_id?: string
   city?: string
   confirmation_completed?: boolean
-  shipment_status?: string
+  shipment_status?: string[]
   drive_submitted?: boolean
   page?: number
   pageSize?: number

@@ -25,10 +25,8 @@ import { useFileUpload } from "@/hooks/use-file-upload"
 import type { SponsorshipDemande1Values } from "../lib/schema"
 
 function CachetUpload({
-  value,
   onChange,
 }: {
-  value: File | null | undefined
   onChange: (v: File | null) => void
 }) {
   const [{ files }, { removeFile, openFileDialog, getInputProps }] = useFileUpload({
@@ -54,7 +52,7 @@ function CachetUpload({
         <div className="relative inline-block">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={openFileDialog}
             aria-haspopup="dialog"
@@ -193,7 +191,7 @@ export function CommitmentStep() {
                 <FieldLabel htmlFor="file-cachet">
                   Cachet de l&apos;établissement (si applicable)
                 </FieldLabel>
-                <CachetUpload value={field.value} onChange={field.onChange} />
+                <CachetUpload onChange={field.onChange} />
                 {fieldState.invalid && <FieldDescription>{fieldState.error?.message}</FieldDescription>}
               </Field>
             )}

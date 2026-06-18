@@ -3,22 +3,42 @@ import type { EventApplication, EventStatus, DeliveryStatus } from "@/types/even
 
 const STATUS_MAP: Record<string, EventStatus> = {
   SUBMITTED: "Pending",
-  UNDER_REVIEW: "Pending",
-  APPROVED: "Accepted",
-  CONFIRMED: "Accepted",
-  SHIPPED: "Accepted",
-  COMPLETED: "Accepted",
+  SCORED: "Pending",
+  NEEDS_CLARIFICATION: "Pending",
   REJECTED: "Rejected",
+  VALIDATED: "Accepted",
+  CONFIRMATION_SENT: "Accepted",
+  CONFIRMED: "Accepted",
+  ALLOCATED: "Accepted",
+  PREPARING_SHIPMENT: "Accepted",
+  IN_DELIVERY: "Accepted",
+  DELIVERED: "Accepted",
+  UGC_PENDING: "Accepted",
+  CONTENT_REVIEWED: "Accepted",
+  REPORTED: "Pending",
+  CLOSED: "Accepted",
 }
 
 const DELIVERY_MAP: Record<string, DeliveryStatus> = {
   SUBMITTED: "Non livrée",
-  UNDER_REVIEW: "Non livrée",
-  APPROVED: "Non livrée",
-  CONFIRMED: "Non livrée",
-  SHIPPED: "Non livrée",
-  COMPLETED: "Livrée",
+  SCORED: "Non livrée",
+  NEEDS_CLARIFICATION: "Non livrée",
   REJECTED: "Non livrée",
+  VALIDATED: "Non livrée",
+  CONFIRMATION_SENT: "Non livrée",
+  CONFIRMED: "Non livrée",
+  ALLOCATED: "Non livrée",
+  PREPARING_SHIPMENT: "Non livrée",
+  IN_DELIVERY: "Non livrée",
+  DELIVERED: "Livrée",
+  UGC_PENDING: "Non livrée",
+  CONTENT_REVIEWED: "Non livrée",
+  REPORTED: "Non livrée",
+  CLOSED: "Livrée",
+}
+
+function isEventCompleted(code: string): boolean {
+  return code === "DELIVERED" || code === "CLOSED"
 }
 
 export function eventToApplication(
@@ -70,7 +90,7 @@ export function eventToApplication(
     quantity: appForm?.expected_attendance ?? undefined,
     status: STATUS_MAP[workflowCode] ?? "Pending",
     deliveryStatus: DELIVERY_MAP[workflowCode] ?? "Non livrée",
-    isRealized: workflowCode === "COMPLETED",
+    isRealized: isEventCompleted(workflowCode),
     step1,
     step2,
     step3,

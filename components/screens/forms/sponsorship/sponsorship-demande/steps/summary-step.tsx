@@ -34,7 +34,7 @@ function SummarySection({ title, step, children, onEdit }: { title: string; step
         <CardTitle>{title}</CardTitle>
         <Button
           type="button"
-          variant="outline"
+          variant="secondary"
           size="sm"
           onClick={() => onEdit(step)}
         >

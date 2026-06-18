@@ -1,20 +1,19 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ContentCard } from "@/components/screens/content/content-card"
 import { ContentDetailsModal } from "@/components/screens/content/content-details-modal"
 import { Typography } from "@/components/ui/typography"
-import { UGCEvent, ContentStatus } from "@/types/content"
-import { IconSearch } from "@tabler/icons-react"
-import contentData from "@/data/content.json"
-
-const initialEvents: UGCEvent[] = contentData as UGCEvent[]
+import { useMountEffect } from "@/hooks/use-mount-effect"
+import { useAutoRefresh } from "@/hooks/use-auto-refresh"
+import { useRefreshStore } from "@/stores/refresh.store"
+import { contentService } from "@/services/content.service"
+import type { UGCEvent, ContentStatus } from "@/types/content"
 
 const statusTabs = [
-  { value: "all", label: "All" },
   { value: "waiting", label: "Waiting" },
   { value: "received", label: "Received" },
   { value: "editing", label: "Editing" },
@@ -45,28 +44,43 @@ function canTransitionTo(newStatus: ContentStatus, currentStatus: ContentStatus)
 }
 
 export default function ContentDashboardPage() {
-  const [events, setEvents] = useState<UGCEvent[]>(initialEvents)
+  const [events, setEvents] = useState<UGCEvent[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [cityFilter, setCityFilter] = useState("all")
-  const [activeTab, setActiveTab] = useState("all")
+  const [activeTab, setActiveTab] = useState("waiting")
   const [selectedEvent, setSelectedEvent] = useState<UGCEvent | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const noteCounterRef = useRef(100)
+  const [loading, setLoading] = useState(true)
+  const noteCounterRef = useRef(1)
+  const triggerRefresh = useRefreshStore((s) => s.triggerRefresh)
+
+  const fetchEvents = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await contentService.listContentDashboardEvents()
+      setEvents(data)
+    } catch {
+      setEvents([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useMountEffect(fetchEvents)
+  useAutoRefresh("events", fetchEvents)
 
   const cities = [...new Set(events.map((e) => e.city))].toSorted()
 
   const filteredEvents = (() => {
     let filtered = events
 
-    if (activeTab !== "all") {
-      const statusMap: Record<string, ContentStatus> = {
-        waiting: "Waiting",
-        received: "Received",
-        editing: "Editing",
-        posted: "Posted",
-      }
-      filtered = filtered.filter((e) => e.contentStatus === statusMap[activeTab])
+    const statusMap: Record<string, ContentStatus> = {
+      waiting: "Waiting",
+      received: "Received",
+      editing: "Editing",
+      posted: "Posted",
     }
+    filtered = filtered.filter((e) => e.contentStatus === statusMap[activeTab])
 
     if (searchQuery) {
       filtered = filtered.filter(
@@ -86,32 +100,32 @@ export default function ContentDashboardPage() {
 
   const statusCounts = getStatusCounts(events)
 
-  const handleStatusChange = (id: number, newStatus: ContentStatus) => {
+  const handleStatusChange = async (id: string, newStatus: ContentStatus) => {
+    const event = events.find((e) => e.id === id)
+    if (!event) return
+    if (!canTransitionTo(newStatus, event.contentStatus)) return
+
+    const updates: Partial<UGCEvent> = { contentStatus: newStatus }
+    if (newStatus === "Received" && !event.contentReceivedAt) {
+      updates.contentReceivedAt = new Date().toISOString()
+    }
+    if (newStatus === "Editing" && !event.editingStartedAt) {
+      updates.editingStartedAt = new Date().toISOString()
+    }
+    if (newStatus === "Posted" && !event.postedAt) {
+      updates.postedAt = new Date().toISOString()
+    }
+
     setEvents((prev) =>
-      prev.map((event) => {
-        if (event.id !== id) return event
-
-        if (!canTransitionTo(newStatus, event.contentStatus)) {
-          return event
-        }
-
-        const updates: Partial<UGCEvent> = { contentStatus: newStatus }
-
-        if (newStatus === "Received" && !event.contentReceivedAt) {
-          updates.contentReceivedAt = new Date().toISOString()
-        }
-
-        if (newStatus === "Editing" && !event.editingStartedAt) {
-          updates.editingStartedAt = new Date().toISOString()
-        }
-
-        if (newStatus === "Posted" && !event.postedAt) {
-          updates.postedAt = new Date().toISOString()
-        }
-
-        return { ...event, ...updates }
-      })
+      prev.map((ev) => (ev.id === id ? { ...ev, ...updates } : ev))
     )
+
+    try {
+      await contentService.updateContentStatus(event.eventId, newStatus)
+      triggerRefresh("events")
+    } catch {
+      fetchEvents()
+    }
   }
 
   const handleViewDetails = (event: UGCEvent) => {
@@ -119,7 +133,7 @@ export default function ContentDashboardPage() {
     setModalOpen(true)
   }
 
-  const handleAddNote = (id: number, content: string) => {
+  const handleAddNote = (id: string, content: string) => {
     const newNote = {
       id: noteCounterRef.current,
       content,
@@ -142,29 +156,26 @@ export default function ContentDashboardPage() {
   }
 
   const handleOpenDrive = (link?: string) => {
-    if (link) {
-      window.open(link, "_blank")
-    }
+    if (link) window.open(link, "_blank")
   }
 
   return (
     <div className="h-full flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
-        <Typography variant="h2">Content Operations</Typography>
+        <div className="space-y-1">
+          <Typography variant="h3">Content Operations</Typography>
+          <Typography variant="muted">Suivez et gérez le contenu UGC des événements</Typography>
+        </div>
+
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Input
-            className="h-10 pl-9"
-            placeholder="Search events..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div className="absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-muted-foreground pointer-events-none">
-            <IconSearch size={18} />
-          </div>
-        </div>
+        <Input
+          className="h-10 max-w-sm"
+          placeholder="Search events..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
 
         <Select value={cityFilter} onValueChange={setCityFilter}>
           <SelectTrigger className="h-10 w-40">
@@ -182,56 +193,62 @@ export default function ContentDashboardPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <div className="sm:hidden">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              {statusTabs.map((tab) => {
-                const count = tab.value === "all" ? events.length : tab.value === "waiting" ? statusCounts.waiting : tab.value === "received" ? statusCounts.received : tab.value === "editing" ? statusCounts.editing : statusCounts.posted
-                return (
-                  <SelectItem key={tab.value} value={tab.value}>
-                    {tab.label} ({count})
-                  </SelectItem>
-                )
-              })}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <TabsList className="hidden sm:flex h-10 gap-1 bg-transparent border-b rounded-none px-0">
-          {statusTabs.map((tab) => {
-            const count = tab.value === "all" ? events.length : tab.value === "waiting" ? statusCounts.waiting : tab.value === "received" ? statusCounts.received : tab.value === "editing" ? statusCounts.editing : statusCounts.posted
-            return (
-              <TabsTrigger key={tab.value} value={tab.value} className="h-9 px-4 rounded-md data-[state=active]:bg-muted">
-                {tab.label} ({count})
-              </TabsTrigger>
-            )
-          })}
-        </TabsList>
-
-        <TabsContent value={activeTab} className="flex-1 mt-6">
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredEvents.map((event) => (
-                <ContentCard
-                  key={event.id}
-                  event={event}
-                  onViewDetails={handleViewDetails}
-                  onOpenDrive={handleOpenDrive}
-                />
-              ))}
-            </div>
-
-            {filteredEvents.length === 0 && (
-              <div className="flex items-center justify-center py-20 text-muted-foreground">
-                <Typography>No events found</Typography>
-              </div>
-            )}
+          <div className="sm:hidden">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusTabs.map((tab) => {
+                  const count = statusCounts[tab.value as keyof typeof statusCounts]
+                  return (
+                    <SelectItem key={tab.value} value={tab.value}>
+                      {tab.label} ({count})
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
           </div>
-        </TabsContent>
-      </Tabs>
+
+          <TabsList className="hidden sm:flex h-10 gap-1 bg-transparent border-b rounded-none px-0">
+            {statusTabs.map((tab) => {
+              const count = statusCounts[tab.value as keyof typeof statusCounts]
+              return (
+                <TabsTrigger key={tab.value} value={tab.value} className="h-9 px-4 rounded-md data-[state=active]:bg-muted">
+                  {tab.label} ({count})
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+
+          <TabsContent value={activeTab} className="flex-1 mt-6">
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="flex items-center justify-center py-20 text-muted-foreground">
+                  <Typography>Loading...</Typography>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {filteredEvents.map((event) => (
+                    <ContentCard
+                      key={event.id}
+                      event={event}
+                      onViewDetails={handleViewDetails}
+                      onOpenDrive={handleOpenDrive}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {!loading && filteredEvents.length === 0 && (
+                <div className="flex items-center justify-center py-20 text-muted-foreground">
+                  <Typography>Aucun événement trouvé</Typography>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
 
       <ContentDetailsModal
         event={selectedEvent}

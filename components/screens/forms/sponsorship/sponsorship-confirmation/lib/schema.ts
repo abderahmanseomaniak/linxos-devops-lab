@@ -9,12 +9,8 @@ const confirmationSchema = z
     eventName: z.string().trim().min(1, "Nom de l'événement requis"),
     city: z.string().trim().min(1, "Ville requise"),
     club: z.string().trim().min(1, "Club / organisation requis"),
-    university: z.string().trim().optional().default(""),
-    instagramUrl: z
-      .string()
-      .trim()
-      .min(1, "URL Instagram requise")
-      .regex(/^https?:\/\/.+/i, "URL Instagram invalide"),
+    university: z.string().trim().min(1, "Université / école requise"),
+    instagramUrl: z.string().optional(),
     reseaux: z.array(z.object({ url: z.string() })).default([{ url: "" }]),
 
     cansConfirmed: z.number().min(0, "Le nombre doit être positif ou nul"),
@@ -27,11 +23,11 @@ const confirmationSchema = z
       .array(z.object({ url: z.string() }))
       .default(Array.from({ length: REQUIRED_UGC }, () => ({ url: "" }))),
 
-    logisticsName: z.string().trim().optional().default(""),
-    logisticsWhatsapp: z.string().trim().optional().default(""),
-    deliveryAddress: z.string().trim().optional().default(""),
-    deliveryDate: z.string().optional().default(""),
-    receptionTime: z.string().optional().default(""),
+    logisticsName: z.string().trim().min(1, "Nom du contact logistique requis"),
+    logisticsWhatsapp: z.string().trim().min(1, "Téléphone logistique requis"),
+    deliveryAddress: z.string().trim().min(1, "Adresse de livraison requise"),
+    deliveryDate: z.string().min(1, "Date de livraison requise"),
+    receptionTime: z.string().min(1, "Heure de réception requise"),
 
     confirmCorrect: z
       .boolean()
@@ -52,7 +48,7 @@ const confirmationSchema = z
     responsibleName: z.string().trim().min(1, "Nom du responsable requis"),
     signature: z.string().trim().min(1, "Signature requise"),
     signatureDate: z.string().min(1, "Date de signature requise"),
-    comment: z.string().trim().optional().default(""),
+    comment: z.string().trim().min(1, "Commentaire requis"),
   })
   .superRefine((data, ctx) => {
     if (data.hasUgc === "yes") {
@@ -61,7 +57,7 @@ const confirmationSchema = z
         if (!url || !/^https?:\/\/.+/i.test(url)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            path: ["ugcUrls", i],
+            path: ["ugcUrls", i, "url"],
             message: "URL requise (doit commencer par http(s)://)",
           })
         }
@@ -99,7 +95,7 @@ export const defaultConfirmationValues: ConfirmationFormValues = {
 }
 
 export const stepFields: Array<Array<keyof ConfirmationFormValues>> = [
-  ["email", "eventName", "city", "club", "university", "instagramUrl", "reseaux"],
+  ["email", "eventName", "city", "club", "university", "reseaux"],
   ["cansConfirmed", "fullName", "whatsappPhone"],
   ["hasUgc", "ugcUrls"],
   ["logisticsName", "logisticsWhatsapp", "deliveryAddress", "deliveryDate", "receptionTime"],

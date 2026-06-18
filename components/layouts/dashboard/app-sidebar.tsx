@@ -21,13 +21,11 @@ import {
   IconClipboardList,
   IconPackage,
   IconChartBar,
-  IconBell,
   IconLogs,
   IconCategory,
   IconGift,
-  IconPhoto,
-  IconUser,
   IconTruckDelivery,
+  IconPhoto,
 } from "@tabler/icons-react"
 import { useAuth } from "@/providers/auth-provider"
 
@@ -41,13 +39,14 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
     { title: "Stocks", href: "/stocks", icon: IconChartBar, group: "Gestion" },
     { title: "Allocations", href: "/allocations", icon: IconClipboardList, group: "Gestion" },
     { title: "Livraison", href: "/logistics", icon: IconTruckDelivery, group: "Gestion" },
-    { title: "UGC", href: "/ugc", icon: IconPhoto, group: "Gestion" },
-    { title: "Reporting", href: "/reporting", icon: IconChartBar, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
+    { title: "Contenu", href: "/content", icon: IconPhoto, group: "Gestion" },
     { title: "Journalisation", href: "/logs", icon: IconLogs, group: "Gestion" },
+    // { title: "UGC", href: "/ugc", icon: IconPhoto, group: "Gestion" },
+    // { title: "Reporting", href: "/reporting", icon: IconChartBar, group: "Gestion" },
+    // { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
     { title: "Configuration", href: "/config", icon: IconSettings, group: "Gestion" },
     { title: "Utilisateurs", href: "/users", icon: IconUsers, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
+    // { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
   SPONSORING_MANAGER: [
     { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
@@ -57,8 +56,9 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
     { title: "Catégories", href: "/categories", icon: IconCategory, group: "Gestion" },
     { title: "Produits", href: "/products", icon: IconPackage, group: "Gestion" },
     { title: "Stocks", href: "/stocks", icon: IconChartBar, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
+    { title: "Livraison", href: "/logistics", icon: IconTruckDelivery, group: "Gestion" },
+    // { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
+    // { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
   LOGISTICS_MANAGER: [
     { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
@@ -68,16 +68,17 @@ const roleMenuConfig: Record<string, Array<{ title: string; href: string; icon: 
     { title: "Allocations", href: "/allocations", icon: IconClipboardList, group: "Gestion" },
     { title: "Livraison", href: "/logistics", icon: IconTruckDelivery, group: "Gestion" },
     { title: "Événements", href: "/events", icon: IconCalendar, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
+    // { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
+    // { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
   CONTENT_MANAGER: [
     { title: "Dashboard", href: "/", icon: IconLayoutDashboard, group: "Général" },
     { title: "Événements", href: "/events", icon: IconCalendar, group: "Gestion" },
-    { title: "UGC", href: "/ugc", icon: IconPhoto, group: "Gestion" },
+    // { title: "UGC", href: "/ugc", icon: IconPhoto, group: "Gestion" },
+    { title: "Contenu", href: "/content", icon: IconPhoto, group: "Gestion" },
     { title: "Campagnes", href: "/campaigns", icon: IconGift, group: "Gestion" },
-    { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
-    { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
+    // { title: "Notifications", href: "/notifications", icon: IconBell, group: "Gestion" },
+    // { title: "Profil", href: "/profile", icon: IconUser, group: "Gestion" },
   ],
 }
 
@@ -100,20 +101,22 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <Image
-                  src="/assets/logos/logo-texte-noir.png"
-                  alt="Logo"
-                  width={128}
-                  height={48}
-                  className="block dark:hidden"
-                />
-                <Image
-                  src="/assets/logos/logo-texte-blanc.png"
-                  alt="Logo"
-                  width={128}
-                  height={48}
-                  className="hidden dark:block"
-                />
+                <div className="w-[165px] h-12 dark:hidden relative">
+                  <Image
+                    src="/assets/logos/logo-texte-noir.png"
+                    alt="Logo"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <div className="w-[165px] h-12 hidden dark:block relative">
+                  <Image
+                    src="/assets/logos/logo-texte-blanc.png"
+                    alt="Logo"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

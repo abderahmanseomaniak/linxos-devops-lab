@@ -1,27 +1,19 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel,
-  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { inventoryService } from "@/services/inventory.service"
 import type { ProductCategory, ProductCategoryInsert, ProductCategoryUpdate } from "@/types/inventory.types"
-import { toast } from "sonner"
-import { IconPlus, IconPencil, IconTrash, IconRefresh } from "@tabler/icons-react"
-import { CategorySheet } from "./sheets/category-sheet"
+import { IconPlus } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
+import { toast } from "sonner"
+import { CategoriesTable, type CategoryListFilters } from "./categories-table"
+import { CategorySheet } from "./sheets/category-sheet"
 
 export function CategoriesPage() {
   const [categories, setCategories] = useState<ProductCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState<CategoryListFilters>({})
   const [editOpen, setEditOpen] = useState(false)
   const [editing, setEditing] = useState<ProductCategory | null>(null)
 
@@ -34,6 +26,14 @@ export function CategoriesPage() {
   }, [])
 
   useEffect(() => { fetch() }, [fetch])
+
+  const handleFilterChange = <K extends keyof CategoryListFilters>(key: K, value: CategoryListFilters[K]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleClearFilters = () => {
+    setFilters({})
+  }
 
   const handleSave = async (data: ProductCategoryInsert | ProductCategoryUpdate) => {
     try {
@@ -61,71 +61,26 @@ export function CategoriesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Typography variant="h1" className="text-xl font-semibold">Catégories</Typography>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="h-8" onClick={fetch}><IconRefresh className="size-3.5" /></Button>
-          <Button className="h-8 text-xs" onClick={() => { setEditing(null); setEditOpen(true) }}>
-            <IconPlus className="size-3.5" /> Nouvelle
-          </Button>
+        <div className="space-y-1">
+          <Typography variant="h3">Catégories</Typography>
+          <Typography variant="muted">Organisez vos produits par catégorie</Typography>
         </div>
+        <Button className="h-8 text-xs" onClick={() => { setEditing(null); setEditOpen(true) }}>
+          <IconPlus className="size-3.5" /> Nouvelle
+        </Button>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-8"><Spinner className="size-6" /></div>
-      ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Active</TableHead>
-                <TableHead>Produits</TableHead>
-                <TableHead className="w-20"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categories.length === 0 ? (
-                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Aucune catégorie</TableCell></TableRow>
-              ) : categories.map((c) => (
-                <TableRow key={c.id}>
-                  <TableCell className="font-medium">{c.name}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{c.description ?? "-"}</TableCell>
-                  <TableCell><Badge variant={c.is_active ? "default" : "secondary"}>{c.is_active ? "Oui" : "Non"}</Badge></TableCell>
-                  <TableCell>{c.products?.length ?? 0}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="size-7" onClick={() => { setEditing(c); setEditOpen(true) }}>
-                        <IconPencil className="size-3.5" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-7 text-destructive">
-                            <IconTrash className="size-3.5" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer ?</AlertDialogTitle>
-                            <AlertDialogDescription>Cette action est irréversible.</AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(c.id)}>Supprimer</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <CategoriesTable
+        data={categories}
+        loading={loading}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onClearFilters={handleClearFilters}
+        onEdit={(c) => { setEditing(c); setEditOpen(true) }}
+        onDelete={handleDelete}
+      />
 
       <CategorySheet open={editOpen} onOpenChange={setEditOpen} category={editing} onSave={handleSave} />
     </div>
   )
 }
-

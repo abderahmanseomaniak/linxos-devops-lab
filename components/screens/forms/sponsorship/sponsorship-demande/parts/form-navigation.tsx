@@ -23,7 +23,7 @@ export function FormNavigation({
   return (
     <div className="flex items-center justify-between">
       {canGoPrev ? (
-        <Button variant="outline" onClick={onPrev} disabled={submitting}>
+        <Button variant="secondary" onClick={onPrev} disabled={submitting}>
           <IconArrowLeft data-icon="inline-start" />
           Retour
         </Button>

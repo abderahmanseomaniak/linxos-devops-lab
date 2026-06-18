@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
@@ -31,18 +32,53 @@ function ThresholdSlider({
   onChange: (v: number) => void
   description?: string
 }) {
+  const [draft, setDraft] = useState(String(value));
+
+  const commit = useCallback(
+    (raw: string) => {
+      const num = Number.parseFloat(raw);
+      if (Number.isNaN(num)) {
+        setDraft(String(value));
+        return;
+      }
+      const clamped = Math.min(100, Math.max(0, Math.round(num)));
+      setDraft(String(clamped));
+      onChange(clamped);
+    },
+    [value, onChange],
+  );
+
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <div>
-          <Typography variant="small">{label}</Typography>
-          {description && (
-            <Typography variant="muted" className="text-xs">{description}</Typography>
-          )}
-        </div>
-        <Typography className="font-mono text-sm tabular-nums">{value}%</Typography>
+    <div className="space-y-1.5">
+      <div>
+        <Label className="text-sm font-medium">{label}</Label>
+        {description && (
+          <Typography variant="muted" className="text-xs">{description}</Typography>
+        )}
       </div>
-      <Slider value={[value]} onValueChange={([v]) => onChange(v)} max={100} step={1} />
+      <div className="flex items-center gap-3">
+        <Slider
+          value={[value]}
+          onValueChange={([v]) => {
+            setDraft(String(v));
+            onChange(v);
+          }}
+          max={100}
+          step={1}
+          showTooltip
+          className="flex-1"
+        />
+        <div className="flex items-center gap-1 shrink-0">
+          <Input
+            className="h-7 w-14 px-2 py-1 text-right text-xs font-mono tabular-nums"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={() => commit(draft)}
+            onKeyDown={(e) => e.key === "Enter" && commit(draft)}
+          />
+          <span className="text-xs text-muted-foreground">%</span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -56,6 +92,22 @@ function RuleRow({
   onUpdate: (id: string, data: { name?: string; weight?: number; is_active?: boolean }) => void
   onDelete: (id: string) => void
 }) {
+  const [draft, setDraft] = useState(String(rule.weight));
+
+  const commit = useCallback(
+    (raw: string) => {
+      const num = Number.parseFloat(raw);
+      if (Number.isNaN(num)) {
+        setDraft(String(rule.weight));
+        return;
+      }
+      const clamped = Math.min(100, Math.max(0, Math.round(num)));
+      setDraft(String(clamped));
+      onUpdate(rule.id, { weight: clamped });
+    },
+    [rule.weight, onUpdate, rule.id],
+  );
+
   return (
     <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
       <Input
@@ -64,17 +116,28 @@ function RuleRow({
         onChange={(e) => onUpdate(rule.id, { name: e.target.value })}
         placeholder="Rule name"
       />
-      <div className="flex items-center gap-2 w-32">
+      <div className="flex items-center gap-2 w-64">
         <Slider
           value={[rule.weight]}
-          onValueChange={([v]) => onUpdate(rule.id, { weight: v })}
+          onValueChange={([v]) => {
+            setDraft(String(v));
+            onUpdate(rule.id, { weight: v });
+          }}
           max={100}
           step={5}
           className="flex-1"
+          showTooltip
         />
-        <Typography className="font-mono text-xs tabular-nums w-8 text-right">
-          {rule.weight}
-        </Typography>
+        <div className="flex items-center gap-1">
+          <Input
+            className="h-7 w-14 px-2 py-1 text-right text-xs font-mono tabular-nums"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={() => commit(draft)}
+            onKeyDown={(e) => e.key === "Enter" && commit(draft)}
+          />
+          <span className="text-xs text-muted-foreground">%</span>
+        </div>
       </div>
       <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(rule.id)}>
         <IconX className="size-4" />
@@ -87,7 +150,6 @@ export function PlatformConfig() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [profiles, setProfiles] = useState<ScoringProfile[]>([])
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>("")
-  const [profile, setProfile] = useState<ScoringProfile | null>(null)
   const [rules, setRules] = useState<ScoringRule[]>([])
   const [newRuleName, setNewRuleName] = useState("")
   const [saved, setSaved] = useState(false)
@@ -105,22 +167,27 @@ export function PlatformConfig() {
     })
   }, [])
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!selectedCampaignId) return
-    const sp = profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null
-    setProfile(sp)
-  }, [selectedCampaignId, profiles])
+  const profile = useMemo(
+    () => profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null,
+    [selectedCampaignId, profiles]
+  )
+
+  const rulesLoadedRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!selectedCampaignId) return
-    if (profile) {
-      configService.listRulesByProfile(profile.id).then(setRules)
-    } else {
-      setRules([])
+    if (!selectedCampaignId) {
+      rulesLoadedRef.current = null
+      return
     }
-  }, [selectedCampaignId, profile])
-  /* eslint-enable react-hooks/set-state-in-effect */
+    const sp = profiles.find((p) => p.campaign_id === selectedCampaignId) ?? null
+    if (!sp) {
+      rulesLoadedRef.current = null
+      return
+    }
+    if (sp.id === rulesLoadedRef.current) return
+    rulesLoadedRef.current = sp.id
+    configService.listRulesByProfile(sp.id).then(setRules)
+  }, [selectedCampaignId, profiles])
 
   const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId)
   const totalWeight = rules.reduce((sum, r) => sum + r.weight, 0)
@@ -128,14 +195,14 @@ export function PlatformConfig() {
 
   const updateProfile = useCallback(
     async (updates: Partial<ScoringProfile>) => {
-      if (!profile || !selectedCampaignId) return
-      const updated = await configService.updateScoringProfile(profile.id, updates)
-      setProfile(updated)
+      const current = profiles.find((p) => p.campaign_id === selectedCampaignId)
+      if (!current || !selectedCampaignId) return
+      const updated = await configService.updateScoringProfile(current.id, updates)
       setProfiles((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
       setSaved(true)
       setTimeout(() => setSaved(false), 1500)
     },
-    [profile, selectedCampaignId]
+    [profiles, selectedCampaignId]
   )
 
   const createProfile = useCallback(async () => {
@@ -147,7 +214,6 @@ export function PlatformConfig() {
       escalation_threshold: 60,
       rejection_threshold: 40,
     })
-    setProfile(sp)
     setProfiles((prev) => [...prev, sp])
   }, [selectedCampaignId])
 
@@ -182,9 +248,9 @@ export function PlatformConfig() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <div className="space-y-2">
-        <Typography variant="h2">Configuration IA</Typography>
+        <Typography variant="h3">Configuration IA</Typography>
         <Typography variant="muted">
-          Gérez les profils de scoring et les règles utilisés par l&apos;IA pour évaluer les événements.
+           Gérez les profils de scoring et les règles utilisés par l&apos;IA pour évaluer les événements.
         </Typography>
       </div>
 
@@ -241,7 +307,9 @@ export function PlatformConfig() {
                     description="Score en dessous duquel l'événement est automatiquement rejeté"
                     value={profile.score_minimum ?? 0}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, score_minimum: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, score_minimum: v } : p
+                      ))
                       updateProfile({ score_minimum: v })
                     }}
                   />
@@ -250,7 +318,9 @@ export function PlatformConfig() {
                     description="Au-dessus de ce score, l'événement est accepté"
                     value={profile.acceptance_threshold ?? 80}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, acceptance_threshold: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, acceptance_threshold: v } : p
+                      ))
                       updateProfile({ acceptance_threshold: v })
                     }}
                   />
@@ -259,7 +329,9 @@ export function PlatformConfig() {
                     description="Entre ce seuil et l'acceptation, l'événement nécessite une révision manuelle"
                     value={profile.escalation_threshold ?? 60}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, escalation_threshold: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, escalation_threshold: v } : p
+                      ))
                       updateProfile({ escalation_threshold: v })
                     }}
                   />
@@ -268,7 +340,9 @@ export function PlatformConfig() {
                     description="En dessous de ce seuil, l'événement est rejeté"
                     value={profile.rejection_threshold ?? 40}
                     onChange={(v) => {
-                      setProfile((prev) => prev ? { ...prev, rejection_threshold: v } : null)
+                      setProfiles((prev) => prev.map((p) =>
+                        p.campaign_id === selectedCampaignId ? { ...p, rejection_threshold: v } : p
+                      ))
                       updateProfile({ rejection_threshold: v })
                     }}
                   />

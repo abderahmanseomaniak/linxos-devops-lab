@@ -41,7 +41,7 @@ export default function DropdownProfile() {
   const email = profile?.email ?? user?.email ?? ""
   const role = profile?.role ?? "CONTENT_MANAGER"
   const initials = getInitials(name)
-  const avatarUrl = user?.user_metadata?.avatar_url ?? "/origin/avatar.jpg"
+  const avatarUrl = user?.user_metadata?.avatar_url ?? null
 
   if (!user) return null
 

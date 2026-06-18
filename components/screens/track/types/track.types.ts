@@ -66,14 +66,14 @@ export function getTrackAction(data: TrackApplicationData): TrackAction {
   const shipmentStatus = data.shipment_status
   const driveSubmitted = data.drive_submitted
 
-  if (stateCode === "APPROVED" || stateCode === "CONFIRMED") {
+  if (stateCode === "VALIDATED" || stateCode === "CONFIRMED") {
     if (!confirmationExists) return "fill_confirmation"
   }
 
   if (shipmentStatus === "DELIVERED" && !driveSubmitted) return "upload_drive"
   if (driveSubmitted && shipmentStatus === "DELIVERED") return "content_received"
 
-  if (stateCode === "COMPLETED") return "completed"
+  if (stateCode === "CLOSED") return "completed"
 
   return null
 }

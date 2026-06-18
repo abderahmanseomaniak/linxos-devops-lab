@@ -96,7 +96,7 @@ export function UgcStep() {
               {fields.length < MAX_UGC_LINKS && (
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => append({ url: "" })}
                   className="self-start"

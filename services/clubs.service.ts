@@ -55,7 +55,7 @@ async function getById(id: string): Promise<Club | null> {
       contacts:club_contacts(*)
     `
     )
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
@@ -82,7 +82,7 @@ async function update(id: string, data: ClubUpdate): Promise<Club> {
   const { data: updated, error } = await supabase
     .from("clubs")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -96,7 +96,7 @@ async function update(id: string, data: ClubUpdate): Promise<Club> {
 }
 
 async function remove(id: string): Promise<void> {
-  const { error } = await supabase.from("clubs").delete().eq("id", id)
+  const { error } = await supabase.from("clubs").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -122,14 +122,14 @@ async function createContact(data: {
     .single()
 
   if (error) throw error
-  return created as { id: string; club_id: string; full_name: string; position: string | null; phone: string | null; email: string | null; is_primary: boolean; created_at: string }
+  return created as unknown as { id: string; club_id: string; full_name: string; position: string | null; phone: string | null; email: string | null; is_primary: boolean; created_at: string }
 }
 
 async function listContacts(clubId: string): Promise<unknown[]> {
   const { data, error } = await supabase
     .from("club_contacts")
     .select("*")
-    .eq("club_id", clubId)
+    .eq("club_id", clubId as never)
     .order("is_primary", { ascending: false })
     .order("created_at", { ascending: true })
 
@@ -147,7 +147,7 @@ async function updateContact(id: string, data: Partial<{
   const { data: updated, error } = await supabase
     .from("club_contacts")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select("*")
     .single()
 
@@ -156,7 +156,7 @@ async function updateContact(id: string, data: Partial<{
 }
 
 async function deleteContact(id: string): Promise<void> {
-  const { error } = await supabase.from("club_contacts").delete().eq("id", id)
+  const { error } = await supabase.from("club_contacts").delete().eq("id", id as never)
   if (error) throw error
 }
 

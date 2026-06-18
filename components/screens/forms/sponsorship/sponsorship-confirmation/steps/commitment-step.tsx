@@ -158,6 +158,7 @@ export function CommitmentStep() {
                       <button
                         type="button"
                         id="signature-date-picker"
+                        data-invalid={ssState.invalid}
                         className="inline-flex h-8 w-full items-center gap-2 rounded-3xl border border-transparent bg-input/50 px-3 text-sm font-normal outline-none transition-[color,box-shadow,background-color] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 data-[invalid=true]:border-destructive data-[invalid=true]:ring-3 data-[invalid=true]:ring-destructive/20"
                       >
                         <IconCalendar className="size-4 shrink-0 text-muted-foreground" />
@@ -194,15 +195,19 @@ export function CommitmentStep() {
         <Controller
           name="comment"
           control={control}
-          render={({ field }) => (
-            <Field>
-              <FieldLabel htmlFor={field.name}>Commentaire (optionnel)</FieldLabel>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Commentaire</FieldLabel>
               <Textarea
                 {...field}
                 id={field.name}
-                placeholder="Ajoutez un commentaire si nécessaire..."
+                aria-invalid={fieldState.invalid}
+                placeholder="Ajoutez un commentaire..."
                 className="min-h-[100px]"
               />
+              {fieldState.invalid && (
+                <FieldDescription>{fieldState.error?.message}</FieldDescription>
+              )}
             </Field>
           )}
         />

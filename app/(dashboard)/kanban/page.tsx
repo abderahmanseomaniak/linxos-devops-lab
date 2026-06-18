@@ -8,6 +8,7 @@ import type { KanbanEvent, KanbanStage } from "@/types/kanban"
 import { useEventsStore } from "@/stores/events.store"
 import { useWorkflowStore } from "@/stores/workflow.store"
 import { eventsToKanban } from "@/components/screens/kanban/kanban-adapter"
+import { useAutoRefresh } from "@/hooks/use-auto-refresh"
 import { Spinner } from "@/components/ui/spinner"
 import { TRANSITIONS_MAP } from "@/services/workflow.service"
 
@@ -29,6 +30,7 @@ export default function KanbanPage() {
     fetchEvents()
     fetchStates()
   }, [fetchEvents, fetchStates])
+  useAutoRefresh("events", fetchEvents)
 
   const kanbanEvents: KanbanEvent[] = useMemo(
     () => eventsToKanban(events),

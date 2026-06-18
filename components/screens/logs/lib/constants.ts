@@ -1,14 +1,32 @@
 
 
 
-export const PAGE_SIZES = [5, 10, 25, 50] as const
-export const DEFAULT_PAGE_SIZE = 10
-export const DEFAULT_SORTING = { desc: false, id: "timestamp" } as const
+export const DEFAULT_PAGE_SIZE = 20
+export const DEFAULT_SORTING = { desc: true, id: "created_at" } as const
 
-// Available log actions for filtering
-export const actions = ["CREATE", "UPDATE", "DELETE", "APPROVE", "REJECT", "INVITE", "DELIVER"] as const
+export const ACTION_LABELS: Record<string, string> = {
+  CREATE: "Création",
+  UPDATE: "Modification",
+  DELETE: "Suppression",
+  APPROVE: "Approbation",
+  REJECT: "Rejet",
+  INVITE: "Invitation",
+  DELIVER: "Livraison",
+}
 
-// Badge variants for each action type
+export const actions = Object.keys(ACTION_LABELS)
+
+export const MODULE_LABELS: Record<string, string> = {
+  EVENTS: "Événements",
+  CAMPAIGNS: "Campagnes",
+  INVENTORY: "Inventaire",
+  STOCKS: "Stocks",
+  USERS: "Utilisateurs",
+  SHIPMENTS: "Expéditions",
+  CONTENT: "Contenu",
+  AUTH: "Authentification",
+}
+
 export const actionVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   CREATE: "default",
   UPDATE: "secondary",

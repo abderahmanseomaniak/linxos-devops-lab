@@ -2,22 +2,21 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
+import { Typography } from "@/components/ui/typography"
 import { supabase } from "@/services/supabase/client"
-import { IconRefresh, IconDownload } from "@tabler/icons-react"
+import { useAutoRefresh } from "@/hooks/use-auto-refresh"
+import { IconDownload } from "@tabler/icons-react"
 
 export default function ReportingPage() {
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState<any>(null)
+  const [stats, setStats] = useState<{ totalEvents: number; totalUgc: number } | null>(null)
 
   const fetch = useCallback(async () => {
     setLoading(true)
     try {
       const { data: events } = await supabase.from("events").select("id")
-      const { data: approved } = await supabase.from("events").select("id, state_id", { count: "exact" })
-      const { data: rejected } = await supabase.from("events").select("id, state_id", { count: "exact" })
       const { count: ugcCount } = await supabase.from("ugc_contents").select("*", { count: "exact", head: true })
 
       setStats({
@@ -28,6 +27,7 @@ export default function ReportingPage() {
   }, [])
 
   useEffect(() => { fetch() }, [fetch])
+  useAutoRefresh("events", fetch)
 
   const handleExport = () => {
     const csv = "Export reporting\n"
@@ -41,9 +41,12 @@ export default function ReportingPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Reporting</h1>
+        <div className="space-y-1">
+          <Typography variant="h3">Reporting</Typography>
+          <Typography variant="muted">Consultez les statistiques et indicateurs clés</Typography>
+        </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="h-8" onClick={fetch}><IconRefresh className="size-3.5" /></Button>
+
           <Button variant="outline" className="h-8 text-xs" onClick={handleExport}>
             <IconDownload className="size-3.5" /> Export CSV
           </Button>
@@ -56,11 +59,11 @@ export default function ReportingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader><CardTitle className="text-sm">Total événements</CardTitle></CardHeader>
-            <CardContent><p className="text-2xl font-bold">{stats?.totalEvents ?? 0}</p></CardContent>
+            <CardContent><Typography variant="p" className="text-2xl font-bold">{stats?.totalEvents ?? 0}</Typography></CardContent>
           </Card>
           <Card>
             <CardHeader><CardTitle className="text-sm">Contenus UGC</CardTitle></CardHeader>
-            <CardContent><p className="text-2xl font-bold">{stats?.totalUgc ?? 0}</p></CardContent>
+            <CardContent><Typography variant="p" className="text-2xl font-bold">{stats?.totalUgc ?? 0}</Typography></CardContent>
           </Card>
         </div>
       )}

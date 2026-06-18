@@ -8,12 +8,21 @@ import type { Profile } from './profiles.types';
 // ── Workflow Codes ────────────────────────────
 export const WORKFLOW_CODES = [
   'SUBMITTED',
-  'UNDER_REVIEW',
-  'APPROVED',
-  'CONFIRMED',
-  'SHIPPED',
-  'COMPLETED',
+  'AI_PROCESSING',
+  'SCORED',
+  'NEEDS_CLARIFICATION',
   'REJECTED',
+  'VALIDATED',
+  'CONFIRMATION_SENT',
+  'CONFIRMED',
+  'ALLOCATED',
+  'PREPARING_SHIPMENT',
+  'IN_DELIVERY',
+  'DELIVERED',
+  'UGC_PENDING',
+  'CONTENT_REVIEWED',
+  'REPORTED',
+  'CLOSED',
 ] as const;
 
 export type WorkflowCode = (typeof WORKFLOW_CODES)[number];
@@ -23,22 +32,40 @@ export const WORKFLOW_STAGES: WorkflowCode[] = [...WORKFLOW_CODES];
 
 export const WORKFLOW_LABELS: Record<WorkflowCode, string> = {
   SUBMITTED: 'Soumis',
-  UNDER_REVIEW: 'En révision',
-  APPROVED: 'Approuvé',
-  CONFIRMED: 'Confirmé',
-  SHIPPED: 'Expédié',
-  COMPLETED: 'Terminé',
+  AI_PROCESSING: 'Analyse IA en cours',
+  SCORED: 'Noté par IA',
+  NEEDS_CLARIFICATION: 'Demande de clarification',
   REJECTED: 'Rejeté',
+  VALIDATED: 'Validé',
+  CONFIRMATION_SENT: 'Confirmation envoyée',
+  CONFIRMED: 'Confirmé',
+  ALLOCATED: 'Alloué',
+  PREPARING_SHIPMENT: 'Préparation expédition',
+  IN_DELIVERY: 'En livraison',
+  DELIVERED: 'Livré',
+  UGC_PENDING: 'UGC en attente',
+  CONTENT_REVIEWED: 'Contenu vérifié',
+  REPORTED: 'Signalé',
+  CLOSED: 'Clôturé',
 };
 
 export const WORKFLOW_COLORS: Record<WorkflowCode, string> = {
   SUBMITTED: '#3B82F6',
-  UNDER_REVIEW: '#F59E0B',
-  APPROVED: '#10B981',
-  CONFIRMED: '#6366F1',
-  SHIPPED: '#8B5CF6',
-  COMPLETED: '#22C55E',
+  AI_PROCESSING: '#F59E0B',
+  SCORED: '#8B5CF6',
+  NEEDS_CLARIFICATION: '#F59E0B',
   REJECTED: '#EF4444',
+  VALIDATED: '#10B981',
+  CONFIRMATION_SENT: '#6366F1',
+  CONFIRMED: '#6366F1',
+  ALLOCATED: '#06B6D4',
+  PREPARING_SHIPMENT: '#F97316',
+  IN_DELIVERY: '#F97316',
+  DELIVERED: '#f97316',
+  UGC_PENDING: '#EC4899',
+  CONTENT_REVIEWED: '#14B8A6',
+  REPORTED: '#EF4444',
+  CLOSED: '#6B7280',
 };
 
 // ── Workflow State ────────────────────────────

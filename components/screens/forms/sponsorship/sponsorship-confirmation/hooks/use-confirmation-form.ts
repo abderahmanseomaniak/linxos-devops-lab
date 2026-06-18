@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useForm, type UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -10,6 +10,7 @@ import { useStep } from "@/hooks/use-step"
 import {
   confirmationSchema,
   defaultConfirmationValues,
+  stepFields,
   type ConfirmationFormValues,
 } from "@/components/screens/forms/sponsorship/sponsorship-confirmation/lib/schema"
 
@@ -31,6 +32,16 @@ export type ConfirmationFormApi = {
   submissionError: string | null
   result: { confirmation_id: string; event_id: string } | null
   reset: () => void
+  otpDialogOpen: boolean
+  otpValue: string
+  otpError: string | null
+  otpLoading: boolean
+  otpVerified: boolean
+  onOtpValueChange: (value: string) => void
+  onOtpVerify: () => void
+  onOtpClose: () => void
+  onOtpResend: () => void
+  allocatedCans: number
 }
 
 export function useConfirmationForm(
@@ -52,6 +63,50 @@ export function useConfirmationForm(
   const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [result, setResult] = useState<{ confirmation_id: string; event_id: string } | null>(null)
 
+  const handleGoNext = useCallback(async () => {
+    const fields = stepFields[current - 1]
+    if (fields.length === 0) {
+      goToNextStep()
+      return
+    }
+    const valid = await form.trigger(fields as never)
+    if (valid) goToNextStep()
+  }, [current, form, goToNextStep])
+
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false)
+  const [otpValue, setOtpValue] = useState("")
+  const [otpError, setOtpError] = useState<string | null>(null)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpVerified, setOtpVerified] = useState(false)
+
+  const [allocatedCans, setAllocatedCans] = useState(0)
+
+  useEffect(() => {
+    if (!trackingCode) return
+
+    supabase
+      .from("events")
+      .select("id")
+      .eq("tracking_code", trackingCode)
+      .single()
+      .then(({ data: event, error: eventErr }) => {
+        if (eventErr || !event) return
+
+        supabase
+          .from("allocations")
+          .select("allocated_quantity")
+          .eq("event_id", (event as unknown as { id: string }).id)
+          .maybeSingle()
+          .then(({ data: alloc }) => {
+            if (alloc) {
+              const qty = (alloc as unknown as { allocated_quantity: number }).allocated_quantity
+              setAllocatedCans(qty)
+              form.setValue("cansConfirmed", qty)
+            }
+          })
+      })
+  }, [trackingCode, form])
+
   const doSubmit = useCallback(
     async (values: ConfirmationFormValues) => {
       if (!trackingCode) {
@@ -68,7 +123,7 @@ export function useConfirmationForm(
 
         // Try RPC first
         try {
-          const { data, error } = await (supabase as any).rpc("submit_confirmation_form", {
+          const rpcArgs = {
             p_tracking_code: trackingCode,
             p_official_instagram: values.instagramUrl,
             p_confirmed_cans: values.cansConfirmed,
@@ -83,11 +138,24 @@ export function useConfirmationForm(
             p_commitment: values.commitUgc,
             p_comment: values.comment || null,
             p_drive_url: values.driveUrl || null,
-          })
+          } as const
+          const { data, error } = await (supabase.rpc("submit_confirmation_form", rpcArgs as never) as unknown as Promise<{ data: { success?: boolean; confirmation_id?: string; event_id?: string } | null; error: { message: string } | null }>)
 
           if (!error && data?.success) {
             confirmationId = (data as { confirmation_id: string }).confirmation_id
             eventId = (data as { event_id: string }).event_id
+
+            // Transition to CONFIRMED + insert UGC profiles via API
+            await fetch("/api/submit-sponsorship", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                formType: "confirm_transition",
+                eventId,
+                confirmationId,
+                ugcUrls: values.ugcUrls?.filter((u) => u.url?.trim()) || [],
+              }),
+            })
           } else {
             console.warn("[submit_confirmation_form] RPC unavailable, using API fallback:", error?.message ?? error)
           }
@@ -116,6 +184,7 @@ export function useConfirmationForm(
               commitment: values.commitUgc,
               comment: values.comment || null,
               drive_url: values.driveUrl || null,
+              ugcUrls: values.ugcUrls?.filter((u) => u.url?.trim()) || [],
             }),
           })
 
@@ -131,20 +200,6 @@ export function useConfirmationForm(
 
         if (!confirmationId) {
           throw new Error("Erreur lors de la soumission du formulaire")
-        }
-
-        // Insert UGC profiles client-side
-        if (values.hasUgc === "yes" && values.ugcUrls) {
-          const ugcPromises = values.ugcUrls
-            .filter((u) => u.url?.trim())
-            .map((u) =>
-              (supabase as any).from("confirmation_ugc_profiles").insert({
-                confirmation_form_id: confirmationId,
-                instagram_url: u.url.includes("instagram") ? u.url : null,
-                tiktok_url: u.url.includes("tiktok") ? u.url : null,
-              })
-            )
-          await Promise.allSettled(ugcPromises)
         }
 
         setResult({
@@ -167,15 +222,104 @@ export function useConfirmationForm(
     [trackingCode]
   )
 
-  const submit = useCallback(() => {
-    const values = form.getValues()
-    doSubmit(values)
-  }, [form, doSubmit])
+  const handleOtpClose = useCallback(() => {
+    setOtpDialogOpen(false)
+    setOtpValue("")
+    setOtpError(null)
+  }, [])
+
+  const handleSendOtp = useCallback(async () => {
+    const email = form.getValues("email")
+    if (!email) return
+
+    setOtpLoading(true)
+    setOtpError(null)
+
+    try {
+      const res = await fetch("/api/send-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur d'envoi")
+      }
+    } catch (err) {
+      console.error("[send-verification]", err)
+      setOtpError(err instanceof Error ? err.message : "Erreur d'envoi du code")
+    } finally {
+      setOtpLoading(false)
+    }
+  }, [form])
+
+  const handleOtpResend = useCallback(async () => {
+    await handleSendOtp()
+  }, [handleSendOtp])
+
+  const handleVerifyOtp = useCallback(async () => {
+    const email = form.getValues("email")
+    if (!email || otpValue.length < 6) return
+
+    setOtpLoading(true)
+    setOtpError(null)
+
+    try {
+      const res = await fetch("/api/verify-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code: otpValue }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Code invalide")
+      }
+
+      setOtpVerified(true)
+      setOtpDialogOpen(false)
+      setOtpValue("")
+
+      const values = form.getValues()
+      doSubmit(values)
+    } catch (err) {
+      console.error("[verify-code]", err)
+      setOtpError(err instanceof Error ? err.message : "Code invalide")
+    } finally {
+      setOtpLoading(false)
+    }
+  }, [form, otpValue, doSubmit])
+
+  const submit = useCallback(async () => {
+    const fields = stepFields[current - 1]
+    if (fields.length > 0) {
+      const valid = await form.trigger(fields as never)
+      if (!valid) return
+    }
+
+    const email = form.getValues("email")
+    if (!email) {
+      toast.error("Veuillez remplir votre adresse email à l'étape 1")
+      return
+    }
+
+    setOtpValue("")
+    setOtpError(null)
+    setOtpDialogOpen(true)
+    handleSendOtp()
+  }, [current, form, handleSendOtp])
 
   const reset = useCallback(() => {
     form.reset(defaultConfirmationValues)
     setResult(null)
     setSubmissionError(null)
+    setOtpVerified(false)
+    setOtpValue("")
+    setOtpError(null)
+    setOtpDialogOpen(false)
     setStep(1)
   }, [form, setStep])
 
@@ -186,7 +330,7 @@ export function useConfirmationForm(
       total: totalSteps,
       canGoNext: canGoToNextStep,
       canGoPrev: canGoToPrevStep,
-      goNext: goToNextStep,
+      goNext: handleGoNext,
       goPrev: goToPrevStep,
       goTo: (next) => setStep(next),
     },
@@ -195,5 +339,15 @@ export function useConfirmationForm(
     submissionError,
     result,
     reset,
+    otpDialogOpen,
+    otpValue,
+    otpError,
+    otpLoading,
+    otpVerified,
+    onOtpValueChange: setOtpValue,
+    onOtpVerify: handleVerifyOtp,
+    onOtpClose: handleOtpClose,
+    onOtpResend: handleOtpResend,
+    allocatedCans,
   }
 }

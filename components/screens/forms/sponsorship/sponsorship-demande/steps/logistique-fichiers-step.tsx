@@ -78,7 +78,7 @@ function FileUploadField({
             <div className="relative inline-block self-start">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={openFileDialog}
                 aria-haspopup="dialog"
@@ -122,7 +122,7 @@ function FileUploadField({
             <div className="relative inline-block">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={openFileDialog}
                 aria-haspopup="dialog"

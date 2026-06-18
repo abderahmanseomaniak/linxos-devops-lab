@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 import Link from "next/link"
 import { FormProvider } from "react-hook-form"
-import { IconCheck, IconExternalLink, IconFileDescription } from "@tabler/icons-react"
+import { IconCheck } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,8 +13,9 @@ import { FormStepper } from "@/components/screens/forms/sponsorship/sponsorship-
 import { StepRenderer } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/step-renderer"
 import { FormNavigation } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/form-navigation"
 import { ContactFooter } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/contact-footer"
-import { Typography } from "@/components/ui/typography"
+import { OtpDialog } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/otp-dialog"
 import type { SponsorshipDemande1Values } from "@/components/screens/forms/sponsorship/sponsorship-demande/lib/schema"
+import { Typography } from "@/components/ui/typography"
 
 const STEPS: readonly Step[] = [
   { id: 1, title: "Club & Responsable" },
@@ -26,8 +27,24 @@ const STEPS: readonly Step[] = [
   { id: 7, title: "Signature" },
 ]
 
-export function SponsorshipDemande1Form() {
-  const { form, step, submit, submitting, submissionError, result, reset } = useSponsorshipForm(STEPS.length)
+export function SponsorshipDemandeForm() {
+  const {
+    form,
+    step,
+    submit,
+    submitting,
+    submissionError,
+    result,
+    reset,
+    otpDialogOpen,
+    otpValue,
+    otpError,
+    otpLoading,
+    onOtpValueChange,
+    onOtpVerify,
+    onOtpClose,
+    onOtpResend,
+  } = useSponsorshipForm(STEPS.length)
 
   const triggerStepValidation = useCallback(
     async (nextStep: number) => {
@@ -71,45 +88,58 @@ export function SponsorshipDemande1Form() {
     return (
       <div className="mx-auto w-full max-w-2xl space-y-6 py-12">
         <Card className="border-green-200 shadow-lg">
-          <CardHeader className="items-center gap-4 text-center pb-2">
+          <CardHeader className="flex flex-col  items-center gap-4 text-center pb-2">
             <div className="flex size-16 items-center justify-center rounded-full bg-green-100">
               <IconCheck className="size-8 text-green-600" />
             </div>
             <CardTitle className="text-2xl">Demande envoyée avec succès !</CardTitle>
             <CardDescription className="text-base">
-              Votre dossier de sponsoring a bien été reçu. Nous revenons vers vous rapidement.
+              <Typography variant="p" >
+               Votre dossier de sponsoring a bien été reçu.
+              </Typography>
+              <Typography variant="p" >
+                Nous revenons vers vous rapidement.
+              </Typography>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="rounded-lg bg-muted p-6 space-y-4">
               <div className="text-center">
-                <Typography variant="p" className="text-sm text-muted-foreground mb-1">Code de suivi</Typography>
+                <Typography variant="p" className="text-sm text-muted-foreground mb-1">
+                  Code de suivi
+                </Typography>
                 <Typography variant="p" className="text-3xl font-mono font-bold tracking-wider text-primary">
                   {result.tracking_code}
                 </Typography>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <Typography variant="p" className="text-muted-foreground">Référence événement</Typography>
-                  <Typography variant="p" className="font-mono text-xs">{result.event_id}</Typography>
+                  <Typography variant="p" className="text-muted-foreground">
+                    Référence événement
+                  </Typography>
+                  <Typography variant="p" className="font-mono text-xs">
+                    {result.event_id}
+                  </Typography>
                 </div>
                 <div>
-                  <Typography variant="p" className="text-muted-foreground">Statut</Typography>
-                  <Typography variant="p" className="font-medium text-amber-600">En cours d&apos;examen</Typography>
+                  <Typography variant="p" className="text-muted-foreground">
+                    Statut
+                  </Typography>
+                  <Typography variant="p" className="font-medium text-amber-600">
+                    En cours d&apos;examen
+                  </Typography>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <Button asChild size="lg" className="w-full">
+            <div className="flex gap-3">
+              <Button asChild size="lg" className="flex-1">
                 <Link href={`/track?code=${result.tracking_code}`}>
-                  <IconExternalLink className="size-4" />
                   Suivre ma demande
                 </Link>
               </Button>
-              <Button variant="outline" asChild size="lg" className="w-full">
+              <Button variant="secondary" asChild size="lg" className="flex-1">
                 <Link href="/forms/sponsorship/sponsorship-demande">
-                  <IconFileDescription className="size-4" />
                   Nouvelle demande
                 </Link>
               </Button>
@@ -157,6 +187,19 @@ export function SponsorshipDemande1Form() {
 
         <ContactFooter />
       </div>
+
+      <OtpDialog
+        open={otpDialogOpen}
+        value={otpValue}
+        error={otpError}
+        loading={otpLoading}
+        length={6}
+        email={form.getValues("email")}
+        onValueChange={onOtpValueChange}
+        onVerify={onOtpVerify}
+        onClose={onOtpClose}
+        onResend={onOtpResend}
+      />
     </FormProvider>
   )
 }

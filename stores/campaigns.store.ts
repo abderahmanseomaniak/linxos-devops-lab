@@ -37,7 +37,7 @@ export const useCampaignsStore = create<CampaignsStore>((set, get) => ({
       const { filters, pagination } = get()
       const result = await campaignsService.list({
         search: filters.search || undefined,
-        status: filters.status || undefined,
+        status: (filters.status || undefined) as never,
         page: pagination.page,
         pageSize: pagination.pageSize,
       })

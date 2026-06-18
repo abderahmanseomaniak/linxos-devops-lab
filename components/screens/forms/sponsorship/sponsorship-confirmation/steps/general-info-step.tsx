@@ -117,12 +117,14 @@ export function GeneralInfoStep() {
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
-                      placeholder="Optionnel"
+                      placeholder="Université ou école"
                     />
+                    {fieldState.invalid && (
+                      <FieldDescription>{fieldState.error?.message}</FieldDescription>
+                    )}
                   </Field>
                 )}
               />
-             
             </div>
              <FieldSet className="gap-4">
           <FieldLegend variant="label">Réseaux sociaux</FieldLegend>
@@ -178,7 +180,7 @@ export function GeneralInfoStep() {
           </FieldGroup>
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => append({ url: "" })}
             className="self-start"

@@ -3,12 +3,13 @@
 import { useEffect, useState, useCallback } from "react"
 import { UsersTable } from "@/components/screens/users/users-table"
 import { usersService } from "@/services/users.service"
+import { useAutoRefresh } from "@/hooks/use-auto-refresh"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
+import { Typography } from "@/components/ui/typography"
 import { AddUserSheet } from "@/components/screens/users/sheet/add-user-sheet"
 import { EditUserSheet } from "@/components/screens/users/sheet/edit-user-sheet"
 import { UserDetailsSheet } from "@/components/screens/users/sheet/details-user-sheet"
-import { Typography } from "@/components/ui/typography"
 import type { Profile } from "@/types/profiles.types"
 
 export default function UsersPage() {
@@ -35,6 +36,8 @@ export default function UsersPage() {
     fetchUsers()
   }, [fetchUsers])
 
+  useAutoRefresh("profiles", fetchUsers)
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -46,12 +49,14 @@ export default function UsersPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Typography variant="h1" className="text-xl font-semibold">Utilisateurs</Typography>
+        <div className="space-y-1">
+          <Typography variant="h3">Utilisateurs</Typography>
+          <Typography variant="muted">Gérez les accès et les rôles</Typography>
+        </div>
         <Button onClick={() => setShowAdd(true)}>Ajouter</Button>
       </div>
       <UsersTable
         data={profiles}
-        onRefresh={fetchUsers}
         onEdit={(user) => { setSelectedUser(user); setShowEdit(true) }}
         onDelete={async (user) => {
           try {

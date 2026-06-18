@@ -204,7 +204,7 @@ export function UgcStep() {
             </FieldGroup>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={() =>
                 infAppend({
@@ -342,7 +342,7 @@ export function UgcStep() {
             {ambFields.length < MAX_AMBASSADEURS && (
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => ambAppend({ url: "" })}
                 className="self-start"

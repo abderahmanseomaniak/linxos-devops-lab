@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const SUBMITTED_STATE_CODE = "SUBMITTED";
 
@@ -18,7 +18,7 @@ function getAdmin() {
   );
 }
 
-async function handleSponsorshipDemande(admin: any, formData: Record<string, unknown>) {
+async function handleSponsorshipDemande(admin: SupabaseClient, formData: Record<string, unknown>) {
   const { data: club, error: clubError } = await admin
     .from("clubs")
     .insert({
@@ -117,7 +117,7 @@ async function handleSponsorshipDemande(admin: any, formData: Record<string, unk
   return { tracking_code: trackingCode, event_id: event.id, application_form_id: appForm.id, club_id: club.id };
 }
 
-async function handleConfirmationForm(admin: any, formData: Record<string, unknown>) {
+async function handleConfirmationForm(admin: SupabaseClient, formData: Record<string, unknown>) {
   const trackingCode = formData.trackingCode as string;
   if (!trackingCode) {
     throw new Error("Code de suivi requis");
@@ -166,6 +166,28 @@ async function handleConfirmationForm(admin: any, formData: Record<string, unkno
       });
   }
 
+  // Insert UGC profiles (from client-side, but executed server-side with service role)
+  const ugcUrls = formData.ugcUrls as { url?: string }[] | undefined;
+  if (ugcUrls && Array.isArray(ugcUrls)) {
+    const ugcInserts = ugcUrls
+      .filter((u) => u.url?.trim())
+      .map((u) => {
+        const url = u.url!.trim().toLowerCase();
+        const isInstagram = url.includes("instagram") || url.includes("ig.");
+        const isTiktok = url.includes("tiktok");
+        return {
+          confirmation_form_id: confirmation.id,
+          instagram_url: isInstagram ? u.url!.trim() : null,
+          tiktok_url: isTiktok ? u.url!.trim() : null,
+        };
+      })
+      .filter((row) => row.instagram_url || row.tiktok_url);
+
+    if (ugcInserts.length > 0) {
+      await admin.from("confirmation_ugc_profiles").insert(ugcInserts as never);
+    }
+  }
+
   return { confirmation_id: confirmation.id, event_id: event.id };
 }
 
@@ -187,6 +209,51 @@ export async function POST(req: Request) {
       case "confirmation": {
         result = await handleConfirmationForm(admin, formData);
         return NextResponse.json({ success: true, ...result });
+      }
+
+      case "confirm_transition": {
+        const { eventId } = formData;
+        if (!eventId) throw new Error("eventId requis");
+
+        const CONFIRMED_STATE_CODE = "CONFIRMED";
+        const { data: confirmedState } = await admin
+          .from("workflow_states")
+          .select("id")
+          .eq("code", CONFIRMED_STATE_CODE)
+          .single();
+
+        if (confirmedState) {
+          // Transition event state
+          await admin
+            .from("events")
+            .update({ state_id: (confirmedState as { id: string }).id })
+            .eq("id", eventId as string);
+
+          // Insert UGC profiles
+          const confirmationId = formData.confirmationId as string;
+          const ugcUrls = formData.ugcUrls as { url?: string }[] | undefined;
+          if (confirmationId && ugcUrls && Array.isArray(ugcUrls)) {
+            const ugcInserts = ugcUrls
+              .filter((u) => u.url?.trim())
+              .map((u) => {
+                const url = u.url!.trim().toLowerCase();
+                const isInstagram = url.includes("instagram") || url.includes("ig.");
+                const isTiktok = url.includes("tiktok");
+                return {
+                  confirmation_form_id: confirmationId,
+                  instagram_url: isInstagram ? u.url!.trim() : null,
+                  tiktok_url: isTiktok ? u.url!.trim() : null,
+                };
+              })
+              .filter((row) => row.instagram_url || row.tiktok_url);
+
+            if (ugcInserts.length > 0) {
+              await admin.from("confirmation_ugc_profiles").insert(ugcInserts as never);
+            }
+          }
+        }
+
+        return NextResponse.json({ success: true });
       }
 
       default:

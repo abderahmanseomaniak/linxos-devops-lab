@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     )
 
     // 1. Find event
-    const query = (admin as any)
+    const query = admin
       .from("events")
       .select(`
         id, title, city, tracking_code, applicant_email, start_date, end_date, created_at,
@@ -46,14 +46,14 @@ export async function GET(req: Request) {
     }
 
     // 2. Get confirmation form
-    const { data: confirmation } = await (admin as any)
+    const { data: confirmation } = await admin
       .from("confirmation_forms")
       .select("id, confirmed_cans, main_contact_name")
       .eq("event_id", event.id)
       .maybeSingle()
 
     // 3. Get latest shipment status
-    const { data: shipment } = await (admin as any)
+    const { data: shipment } = await admin
       .from("shipments")
       .select("status")
       .eq("event_id", event.id)
@@ -62,14 +62,14 @@ export async function GET(req: Request) {
       .maybeSingle()
 
     // 4. Get drive folder
-    const { data: drive } = await (admin as any)
+    const { data: drive } = await admin
       .from("drive_folders")
       .select("drive_url")
       .eq("event_id", event.id)
       .maybeSingle()
 
     // 5. Get workflow history
-    const { data: rawHistory } = await (admin as any)
+    const { data: rawHistory } = await admin
       .from("workflow_history")
       .select(`
         id, comment, created_at,

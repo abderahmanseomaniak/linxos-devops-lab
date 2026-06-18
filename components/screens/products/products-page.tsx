@@ -1,25 +1,20 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
 import { inventoryService } from "@/services/inventory.service"
 import type { Product, ProductInsert, ProductUpdate, ProductCategory } from "@/types/inventory.types"
-import { toast } from "sonner"
-import { IconPlus, IconPencil, IconRefresh } from "@tabler/icons-react"
-import { ProductSheet } from "./sheets/product-sheet"
 import { Typography } from "@/components/ui/typography"
+import { toast } from "sonner"
+import { IconPlus } from "@tabler/icons-react"
+import { ProductSheet } from "./sheets/product-sheet"
+import { ProductsTable, type ProductListFilters } from "./products-table"
 
 export function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<ProductCategory[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState("")
+  const [filters, setFilters] = useState<ProductListFilters>({})
   const [editOpen, setEditOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
 
@@ -27,15 +22,23 @@ export function ProductsPage() {
     setLoading(true)
     try {
       const [pResult, cats] = await Promise.all([
-        inventoryService.listProducts({ search, pageSize: 100 }),
+        inventoryService.listProducts({ search: filters.search, pageSize: 100 }),
         inventoryService.listCategories(),
       ])
       setProducts(pResult.data)
       setCategories(cats)
     } catch { toast.error("Erreur chargement") } finally { setLoading(false) }
-  }, [search])
+  }, [filters.search])
 
   useEffect(() => { fetch() }, [fetch])
+
+  const handleFilterChange = <K extends keyof ProductListFilters>(key: K, value: ProductListFilters[K]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleClearFilters = () => {
+    setFilters({})
+  }
 
   const handleSave = async (data: ProductInsert | ProductUpdate) => {
     try {
@@ -54,56 +57,37 @@ export function ProductsPage() {
     } catch { toast.error("Erreur enregistrement") }
   }
 
+  const handleDelete = useCallback(async (id: string) => {
+    try {
+      await inventoryService.removeProduct(id)
+      toast.success("Produit supprimé")
+      fetch()
+    } catch { toast.error("Erreur suppression") }
+  }, [fetch])
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Typography variant="h1" className="text-xl font-semibold">Produits</Typography>
-        <div className="flex items-center gap-2">
-          <Input placeholder="Rechercher..." className="h-8 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <Button variant="outline" className="h-8" onClick={fetch}><IconRefresh className="size-3.5" /></Button>
-          <Button className="h-8 text-xs" onClick={() => { setEditing(null); setEditOpen(true) }}>
-            <IconPlus className="size-3.5" /> Nouveau
-          </Button>
+        <div className="space-y-1">
+          <Typography variant="h3">Produits</Typography>
+          <Typography variant="muted">Gérez votre catalogue de produits</Typography>
         </div>
+        <Button size="sm" onClick={() => { setEditing(null); setEditOpen(true) }}>
+          <IconPlus className="size-4" /> Ajouter un produit
+        </Button>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-8"><Spinner className="size-6" /></div>
-      ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Catégorie</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Actif</TableHead>
-                <TableHead className="w-20"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.length === 0 ? (
-                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Aucun produit</TableCell></TableRow>
-              ) : products.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell>{p.category?.name ?? "-"}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm max-w-[200px] truncate">{p.description ?? "-"}</TableCell>
-                  <TableCell><Badge variant={p.is_active ? "default" : "secondary"}>{p.is_active ? "Oui" : "Non"}</Badge></TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="icon" className="size-7" onClick={() => { setEditing(p); setEditOpen(true) }}>
-                      <IconPencil className="size-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <ProductsTable
+        data={products}
+        loading={loading}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onClearFilters={handleClearFilters}
+        onEdit={(product) => { setEditing(product); setEditOpen(true) }}
+        onDelete={handleDelete}
+      />
 
       <ProductSheet open={editOpen} onOpenChange={setEditOpen} product={editing} categories={categories} onSave={handleSave} />
     </div>
   )
 }
-

@@ -31,7 +31,7 @@ export function AddStockSheet({ open, onOpenChange, onSuccess }: AddStockSheetPr
   useEffect(() => {
     if (!open) return
     const load = async () => {
-      const { data: c } = await supabase.from("campaigns").select("id, name")
+      const { data: c } = await supabase.from("campaigns").select("id, name").eq("status", "ACTIVE")
       const { data: cat } = await supabase.from("product_categories").select("id, name").eq("is_active", true)
       const { data: p } = await supabase.from("products").select("id, name, category_id").eq("is_active", true)
       setCampaigns(c ?? [])

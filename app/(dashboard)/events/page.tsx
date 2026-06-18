@@ -3,6 +3,7 @@
 import { EventTable } from "@/components/screens/events/event-table"
 import { EventsStats } from "@/components/screens/events/components/events-stats"
 import { useEventOverviewTable } from "@/components/screens/events/hooks/use-event-overview-table"
+import { useAutoRefresh } from "@/hooks/use-auto-refresh"
 import { Spinner } from "@/components/ui/spinner"
 
 export default function EventsPage() {
@@ -15,6 +16,8 @@ export default function EventsPage() {
     selectedEvent, setSelectedEvent,
     detailOpen, setDetailOpen,
   } = useEventOverviewTable()
+
+  useAutoRefresh("events", refresh)
 
   if (loading && data.length === 0 && !error) {
     return (
@@ -41,7 +44,6 @@ export default function EventsPage() {
         filters={filters}
         onFilterChange={updateFilter}
         onClearFilters={clearFilters}
-        onRefresh={refresh}
         onSelectEvent={setSelectedEvent}
         selectedEvent={selectedEvent}
         detailOpen={detailOpen}

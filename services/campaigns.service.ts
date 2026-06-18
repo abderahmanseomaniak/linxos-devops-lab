@@ -1,9 +1,9 @@
 import { supabase } from "@/services/supabase/client"
-import type { Campaign, CampaignInsert, CampaignUpdate } from "@/types/campaigns.types"
+import type { Campaign, CampaignInsert, CampaignUpdate, CampaignStatus } from "@/types/campaigns.types"
 
 export interface CampaignListFilters {
   search?: string
-  status?: string
+  status?: CampaignStatus
   page?: number
   pageSize?: number
 }
@@ -34,7 +34,7 @@ async function list(filters: CampaignListFilters = {}): Promise<CampaignListResu
   }
 
   if (status) {
-    query = query.eq("status", status)
+    query = query.eq("status", status as never)
   }
 
   const from = (page - 1) * pageSize
@@ -64,7 +64,7 @@ async function getById(id: string): Promise<Campaign | null> {
       )
     `
     )
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
@@ -94,7 +94,7 @@ async function update(id: string, data: CampaignUpdate): Promise<Campaign> {
   const { data: updated, error } = await supabase
     .from("campaigns")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -111,7 +111,7 @@ async function update(id: string, data: CampaignUpdate): Promise<Campaign> {
 }
 
 async function remove(id: string): Promise<void> {
-  const { error } = await supabase.from("campaigns").delete().eq("id", id)
+  const { error } = await supabase.from("campaigns").delete().eq("id", id as never)
   if (error) throw error
 }
 

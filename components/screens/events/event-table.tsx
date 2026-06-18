@@ -23,8 +23,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { EventOverviewRow, EventListFilters } from "@/types/events-overview"
-import { Badge } from "@/components/ui/badge"
+import type { WorkflowCode } from "@/types/workflow.types"
+import { WORKFLOW_COLORS } from "@/types/workflow.types"
+
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
@@ -40,40 +43,51 @@ import { EventDetailSheet } from "./sheets/detail-event-sheet"
 import { Spinner } from "@/components/ui/spinner"
 import { DEFAULT_SORTING } from "./lib/constants"
 import { SORT_ICONS } from "@/components/shared/sort-icons"
-import { eventsActionsService } from "@/services/events-actions.service"
+
+import { supabase } from "@/services/supabase/client"
 import { useAuth } from "@/providers/auth-provider"
+import { StatusPicker, type StatusPickerItem } from "@/components/ui/status-picker"
 import { toast } from "sonner"
 
-const WORKFLOW_LABELS: Record<string, string> = {
-  DRAFT: "Brouillon",
-  UNDER_REVIEW: "En révision",
-  APPROVED: "Approuvé",
-  REJECTED: "Rejeté",
-  CONFIRMED: "Confirmé",
-  SHIPPED: "Expédié",
-  DELIVERED: "Livré",
-  COMPLETED: "Terminé",
-  CONTENT_REVIEWED: "Contenu vérifié",
-  REPORTED: "Signalé",
+const STATUS_CODE_TO_PICKER_ID: Record<string, number> = {
+  SUBMITTED: 1,
+  SCORED: 2,
+  NEEDS_CLARIFICATION: 3,
+  REJECTED: 4,
+  VALIDATED: 5,
+  CONFIRMATION_SENT: 6,
+  CONFIRMED: 7,
+  ALLOCATED: 8,
+  PREPARING_SHIPMENT: 9,
+  IN_DELIVERY: 10,
+  DELIVERED: 11,
+  UGC_PENDING: 12,
+  CONTENT_REVIEWED: 13,
+  REPORTED: 14,
+  CLOSED: 15,
 }
 
-const WORKFLOW_VARIANTS: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  DRAFT: "outline",
-  UNDER_REVIEW: "secondary",
-  APPROVED: "default",
-  REJECTED: "destructive",
-  CONFIRMED: "default",
-  SHIPPED: "secondary",
-  DELIVERED: "default",
-  COMPLETED: "default",
-  CONTENT_REVIEWED: "default",
-  REPORTED: "destructive",
-}
+const PICKER_ID_TO_STATUS_CODE: Record<number, string> = Object.fromEntries(
+  Object.entries(STATUS_CODE_TO_PICKER_ID).map(([k, v]) => [v, k])
+)
 
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })
-}
+const STATUS_PICKER_ITEMS: StatusPickerItem[] = [
+  { id: 1, emoji: "📤", name: "Soumis" },
+  { id: 2, emoji: "⭐", name: "Noté" },
+  { id: 3, emoji: "❓", name: "Demande de clarification" },
+  { id: 4, emoji: "❌", name: "Rejeté" },
+  { id: 5, emoji: "✅", name: "Validé" },
+  { id: 6, emoji: "📧", name: "Confirmation envoyée" },
+  { id: 7, emoji: "📋", name: "Confirmé" },
+  { id: 8, emoji: "📦", name: "Alloué" },
+  { id: 9, emoji: "📦", name: "Préparation expédition" },
+  { id: 10, emoji: "🚚", name: "En livraison" },
+  { id: 11, emoji: "✅", name: "Livré" },
+  { id: 12, emoji: "📸", name: "UGC en attente" },
+  { id: 13, emoji: "🎬", name: "Contenu vérifié" },
+  { id: 14, emoji: "🚨", name: "Signalé" },
+  { id: 15, emoji: "🔒", name: "Clôturé" },
+]
 
 function getInitials(name: string): string {
   return name
@@ -84,7 +98,6 @@ function getInitials(name: string): string {
     .slice(0, 2)
 }
 
-
 interface EventTableProps {
   data: EventOverviewRow[]
   total: number
@@ -94,7 +107,7 @@ interface EventTableProps {
   filters: EventListFilters
   onFilterChange: <K extends keyof EventListFilters>(key: K, value: EventListFilters[K]) => void
   onClearFilters: () => void
-  onRefresh: () => void
+  onRefresh?: () => void
   onSelectEvent: (event: EventOverviewRow | null) => void
   selectedEvent: EventOverviewRow | null
   detailOpen: boolean
@@ -109,10 +122,49 @@ export function EventTable({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([DEFAULT_SORTING])
   const [rowSelection, setRowSelection] = useState({})
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
-  const { user, isAdmin, isSponsoringManager } = useAuth()
+  const [, setActionLoading] = useState<string | null>(null)
+  const { user } = useAuth()
   const userId = user?.id ?? ""
-  const canDecide = isAdmin || isSponsoringManager
+
+  const handleStatusChange = async (eventId: string, currentCode: string, newId: number) => {
+    if (newId === 0) return
+    const newCode = PICKER_ID_TO_STATUS_CODE[newId]
+    if (!newCode || newCode === currentCode) return
+    setActionLoading(eventId)
+    try {
+      const { data: state } = await supabase
+        .from("workflow_states")
+        .select("id")
+        .eq("code", newCode as never)
+        .maybeSingle()
+      if (!state) { toast.error("État introuvable"); setActionLoading(null); return }
+      const { data: event } = await supabase
+        .from("events")
+        .select("state_id")
+        .eq("id", eventId)
+        .single() as { data: { state_id: string | null } | null }
+      await supabase.from("events").update({ state_id: (state as { id: string }).id }).eq("id", eventId)
+      await supabase.from("workflow_history").insert({
+        event_id: eventId,
+        old_state_id: event?.state_id ?? null,
+        new_state_id: (state as { id: string }).id,
+        changed_by: userId,
+      })
+      if (newCode === "VALIDATED") {
+        const { data: ev } = await supabase.from("events").select("applicant_email, tracking_code").eq("id", eventId).single() as { data: { applicant_email: string; tracking_code: string } | null }
+        if (ev?.applicant_email) {
+          const { sendConfirmationLinkEmail } = await import("@/services/email/send-email")
+          sendConfirmationLinkEmail(eventId, ev.applicant_email, ev.tracking_code)
+        }
+      }
+      toast.success("Statut mis à jour")
+      onRefresh?.()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur lors du changement de statut")
+    } finally {
+      setActionLoading(null)
+    }
+  }
 
   const columns: ColumnDef<EventOverviewRow>[] = [
     {
@@ -165,14 +217,20 @@ export function EventTable({
       id: "status",
       header: "Statut",
       cell: ({ row }) => {
-        const code = row.original.workflow_code ?? ""
+        const code = row.original.workflow_code as WorkflowCode | undefined
+        const currentId = code ? STATUS_CODE_TO_PICKER_ID[code] ?? 0 : 0
         return (
-          <Badge variant={WORKFLOW_VARIANTS[code] ?? "secondary"}>
-            {WORKFLOW_LABELS[code] ?? code}
-          </Badge>
+          <div className="flex items-center" onClick={(e) => e.stopPropagation()} role="presentation">
+            <StatusPicker
+              items={STATUS_PICKER_ITEMS}
+              value={currentId}
+              color={code && WORKFLOW_COLORS[code] ? WORKFLOW_COLORS[code] : undefined}
+              onChange={(id) => handleStatusChange(row.original.event_id, code ?? "", id)}
+            />
+          </div>
         )
       },
-      size: 130,
+      size: 200,
     },
     {
       id: "score_ai",
@@ -190,22 +248,24 @@ export function EventTable({
       size: 100,
     },
     {
-      id: "date_confirme",
-      header: "Date confirmation",
+      id: "ai_recommendation",
+      header: "Recommandation IA",
       cell: ({ row }) => {
-        const date = row.original.date_confirme
-        return <span className="text-sm">{date ? formatDate(date) : "-"}</span>
+        const rec = row.original.ai_recommendation
+        if (!rec) return <span className="text-sm text-muted-foreground">-</span>
+        const variant = rec === "ACCEPT" ? "default" : rec === "REJECT" ? "destructive" : "secondary"
+        const label = rec === "ACCEPT" ? "Accepter" : rec === "REJECT" ? "Rejeter" : "À réviser"
+        return <Badge variant={variant}>{label}</Badge>
       },
       size: 130,
     },
+
     {
       id: "actions",
       size: 80,
       enableHiding: false,
       header: () => <span className="sr-only">Actions</span>,
       cell: ({ row }) => {
-        const event = row.original
-        const canAccept = event.workflow_code === "UNDER_REVIEW" || event.workflow_code === "SUBMITTED"
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -220,25 +280,6 @@ export function EventTable({
               }}>
                 Voir détails
               </DropdownMenuItem>
-              {canDecide && canAccept && (
-                <DropdownMenuItem
-                  disabled={actionLoading === event.event_id}
-                  onClick={async () => {
-                    setActionLoading(event.event_id)
-                    try {
-                      await eventsActionsService.acceptEvent(event.event_id, userId, undefined)
-                      toast.success("Événement accepté")
-                      onRefresh()
-                    } catch {
-                      toast.error("Erreur lors de l'acceptation")
-                    } finally {
-                      setActionLoading(null)
-                    }
-                  }}
-                >
-                  {actionLoading === event.event_id ? "..." : "Accepter"}
-                </DropdownMenuItem>
-              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -275,7 +316,6 @@ export function EventTable({
     <div className="space-y-4">
       <EventTableToolbar
         table={table}
-        onRefresh={onRefresh}
         onClearFilters={onClearFilters}
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={setColumnVisibility}
@@ -283,7 +323,7 @@ export function EventTable({
         onFilterChange={onFilterChange}
       />
 
-      <div className="relative overflow-hidden rounded-md border bg-background">
+      <div className="relative rounded-md border bg-background">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
             <Spinner className="size-6" />

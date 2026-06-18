@@ -1,10 +1,11 @@
 import { supabase } from "@/services/supabase/client"
+import { logAudit } from "@/lib/audit-logger"
 
 async function getStateId(code: string): Promise<string | null> {
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from("workflow_states")
     .select("id")
-    .eq("code", code)
+    .eq("code", code as never)
     .maybeSingle()
   return data?.id ?? null
 }
@@ -16,19 +17,19 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
   const { data: oldState } = await supabase
     .from("events")
     .select("state_id")
-    .eq("id", eventId)
+    .eq("id", eventId as never)
     .single()
 
-  const oldStateId: string | null = (oldState as { state_id: string | null } | null)?.state_id ?? null
+  const oldStateId: string | null = (oldState as unknown as { state_id: string | null } | null)?.state_id ?? null
 
-  const { error: updateError } = await (supabase as any)
+  const { error: updateError } = await supabase
     .from("events")
-    .update({ state_id: newStateId })
-    .eq("id", eventId)
+    .update({ state_id: newStateId } as never)
+    .eq("id", eventId as never)
 
   if (updateError) throw updateError
 
-  const { error: historyError } = await (supabase as any)
+  const { error: historyError } = await supabase
     .from("workflow_history")
     .insert({
       event_id: eventId,
@@ -36,7 +37,7 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
       new_state_id: newStateId,
       changed_by: userId,
       comment: comment ?? null,
-    })
+    } as never)
 
   if (historyError) throw historyError
 }
@@ -44,12 +45,20 @@ async function transitionEventState(eventId: string, newCode: string, userId: st
 export async function acceptEvent(eventId: string, userId: string, comment?: string) {
   await transitionEventState(eventId, "VALIDATED", userId, comment)
 
+  logAudit({
+    action: "APPROVE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: eventId,
+    description: `Approbation de l'événement`,
+  })
+
   // Send confirmation email to applicant
   try {
-    const { data: event } = await (supabase as any)
+    const { data: event } = await supabase
       .from("events")
       .select("applicant_email, tracking_code")
-      .eq("id", eventId)
+      .eq("id", eventId as never)
       .single()
 
     if (event?.applicant_email) {
@@ -62,7 +71,7 @@ export async function acceptEvent(eventId: string, userId: string, comment?: str
 }
 
 export async function rejectEvent(eventId: string, userId: string, comment?: string) {
-  const { error } = await (supabase as any).rpc("reject_event", {
+  const { error } = await supabase.rpc("reject_event", {
     p_event_id: eventId,
     p_user_id: userId,
     p_comment: comment ?? null,
@@ -70,10 +79,18 @@ export async function rejectEvent(eventId: string, userId: string, comment?: str
   if (error) {
     await transitionEventState(eventId, "REJECTED", userId, comment)
   }
+
+  logAudit({
+    action: "REJECT",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: eventId,
+    description: `Rejet de l'événement`,
+  })
 }
 
 export async function askClarification(eventId: string, userId: string, comment?: string) {
-  const { error } = await (supabase as any).rpc("ask_clarification", {
+  const { error } = await supabase.rpc("ask_clarification", {
     p_event_id: eventId,
     p_user_id: userId,
     p_comment: comment ?? null,
@@ -85,24 +102,91 @@ export async function askClarification(eventId: string, userId: string, comment?
 
 export async function createAllocation(
   eventId: string,
-  campaignId: string,
+  campaignId: string | null,
   allocatedQuantity: number,
   userId: string,
+  items?: { product_name: string; quantity: number }[],
 ) {
-  const { error } = await (supabase as any).rpc("create_allocation", {
+  const cId = campaignId || null
+
+  // Check if allocation already exists
+  const { data: existing } = await supabase
+    .from("allocations")
+    .select("id")
+    .eq("event_id", eventId as never)
+    .maybeSingle()
+
+  if (existing) {
+    throw new Error("Cet événement a déjà une allocation")
+  }
+
+  const { error } = await supabase.rpc("create_allocation", {
     p_event_id: eventId,
-    p_campaign_id: campaignId,
+    p_campaign_id: cId as never,
     p_quantity: allocatedQuantity,
     p_user_id: userId,
   })
   if (error) {
-    const { error: insertError } = await (supabase as any).from("allocations").insert({
+    const { error: insertError } = await supabase.from("allocations" as never).insert({
       event_id: eventId,
-      campaign_id: campaignId,
+      campaign_id: cId,
       allocated_quantity: allocatedQuantity,
       approved_by: userId,
-    })
-    if (insertError) throw insertError
+    } as never)
+    if (insertError) {
+      throw new Error("Erreur lors de la création de l'allocation")
+    }
+  }
+
+  // Deduct campaign stock
+  if (cId && items && items.length > 0) {
+    const { data: allProducts } = await supabase.from("products").select("id, name")
+    console.log("[stock] Products in DB:", JSON.stringify(allProducts))
+
+    for (const item of items) {
+      const product = (allProducts as unknown as { id: string; name: string }[] | null)?.find(
+        (p) => p.name.toLowerCase().includes(item.product_name.toLowerCase()),
+      )
+
+      if (product) {
+        const { data: stock } = await supabase
+          .from("campaign_stocks")
+          .select("id, available_quantity, reserved_quantity")
+          .eq("campaign_id", cId as never)
+          .eq("product_id", product.id as never)
+          .maybeSingle()
+
+        console.log(`[stock] Found stock for ${item.product_name}:`, JSON.stringify(stock))
+
+        if (stock) {
+          const s = stock as unknown as { id: string; available_quantity: number; reserved_quantity: number }
+          const newAvailable = Math.max(0, s.available_quantity - item.quantity)
+          const newReserved = s.reserved_quantity + item.quantity
+          const { error: updateErr } = await supabase
+            .from("campaign_stocks")
+            .update({ available_quantity: newAvailable, reserved_quantity: newReserved } as never)
+            .eq("id", s.id as never)
+
+          if (updateErr) {
+            console.error(`[stock] Update failed for ${item.product_name}:`, updateErr)
+          } else {
+            console.log(`[stock] Updated ${item.product_name}: available ${s.available_quantity}->${newAvailable}, reserved ${s.reserved_quantity}->${newReserved}`)
+            await supabase.from("inventory_movements").insert({
+              campaign_id: cId,
+              product_id: product.id,
+              event_id: eventId,
+              movement_type: "RESERVATION",
+              quantity: item.quantity,
+              note: `Réservation via allocation manuelle`,
+            } as never)
+          }
+        } else {
+          console.log(`[stock] No campaign_stock row found for campaign ${cId}, product ${product.name}`)
+        }
+      } else {
+        console.log(`[stock] No product found matching "${item.product_name}"`)
+      }
+    }
   }
 }
 
@@ -112,21 +196,21 @@ export async function createShipment(
   trackingCode: string,
   items: Array<{ product_id: string; quantity: number }>,
 ) {
-  const { error } = await (supabase as any).rpc("create_shipment", {
+  const { error } = await supabase.rpc("create_shipment", {
     p_event_id: eventId,
     p_allocation_id: allocationId,
     p_tracking_code: trackingCode,
     p_items: JSON.stringify(items),
   })
   if (error) {
-    const { data: shipment, error: shipmentError } = await (supabase as any)
+    const { data: shipment, error: shipmentError } = await supabase
       .from("shipments")
       .insert({
         event_id: eventId,
         allocation_id: allocationId,
         tracking_code: trackingCode,
         status: "PREPARING",
-      })
+      } as never)
       .select()
       .single()
 
@@ -134,32 +218,32 @@ export async function createShipment(
     if (!shipment) throw new Error("Échec création expédition")
 
     const shipmentItems = items.map((item) => ({
-      shipment_id: (shipment as { id: string }).id,
+      shipment_id: (shipment as unknown as { id: string }).id,
       product_id: item.product_id,
       quantity: item.quantity,
     }))
 
-    const { error: itemsError } = await (supabase as any).from("shipment_items").insert(shipmentItems)
+    const { error: itemsError } = await supabase.from("shipment_items" as never).insert(shipmentItems as never)
     if (itemsError) throw itemsError
   }
 }
 
 export async function updateShipmentStatus(shipmentId: string, status: string) {
-  const { error } = await (supabase as any).rpc("update_shipment_status", {
+  const { error } = await supabase.rpc("update_shipment_status", {
     p_shipment_id: shipmentId,
     p_status: status,
   })
   if (error) {
     const update: Record<string, string> = { status }
-    if (status === "SHIPPED" || status === "IN_DELIVERY") {
+    if (status === "PREPARING_SHIPMENT" || status === "IN_DELIVERY") {
       update.shipped_at = new Date().toISOString()
     } else if (status === "DELIVERED") {
       update.delivered_at = new Date().toISOString()
     }
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from("shipments")
-      .update(update)
-      .eq("id", shipmentId)
+    .update(update as never)
+    .eq("id", shipmentId as never)
     if (updateError) throw updateError
   }
 }
@@ -169,15 +253,15 @@ export async function deliverShipment(shipmentId: string) {
 }
 
 export async function reportProblem(shipmentId: string, description: string) {
-  const { error } = await (supabase as any).rpc("report_problem", {
+  const { error } = await supabase.rpc("report_problem", {
     p_shipment_id: shipmentId,
     p_description: description,
   })
   if (error) {
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from("shipments")
-      .update({ status: "PROBLEM", problem_description: description })
-      .eq("id", shipmentId)
+      .update({ status: "PROBLEM", problem_description: description } as never)
+      .eq("id", shipmentId as never)
     if (updateError) throw updateError
   }
 }
@@ -193,7 +277,7 @@ export async function verifyContent(
   },
   comment?: string,
 ) {
-  const { error } = await (supabase as any).rpc("verify_content", {
+  const { error } = await supabase.rpc("verify_content", {
     p_ugc_content_id: ugcContentId,
     p_user_id: userId,
     p_visibility_score: scores.visibility_score ?? null,
@@ -203,10 +287,10 @@ export async function verifyContent(
     p_comment: comment ?? null,
   })
   if (error) {
-    const { error: checkError } = await (supabase as any)
+    const { error: checkError } = await supabase
       .from("content_verifications")
       .select("id")
-      .eq("ugc_content_id", ugcContentId)
+      .eq("ugc_content_id", ugcContentId as never)
       .maybeSingle()
 
     if (checkError) throw checkError
@@ -221,9 +305,9 @@ export async function verifyContent(
       comment: comment ?? null,
     }
 
-    const { error: upsertError } = await (supabase as any)
+    const { error: upsertError } = await supabase
       .from("content_verifications")
-      .upsert(verificationData, { onConflict: "ugc_content_id" })
+      .upsert(verificationData as never, { onConflict: "ugc_content_id" })
 
     if (upsertError) throw upsertError
   }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -22,20 +22,12 @@ interface ProductSheetProps {
 }
 
 export function ProductSheet({ open, onOpenChange, product, categories, onSave }: ProductSheetProps) {
-  const [name, setName] = useState(product?.name ?? "")
-  const [categoryId, setCategoryId] = useState(product?.category_id ?? "")
-  const [description, setDescription] = useState(product?.description ?? "")
-  const [isActive, setIsActive] = useState(product?.is_active ?? true)
+  const [name, setName] = useState("")
+  const [categoryId, setCategoryId] = useState("")
+  const [description, setDescription] = useState("")
+  const [isActive, setIsActive] = useState(true)
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!open) return
-    setName(product?.name ?? "")
-    setCategoryId(product?.category_id ?? "")
-    setDescription(product?.description ?? "")
-    setIsActive(product?.is_active ?? true)
-  }, [product, open])
-  /* eslint-enable react-hooks/set-state-in-effect */
+  const formKey = open ? product?.id ?? "new" : "closed"
 
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")
@@ -46,6 +38,7 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <div key={formKey}>
         <SheetHeader className="mb-6">
           <SheetTitle>{product ? "Modifier" : "Nouveau"} produit</SheetTitle>
           <SheetDescription>
@@ -79,6 +72,7 @@ export function ProductSheet({ open, onOpenChange, product, categories, onSave }
           <Button className="mt-2" onClick={handleSubmit}>
             {product ? "Mettre à jour" : "Créer"}
           </Button>
+        </div>
         </div>
       </SheetContent>
     </Sheet>

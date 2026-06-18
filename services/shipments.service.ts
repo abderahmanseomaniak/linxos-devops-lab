@@ -55,7 +55,7 @@ async function getAllocationsByEvent(eventId: string): Promise<Allocation[]> {
       approved_by_user:profiles!allocations_approved_by_fkey(*)
     `
     )
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .order("created_at", { ascending: false })
 
   if (error) throw error
@@ -102,8 +102,8 @@ async function listShipments(filters: ShipmentListFilters = {}): Promise<Shipmen
       { count: "exact" }
     )
 
-  if (eventId) query = query.eq("event_id", eventId)
-  if (status) query = query.eq("status", status)
+  if (eventId) query = query.eq("event_id", eventId as never)
+  if (status) query = query.eq("status", status as never)
   if (search) query = query.ilike("tracking_code", `%${search}%`)
 
   const from = (page - 1) * pageSize
@@ -142,7 +142,7 @@ async function getShipmentById(id: string): Promise<Shipment | null> {
       delivery_proofs:delivery_proofs(*)
     `
     )
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
@@ -186,7 +186,7 @@ async function updateShipmentStatus(
   const { data: updated, error } = await supabase
     .from("shipments")
     .update(updateData as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -212,7 +212,7 @@ async function updateShipmentStatus(
 }
 
 async function removeShipment(id: string): Promise<void> {
-  const { error } = await supabase.from("shipments").delete().eq("id", id)
+  const { error } = await supabase.from("shipments").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -235,7 +235,7 @@ async function addShipmentItem(data: ShipmentItemInsert): Promise<ShipmentItem> 
 }
 
 async function removeShipmentItem(id: string): Promise<void> {
-  const { error } = await supabase.from("shipment_items").delete().eq("id", id)
+  const { error } = await supabase.from("shipment_items").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -249,7 +249,7 @@ async function addDeliveryProof(data: DeliveryProofInsert): Promise<DeliveryProo
     .single()
 
   if (error) throw error
-  return created as DeliveryProof
+  return created as unknown as DeliveryProof
 }
 
 export const shipmentsService = {

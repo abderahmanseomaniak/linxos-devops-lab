@@ -29,7 +29,7 @@ export async function signUp(email: string, password: string, fullName: string) 
       email,
       full_name: fullName,
       role: "SPONSORING_MANAGER",
-    } satisfies Omit<Profile, "is_active" | "created_at">)
+    } as never)
   }
 
   return { session: data.session, user: data.user, error: error?.message ?? null }
@@ -55,8 +55,8 @@ export async function getServerProfile(): Promise<Profile | null> {
   const { data } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", user.id as never)
     .maybeSingle()
 
-  return data as Profile | null
+  return data as unknown as Profile | null
 }

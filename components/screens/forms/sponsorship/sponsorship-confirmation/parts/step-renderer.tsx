@@ -9,15 +9,16 @@ import { CommitmentStep } from "../steps/commitment-step"
 type Props = {
   step: number
   onEdit: (step: number) => void
+  allocatedCans?: number
 }
 
-export function StepRenderer({ step, onEdit }: Props) {
+export function StepRenderer({ step, onEdit, allocatedCans = 0 }: Props) {
   return (
     <Switch
       value={step}
       cases={{
         1: <GeneralInfoStep />,
-        2: <SponsoringContactStep />,
+        2: <SponsoringContactStep allocatedCans={allocatedCans} />,
         3: <UgcStep />,
         4: <LogisticsStep />,
         5: <SummaryStep onEdit={onEdit} />,

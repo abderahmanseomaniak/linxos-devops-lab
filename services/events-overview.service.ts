@@ -15,23 +15,23 @@ async function list(filters: EventListFilters = {}): Promise<EventListResult> {
   if (search) {
     query = query.or(`event_title.ilike.%${search}%,club_name.ilike.%${search}%`)
   }
-  if (workflow_code) {
-    query = query.eq("workflow_code", workflow_code)
+  if (workflow_code && workflow_code.length > 0) {
+    query = query.in("workflow_code", workflow_code)
   }
   if (campaign_id) {
-    query = query.eq("campaign_id", campaign_id)
+    query = query.eq("campaign_id", campaign_id as never)
   }
   if (city) {
     query = query.ilike("city", `%${city}%`)
   }
   if (confirmation_completed !== undefined) {
-    query = query.eq("confirmation_completed", confirmation_completed)
+    query = query.eq("confirmation_completed", confirmation_completed as never)
   }
-  if (shipment_status) {
-    query = query.eq("shipment_status", shipment_status)
+  if (shipment_status && shipment_status.length > 0) {
+    query = query.in("shipment_status", shipment_status)
   }
   if (drive_submitted !== undefined) {
-    query = query.eq("drive_submitted", drive_submitted)
+    query = query.eq("drive_submitted", drive_submitted as never)
   }
 
   const from = (page - 1) * pageSize
@@ -95,23 +95,24 @@ async function getById(id: string): Promise<EventDetail | null> {
       campaign:campaigns(*),
       state:workflow_states(*)
     `)
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
   if (!event) return null
 
-  const base = event as Record<string, unknown>
+  const base = event as unknown as Record<string, unknown>
 
   const fetches = await Promise.allSettled([
-    supabase.from("application_forms").select("*, ugc_profiles:application_ugc_profiles(*)").eq("event_id", id).maybeSingle(),
-    supabase.from("allocations").select("*").eq("event_id", id).order("created_at", { ascending: false }),
-    supabase.from("shipments").select("*, items:shipment_items(*, product:products(id, name))").eq("event_id", id).order("created_at", { ascending: false }),
-    supabase.from("ugc_contents").select("*, verification:content_verifications(*)").eq("event_id", id).order("created_at", { ascending: false }),
-    supabase.from("drive_folders").select("*").eq("event_id", id).maybeSingle(),
-    supabase.from("confirmation_forms").select("*").eq("event_id", id).maybeSingle(),
-    supabase.from("workflow_history").select("*, old_state:workflow_states!workflow_history_old_state_id_fkey(*), new_state:workflow_states!workflow_history_new_state_id_fkey(*), changed_by_user:profiles(full_name)").eq("event_id", id).order("created_at", { ascending: false }),
-    supabase.from("event_attachments").select("*").eq("event_id", id).order("created_at", { ascending: false }),
+    supabase.from("application_forms").select("*, ugc_profiles:application_ugc_profiles(*)").eq("event_id", id as never).maybeSingle(),
+    supabase.from("ai_analyses").select("*").eq("event_id", id as never).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("allocations").select("*").eq("event_id", id as never).order("created_at", { ascending: false }),
+    supabase.from("shipments").select("*, items:shipment_items(*, product:products(id, name))").eq("event_id", id as never).order("created_at", { ascending: false }),
+    supabase.from("ugc_contents").select("*, verification:content_verifications(*)").eq("event_id", id as never).order("created_at", { ascending: false }),
+    supabase.from("drive_folders").select("*").eq("event_id", id as never).maybeSingle(),
+    supabase.from("confirmation_forms").select("*").eq("event_id", id as never).maybeSingle(),
+    supabase.from("workflow_history").select("*, old_state:workflow_states!workflow_history_old_state_id_fkey(*), new_state:workflow_states!workflow_history_new_state_id_fkey(*), changed_by_user:profiles(full_name)").eq("event_id", id as never).order("created_at", { ascending: false }),
+    supabase.from("event_attachments").select("*").eq("event_id", id as never).order("created_at", { ascending: false }),
   ])
 
   const getData = <T>(r: PromiseSettledResult<{ data: T | null; error: unknown }>): T | null =>
@@ -120,13 +121,14 @@ async function getById(id: string): Promise<EventDetail | null> {
   const detail: EventDetail = {
     ...base as unknown as EventDetail,
     application_form: getData(fetches[0]) as EventDetail["application_form"],
-    allocations: (getData<unknown[]>(fetches[1]) ?? []) as EventDetail["allocations"],
-    shipments: (getData<unknown[]>(fetches[2]) ?? []) as EventDetail["shipments"],
-    ugc_contents: (getData<unknown[]>(fetches[3]) ?? []) as EventDetail["ugc_contents"],
-    drive_folder: getData(fetches[4]) as EventDetail["drive_folder"],
-    confirmation_form: getData(fetches[5]) as EventDetail["confirmation_form"],
-    workflow_history: (getData<unknown[]>(fetches[6]) ?? []) as EventDetail["workflow_history"],
-    attachments: (getData<unknown[]>(fetches[7]) ?? []) as EventDetail["attachments"],
+    ai_analysis: getData(fetches[1]) as EventDetail["ai_analysis"],
+    allocations: (getData<unknown[]>(fetches[2]) ?? []) as EventDetail["allocations"],
+    shipments: (getData<unknown[]>(fetches[3]) ?? []) as EventDetail["shipments"],
+    ugc_contents: (getData<unknown[]>(fetches[4]) ?? []) as EventDetail["ugc_contents"],
+    drive_folder: getData(fetches[5]) as EventDetail["drive_folder"],
+    confirmation_form: getData(fetches[6]) as EventDetail["confirmation_form"],
+    workflow_history: (getData<unknown[]>(fetches[7]) ?? []) as EventDetail["workflow_history"],
+    attachments: (getData<unknown[]>(fetches[8]) ?? []) as EventDetail["attachments"],
   }
 
   return detail

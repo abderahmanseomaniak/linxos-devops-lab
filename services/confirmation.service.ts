@@ -26,11 +26,11 @@ async function getByEventId(eventId: string): Promise<ConfirmationFormRecord | n
   const { data, error } = await supabase
     .from("confirmation_forms")
     .select("*")
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .single()
 
   if (error) return null
-  return data as ConfirmationFormRecord
+  return data as unknown as ConfirmationFormRecord
 }
 
 async function create(data: ConfirmationFormInsert): Promise<ConfirmationFormRecord> {
@@ -55,19 +55,19 @@ async function create(data: ConfirmationFormInsert): Promise<ConfirmationFormRec
     .single()
 
   if (error) throw error
-  return created as ConfirmationFormRecord
+  return created as unknown as ConfirmationFormRecord
 }
 
 async function update(eventId: string, data: Partial<ConfirmationFormInsert>): Promise<ConfirmationFormRecord> {
   const { data: updated, error } = await supabase
     .from("confirmation_forms")
     .update(data as never)
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .select("*")
     .single()
 
   if (error) throw error
-  return updated as ConfirmationFormRecord
+  return updated as unknown as ConfirmationFormRecord
 }
 
 async function createUgcProfile(data: {
@@ -86,25 +86,25 @@ async function createUgcProfile(data: {
     .single()
 
   if (error) throw error
-  return created as { id: string; confirmation_form_id: string; [key: string]: unknown }
+  return created as unknown as { id: string; confirmation_form_id: string; [key: string]: unknown }
 }
 
 async function createOrUpdateDriveFolder(eventId: string, driveUrl: string): Promise<{ id: string; event_id: string; drive_url: string | null; [key: string]: unknown }> {
-  const { data: existing } = await (supabase as any)
+  const { data: existing } = await supabase
     .from("drive_folders")
     .select("*")
-    .eq("event_id", eventId)
-    .single()
+    .eq("event_id", eventId as never)
+    .single() as unknown as { data: { id: string; event_id: string; drive_url: string | null } | null; error: unknown }
 
   if (existing) {
-    const { data: updated, error } = await (supabase as any)
+    const { data: updated, error } = await supabase
       .from("drive_folders")
-      .update({ drive_url: driveUrl })
-      .eq("id", existing.id)
+      .update({ drive_url: driveUrl } as never)
+      .eq("id", existing.id as never)
       .select("*")
-      .single()
+      .single() as unknown as { data: { id: string; event_id: string; drive_url: string | null; [key: string]: unknown } | null; error: unknown }
     if (error) throw error
-    return updated as { id: string; event_id: string; drive_url: string | null; [key: string]: unknown }
+    return updated as unknown as { id: string; event_id: string; drive_url: string | null; [key: string]: unknown }
   }
 
   const { data: created, error } = await supabase
@@ -120,7 +120,7 @@ async function createOrUpdateDriveFolder(eventId: string, driveUrl: string): Pro
     .single()
 
   if (error) throw error
-  return created as { id: string; event_id: string; drive_url: string | null; [key: string]: unknown }
+  return created as unknown as { id: string; event_id: string; drive_url: string | null; [key: string]: unknown }
 }
 
 export interface SubmitConfirmationInput {
@@ -157,15 +157,15 @@ export async function submitConfirmationForm(
   const { data: event, error: eventError } = await supabase
     .from("events")
     .select("id, club_id")
-    .eq("tracking_code", data.trackingCode)
+    .eq("tracking_code", data.trackingCode as never)
     .single()
 
   if (eventError || !event) {
     throw new Error("Événement introuvable. Vérifiez votre code de suivi.")
   }
 
-  const eventId = (event as { id: string }).id
-  const clubId = (event as { club_id: string }).club_id
+  const eventId = (event as unknown as { id: string }).id
+  const clubId = (event as unknown as { club_id: string }).club_id
 
   // 2. Mettre à jour le club
   if (data.club) {
@@ -176,14 +176,14 @@ export async function submitConfirmationForm(
         city: data.city,
         university: data.university || null,
       } as never)
-      .eq("id", clubId)
+        .eq("id", clubId as never)
   }
 
   // 3. Mettre à jour l'événement
   await supabase
     .from("events")
     .update({ city: data.city } as never)
-    .eq("id", eventId)
+    .eq("id", eventId as never)
 
   // 4. Créer ou mettre à jour le confirmation_form
   const existing = await getByEventId(eventId)

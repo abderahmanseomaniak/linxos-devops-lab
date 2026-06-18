@@ -9,8 +9,6 @@ import type {
   DriveFolderInsert,
   DriveFolderUpdate,
   EventMetric,
-  EventMetricInsert,
-  EventMetricUpdate,
 } from "@/types/ugc.types"
 
 // ── UGC Contents ─────────────────────────────────
@@ -24,7 +22,7 @@ async function listUGCContents(eventId: string): Promise<UGCContent[]> {
       verification:content_verifications(*)
     `
     )
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .order("created_at", { ascending: false })
 
   if (error) throw error
@@ -54,7 +52,7 @@ async function updateUGCContentMetrics(
   const { data: updated, error } = await supabase
     .from("ugc_contents")
     .update(metrics as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -68,7 +66,7 @@ async function updateUGCContentMetrics(
 }
 
 async function removeUGCContent(id: string): Promise<void> {
-  const { error } = await supabase.from("ugc_contents").delete().eq("id", id)
+  const { error } = await supabase.from("ugc_contents").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -108,7 +106,7 @@ async function listContentVerifications(
     .order("created_at", { ascending: false })
 
   if (ugcContentId) {
-    query = query.eq("ugc_content_id", ugcContentId)
+    query = query.eq("ugc_content_id", ugcContentId as never)
   }
 
   const { data, error } = await query
@@ -123,11 +121,11 @@ async function getDriveFolderByEvent(eventId: string): Promise<DriveFolder | nul
   const { data, error } = await supabase
     .from("drive_folders")
     .select("*")
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .single()
 
   if (error && error.code !== "PGRST116") throw error
-  return data as DriveFolder | null
+  return data as unknown as DriveFolder | null
 }
 
 async function createDriveFolder(data: DriveFolderInsert): Promise<DriveFolder> {
@@ -138,19 +136,19 @@ async function createDriveFolder(data: DriveFolderInsert): Promise<DriveFolder> 
     .single()
 
   if (error) throw error
-  return created as DriveFolder
+  return created as unknown as DriveFolder
 }
 
 async function updateDriveFolder(id: string, data: DriveFolderUpdate): Promise<DriveFolder> {
   const { data: updated, error } = await supabase
     .from("drive_folders")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select("*")
     .single()
 
   if (error) throw error
-  return updated as DriveFolder
+  return updated as unknown as DriveFolder
 }
 
 // ── Event Metrics ────────────────────────────────
@@ -159,18 +157,18 @@ async function getEventMetricsByEvent(eventId: string): Promise<EventMetric | nu
   const { data, error } = await supabase
     .from("event_metrics")
     .select("*")
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .single()
 
   if (error && error.code !== "PGRST116") throw error
-  return data as EventMetric | null
+  return data as unknown as EventMetric | null
 }
 
 async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
   const { data: contents, error: contentsError } = await supabase
     .from("ugc_contents")
     .select("views, likes, comments")
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
 
   if (contentsError) throw contentsError
 
@@ -183,14 +181,14 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
       ? Math.round(((totalLikes + totalComments) / totalViews) * 10000) / 100
       : 0
 
-  const { data: existing } = await (supabase as any)
+  const { data: existing } = await supabase
     .from("event_metrics")
     .select("id")
-    .eq("event_id", eventId)
-    .single() as { data: { id: string } | null }
+    .eq("event_id", eventId as never)
+    .single() as unknown as { data: { id: string } | null }
 
   if (existing) {
-    const { data: updated, error: updateError } = await (supabase as any)
+    const { data: updated, error: updateError } = await supabase
       .from("event_metrics")
       .update({
         total_views: totalViews,
@@ -198,15 +196,15 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
         total_comments: totalComments,
         content_count: contentCount,
         engagement_rate: engagementRate,
-      })
-      .eq("id", existing.id)
+      } as never)
+      .eq("id", existing.id as never)
       .select("*")
       .single()
 
     if (updateError) throw updateError
-    return updated as EventMetric
+    return updated as unknown as EventMetric
   } else {
-    const { data: created, error: insertError } = await (supabase as any)
+    const { data: created, error: insertError } = await supabase
       .from("event_metrics")
       .insert({
         event_id: eventId,
@@ -215,12 +213,12 @@ async function recalculateEventMetrics(eventId: string): Promise<EventMetric> {
         total_comments: totalComments,
         content_count: contentCount,
         engagement_rate: engagementRate,
-      })
+      } as never)
       .select("*")
       .single()
 
     if (insertError) throw insertError
-    return created as EventMetric
+    return created as unknown as EventMetric
   }
 }
 

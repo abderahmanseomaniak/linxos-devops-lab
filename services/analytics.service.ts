@@ -38,7 +38,7 @@ async function getScoringProfileById(id: string): Promise<ScoringProfile | null>
       rules:scoring_rules(*)
     `
     )
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
@@ -71,7 +71,7 @@ async function updateScoringProfile(
   const { data: updated, error } = await supabase
     .from("scoring_profiles")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -86,7 +86,7 @@ async function updateScoringProfile(
 }
 
 async function removeScoringProfile(id: string): Promise<void> {
-  const { error } = await supabase.from("scoring_profiles").delete().eq("id", id)
+  const { error } = await supabase.from("scoring_profiles").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -103,7 +103,7 @@ async function listScoringRulesByProfile(
       scoring_profile:scoring_profiles(*)
     `
     )
-    .eq("scoring_profile_id", profileId)
+    .eq("scoring_profile_id", profileId as never)
     .order("name", { ascending: true })
 
   if (error) throw error
@@ -135,7 +135,7 @@ async function updateScoringRule(
   const { data: updated, error } = await supabase
     .from("scoring_rules")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -149,7 +149,7 @@ async function updateScoringRule(
 }
 
 async function removeScoringRule(id: string): Promise<void> {
-  const { error } = await supabase.from("scoring_rules").delete().eq("id", id)
+  const { error } = await supabase.from("scoring_rules").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -165,7 +165,7 @@ async function getAIAnalysisByEvent(eventId: string): Promise<AIAnalysis | null>
       scoring_profile:scoring_profiles(*)
     `
     )
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .single()
 
   if (error && error.code !== "PGRST116") throw error

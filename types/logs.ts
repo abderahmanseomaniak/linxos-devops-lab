@@ -1,29 +1,13 @@
-export interface LogDetails {
-  [key: string]: unknown
-}
-
-export interface ActivityLog {
+export interface LogEntry {
   id: string
-  userId: string
-  userName: string
-  action: "CREATE" | "UPDATE" | "DELETE" | "APPROVE" | "REJECT" | "INVITE" | "DELIVER"
-  entityType: string
-  entityId: string
-  entityName: string
-  description: string
-  timestamp: string
-  details: LogDetails
-}
-
-export interface LogsData {
-  logs: ActivityLog[]
-}
-
-export interface LogsFilter {
-  search: string
-  userId: string
+  user_id: string
+  user_name: string | null
   action: string
-  entityType: string
-  dateFrom: string
-  dateTo: string
+  module: string | null
+  entity_type: string | null
+  entity_id: string | null
+  description: string | null
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string
 }

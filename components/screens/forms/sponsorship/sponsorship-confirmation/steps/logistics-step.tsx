@@ -40,29 +40,37 @@ export function LogisticsStep() {
               <Controller
                 name="logisticsName"
                 control={control}
-                render={({ field }) => (
-                  <Field>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Nom du contact logistique</FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
+                      aria-invalid={fieldState.invalid}
                       placeholder="Nom du contact"
                     />
+                    {fieldState.invalid && (
+                      <FieldDescription>{fieldState.error?.message}</FieldDescription>
+                    )}
                   </Field>
                 )}
               />
               <Controller
                 name="logisticsWhatsapp"
                 control={control}
-                render={({ field }) => (
-                  <Field>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>WhatsApp logistique</FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
                       type="tel"
+                      aria-invalid={fieldState.invalid}
                       placeholder="+225 XX XX XX XX"
                     />
+                    {fieldState.invalid && (
+                      <FieldDescription>{fieldState.error?.message}</FieldDescription>
+                    )}
                   </Field>
                 )}
               />
@@ -71,14 +79,18 @@ export function LogisticsStep() {
             <Controller
               name="deliveryAddress"
               control={control}
-              render={({ field }) => (
-                <Field>
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Adresse de livraison complète</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
+                    aria-invalid={fieldState.invalid}
                     placeholder="Adresse complète"
                   />
+                  {fieldState.invalid && (
+                    <FieldDescription>{fieldState.error?.message}</FieldDescription>
+                  )}
                 </Field>
               )}
             />
@@ -129,14 +141,18 @@ export function LogisticsStep() {
               <Controller
                 name="receptionTime"
                 control={control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Heure de réception (optionnel)</FieldLabel>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Heure de réception</FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
                       type="time"
+                      aria-invalid={fieldState.invalid}
                     />
+                    {fieldState.invalid && (
+                      <FieldDescription>{fieldState.error?.message}</FieldDescription>
+                    )}
                   </Field>
                 )}
               />

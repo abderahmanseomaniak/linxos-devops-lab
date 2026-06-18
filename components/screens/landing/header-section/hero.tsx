@@ -28,9 +28,6 @@ function HeroSection() {
             <div className="flex flex-col max-w-5xl mx-auto gap-8">
               <div className="relative flex flex-col text-center items-center sm:gap-6 gap-4">
                 <m.h1
-                  initial={{ opacity: 0, y: 32 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
                   className="lg:text-8xl md:text-7xl text-5xl font-medium leading-14 md:leading-20 lg:leading-24"
                 >
                   Operate sponsorship campaigns{" "}
@@ -41,9 +38,6 @@ function HeroSection() {
                   </span>
                 </m.h1>
                 <m.div
-                  initial={{ opacity: 0, y: 32 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1, delay: 0.1, ease: "easeInOut" }}
                 >
                   <Typography variant="lead" className="max-w-2xl">
                     LinxOS centralizes requests, logistics, content production,
@@ -53,9 +47,6 @@ function HeroSection() {
                 </m.div>
               </div>
               <m.div
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.2, ease: "easeInOut" }}
                 className="flex items-center flex-col md:flex-row justify-center gap-8"
               >
                 <Button className="relative text-sm font-medium rounded-full h-12 p-1 ps-6 pe-14 group transition-all duration-500 hover:ps-14 hover:pe-6 w-fit overflow-hidden cursor-pointer">

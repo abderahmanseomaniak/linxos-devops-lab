@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/client"
+import { logAudit } from "@/lib/audit-logger"
 import type { Event, EventInsert, EventUpdate } from "@/types/events.types"
 
 function generateTrackingCode(): string {
@@ -43,15 +44,15 @@ async function list(filters: EventListFilters = {}): Promise<EventListResult> {
   }
 
   if (status) {
-    query = query.eq("workflow_states.code", status)
+    query = query.eq("workflow_states.code", status as never)
   }
 
   if (clubId) {
-    query = query.eq("club_id", clubId)
+    query = query.eq("club_id", clubId as never)
   }
 
   if (campaignId) {
-    query = query.eq("campaign_id", campaignId)
+    query = query.eq("campaign_id", campaignId as never)
   }
 
   const from = (page - 1) * pageSize
@@ -85,7 +86,7 @@ async function getById(id: string): Promise<Event | null> {
       drive_folder:drive_folders(*)
     `
     )
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
@@ -111,6 +112,15 @@ async function create(
     .single()
 
   if (error) throw error
+
+  logAudit({
+    action: "CREATE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: (created as unknown as { id: string }).id,
+    description: `Création de l'événement "${(created as unknown as { id: string; title: string }).title}"`,
+  })
+
   return created as unknown as Event
 }
 
@@ -121,7 +131,7 @@ async function update(
   const { data: updated, error } = await supabase
     .from("events")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -133,12 +143,29 @@ async function update(
     .single()
 
   if (error) throw error
+
+  logAudit({
+    action: "UPDATE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: id,
+    description: `Modification de l'événement`,
+  })
+
   return updated as unknown as Event
 }
 
 async function remove(id: string): Promise<void> {
-  const { error } = await supabase.from("events").delete().eq("id", id)
+  const { error } = await supabase.from("events").delete().eq("id", id as never)
   if (error) throw error
+
+  logAudit({
+    action: "DELETE",
+    module: "EVENTS",
+    entity_type: "event",
+    entity_id: id,
+    description: `Suppression de l'événement`,
+  })
 }
 
 async function createApplicationForm(data: {
@@ -173,18 +200,18 @@ async function createApplicationForm(data: {
     .single()
 
   if (error) throw error
-  return created as { id: string; event_id: string; [key: string]: unknown }
+  return created as unknown as { id: string; event_id: string; [key: string]: unknown }
 }
 
 async function getApplicationFormByEventId(eventId: string): Promise<{ id: string; event_id: string; [key: string]: unknown } | null> {
   const { data, error } = await supabase
     .from("application_forms")
     .select("*")
-    .eq("event_id", eventId)
+    .eq("event_id", eventId as never)
     .single()
 
   if (error) return null
-  return data as { id: string; event_id: string; [key: string]: unknown } | null
+  return data as unknown as { id: string; event_id: string; [key: string]: unknown } | null
 }
 
 async function createUgcProfile(data: {
@@ -211,7 +238,7 @@ async function createUgcProfile(data: {
     .single()
 
   if (error) throw error
-  return created as { id: string; application_form_id: string; [key: string]: unknown }
+  return created as unknown as { id: string; application_form_id: string; [key: string]: unknown }
 }
 
 async function createAttachment(data: {
@@ -232,7 +259,7 @@ async function createAttachment(data: {
     .single()
 
   if (error) throw error
-  return created as { id: string; event_id: string; file_type: string; file_url: string; file_name: string | null; created_at: string }
+  return created as unknown as { id: string; event_id: string; file_type: string; file_url: string; file_name: string | null; created_at: string }
 }
 
 async function listByTrackingCode(trackingCode: string): Promise<Event | null> {
@@ -245,7 +272,7 @@ async function listByTrackingCode(trackingCode: string): Promise<Event | null> {
       state:workflow_states(*),
       application_form:application_forms(*)
     `)
-    .eq("tracking_code", trackingCode)
+    .eq("tracking_code", trackingCode as never)
     .single()
 
   if (error) return null

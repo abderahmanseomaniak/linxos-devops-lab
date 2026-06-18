@@ -8,13 +8,13 @@ async function trackApplication(
   const fallback: TrackApplicationData = { found: false }
 
   try {
-    const { data, error } = await (supabase as any).rpc("track_application", {
+    const { data, error } = await supabase.rpc("track_application", {
       p_code: code,
       p_email: email ?? null,
     })
 
     if (!error && data) {
-      return data as TrackApplicationData
+  return data as unknown as TrackApplicationData
     }
 
     console.warn("[tracking] RPC unavailable, using API fallback:", error?.message ?? error)

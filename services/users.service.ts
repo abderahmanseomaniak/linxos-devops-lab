@@ -1,4 +1,5 @@
 import { supabase } from "@/services/supabase/client"
+import { logAudit } from "@/lib/audit-logger"
 import type { Profile, ProfileInsert, ProfileUpdate } from "@/types/profiles.types"
 
 // ── Types ─────────────────────────────────────────
@@ -31,7 +32,7 @@ async function list(filters: UserListFilters = {}): Promise<UserListResult> {
   }
 
   if (role) {
-    query = query.eq("role", role)
+    query = query.eq("role", role as never)
   }
 
   const from = (page - 1) * pageSize
@@ -44,7 +45,7 @@ async function list(filters: UserListFilters = {}): Promise<UserListResult> {
   if (error) throw error
 
   return {
-    data: (data ?? []) as Profile[],
+    data: (data ?? []) as unknown as Profile[],
     total: count ?? 0,
   }
 }
@@ -55,12 +56,12 @@ async function getById(id: string): Promise<Profile | null> {
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", id)
+    .eq("id", id as never)
     .maybeSingle()
 
   if (error) throw error
 
-  return data as Profile | null
+  return data as unknown as Profile | null
 }
 
 // ── Create ───────────────────────────────────────
@@ -73,7 +74,16 @@ async function create(data: ProfileInsert): Promise<Profile> {
     .single()
 
   if (error) throw error
-  return created as Profile
+
+  logAudit({
+    action: "CREATE",
+    module: "USERS",
+    entity_type: "user",
+    entity_id: (created as unknown as { id: string }).id,
+    description: `Création du compte utilisateur ${(created as unknown as { id: string; email: string }).email}`,
+  })
+
+  return created as unknown as Profile
 }
 
 // ── Update ───────────────────────────────────────
@@ -82,19 +92,36 @@ async function update(id: string, data: ProfileUpdate): Promise<Profile> {
   const { data: updated, error } = await supabase
     .from("profiles")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select("*")
     .single()
 
   if (error) throw error
-  return updated as Profile
+
+  logAudit({
+    action: "UPDATE",
+    module: "USERS",
+    entity_type: "user",
+    entity_id: id,
+    description: `Modification de l'utilisateur`,
+  })
+
+  return updated as unknown as Profile
 }
 
 // ── Remove ───────────────────────────────────────
 
 async function remove(id: string): Promise<void> {
-  const { error } = await supabase.from("profiles").delete().eq("id", id)
+  const { error } = await supabase.from("profiles").delete().eq("id", id as never)
   if (error) throw error
+
+  logAudit({
+    action: "DELETE",
+    module: "USERS",
+    entity_type: "user",
+    entity_id: id,
+    description: `Suppression du compte utilisateur`,
+  })
 }
 
 // ── Export ────────────────────────────────────────

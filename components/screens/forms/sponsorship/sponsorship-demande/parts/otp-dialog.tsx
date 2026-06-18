@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { IconLoader2, IconRefresh } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
@@ -17,11 +18,12 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { Typography } from "@/components/ui/typography"
 
 type Props = {
   open: boolean
   value: string
-  error: boolean
+  error: string | null
   loading: boolean
   length: number
   email: string
@@ -37,6 +39,7 @@ const SLOT_CLASSES =
 export function OtpDialog({
   open,
   value,
+  error,
   loading,
   length,
   email,
@@ -45,6 +48,19 @@ export function OtpDialog({
   onClose,
   onResend,
 }: Props) {
+  const loadingRef = useRef(loading)
+
+  useEffect(() => {
+    loadingRef.current = loading
+    if (!loading) return
+    const timer = setTimeout(() => {
+      if (loadingRef.current) {
+        onClose()
+      }
+    }, 30_000)
+    return () => clearTimeout(timer)
+  }, [loading, onClose])
+
   const handleOpenChange = (next: boolean) => {
     if (!next) onClose()
   }
@@ -82,7 +98,7 @@ export function OtpDialog({
             <FieldLabel htmlFor="otp-verification">Code de vérification</FieldLabel>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={onResend}
               disabled={loading || !onResend}
@@ -109,6 +125,10 @@ export function OtpDialog({
             ))}
           </InputOTP>
         </Field>
+
+        {error && (
+          <Typography variant="p" className="text-sm text-destructive text-center">{error}</Typography>
+        )}
 
         <DialogFooter className="flex-col gap-3 sm:flex-col sm:space-x-0">
           <Button

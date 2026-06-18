@@ -142,7 +142,7 @@ export function TrackCard({ data, className }: TrackCardProps) {
             />
             <StatusItem
               label="Contenu UGC"
-              ok={data.state?.code === "COMPLETED"}
+              ok={data.state?.code === "CLOSED"}
               okLabel="Reçu"
               nokLabel="En attente"
             />
@@ -153,7 +153,7 @@ export function TrackCard({ data, className }: TrackCardProps) {
 
         {/* Action buttons based on business logic */}
         <div className="space-y-2">
-          {state?.code === "APPROVED" && !confirmation && (
+          {state?.code === "VALIDATED" && !confirmation && (
             <Button className="w-full" asChild>
               <Link href={`/forms/sponsorship/sponsorship-confirmation?code=${event.tracking_code}`}>
                 <FileText className="size-4 mr-2" />
@@ -185,7 +185,7 @@ export function TrackCard({ data, className }: TrackCardProps) {
             </div>
           )}
 
-          {data.state?.code === "COMPLETED" && (
+          {data.state?.code === "CLOSED" && (
             <div className="flex items-center gap-2 rounded-lg bg-green-50 dark:bg-green-950/20 p-3 text-sm">
               <CheckCircle2 className="size-4 text-green-600 shrink-0" />
               <span className="text-green-700 dark:text-green-400">

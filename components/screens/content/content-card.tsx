@@ -2,8 +2,9 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Typography } from "@/components/ui/typography"
-import { ContentCardProps, ContentStatus } from "@/types/content"
+import type { ContentCardProps, ContentStatus } from "@/types/content"
 import { IconAlertTriangle, IconCircleCheck, IconMapPin } from "@tabler/icons-react"
 
 const statusColors: Record<ContentStatus, string> = {
@@ -28,58 +29,58 @@ export function ContentCard({
   })
 
   return (
-    <div className="flex flex-col p-5 border rounded-lg bg-white hover:border-zinc-300 transition-colors">
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <div className="flex-1 min-w-0">
-          <Typography variant="h4">{event.eventName}</Typography>
-          <Typography variant="muted" className="mt-1">{event.clubName}</Typography>
-        </div>
-        <Badge variant="outline" className={`${statusColors[event.contentStatus]} shrink-0 font-medium`}>
-          {event.contentStatus}
-        </Badge>
-      </div>
-
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-        <IconMapPin size={14} />
-        <Typography variant="muted">{event.city}</Typography>
-        <span className="text-zinc-300">•</span>
-        <Typography variant="muted">{formattedDate}</Typography>
-      </div>
-
-      <div className="flex items-center gap-4 text-sm mb-4">
-        <div className="flex items-center gap-1.5">
-          <span className={hasEnoughCreators ? "text-foreground font-medium" : "text-amber-600 font-medium"}>
-            {event.ugcCreatorsCount}
-          </span>
-          <Typography variant="small">/</Typography>
-          <Typography variant="small">{event.requiredCreators}</Typography>
-          <Typography variant="small" className="ml-1">creators</Typography>
+    <Card size="sm" className="border border-border">
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <Typography variant="h4">{event.eventName}</Typography>
+            <Typography variant="muted" className="mt-1">{event.clubName}</Typography>
+          </div>
+          <Badge variant="outline" className={`${statusColors[event.contentStatus]} shrink-0 font-medium`}>
+            {event.contentStatus}
+          </Badge>
         </div>
 
-        <span className="text-zinc-200">|</span>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <IconMapPin size={14} />
+          <Typography variant="muted">{event.city}</Typography>
+          <span className="text-zinc-300">•</span>
+          <Typography variant="muted">{formattedDate}</Typography>
+        </div>
 
-        <div className="flex items-center gap-1.5">
-          {hasDriveLink ? (
-            <>
-              <IconCircleCheck size={14} className="text-green-600" />
-              <Typography variant="small" className="text-green-700">Drive linked</Typography>
-            </>
-          ) : (
-            <>
-              <IconAlertTriangle size={14} className="text-amber-500" />
-              <Typography variant="small" className="text-amber-600">No drive</Typography>
-            </>
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-1.5">
+            <span className={hasEnoughCreators ? "text-foreground font-medium" : "text-amber-600 font-medium"}>
+              {event.ugcCreatorsCount}
+            </span>
+            <Typography variant="small">/</Typography>
+            <Typography variant="small">{event.requiredCreators}</Typography>
+            <Typography variant="small" className="ml-1">creators</Typography>
+          </div>
+
+          <span className="text-zinc-200">|</span>
+
+          <div className="flex items-center gap-1.5">
+            {hasDriveLink ? (
+              <>
+                <IconCircleCheck size={14} className="text-green-600" />
+                <Typography variant="small" className="text-green-700">Drive linked</Typography>
+              </>
+            ) : (
+              <>
+                <IconAlertTriangle size={14} className="text-amber-500" />
+                <Typography variant="small" className="text-amber-600">No drive</Typography>
+              </>
+            )}
+          </div>
+
+          {!hasEnoughCreators && (
+            <Typography variant="small" className="text-amber-600 ml-auto">
+              Missing {missingCreators}
+            </Typography>
           )}
         </div>
 
-        {!hasEnoughCreators && (
-          <Typography variant="small" className="text-amber-600 ml-auto">
-            Missing {missingCreators}
-          </Typography>
-        )}
-      </div>
-
-      <div className="pt-3 border-t mt-auto">
         <Button
           size="sm"
           className="w-full"
@@ -87,7 +88,7 @@ export function ContentCard({
         >
           Open Event
         </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

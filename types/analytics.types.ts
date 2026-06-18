@@ -4,7 +4,6 @@
 import { z } from 'zod';
 import type { Campaign } from './campaigns.types';
 import type { Event } from './events.types';
-import type { Profile } from './profiles.types';
 
 // ── Scoring Profile ───────────────────────────
 export interface ScoringProfileRow {
@@ -77,6 +76,13 @@ export interface AIAnalysisRow {
   recommendation: string | null;
   justification: string | null;
   model_used: string | null;
+  risk_level: string | null;
+  strengths: unknown[] | null;
+  weaknesses: unknown[] | null;
+  suggested_allocation: Record<string, number> | null;
+  raw_response: Record<string, unknown> | null;
+  status: string;
+  error_message: string | null;
   created_at: string;
 }
 
@@ -88,6 +94,13 @@ export interface AIAnalysisInsert {
   recommendation?: string | null;
   justification?: string | null;
   model_used?: string | null;
+  risk_level?: string | null;
+  strengths?: unknown[] | null;
+  weaknesses?: unknown[] | null;
+  suggested_allocation?: Record<string, number> | null;
+  raw_response?: Record<string, unknown> | null;
+  status?: string;
+  error_message?: string | null;
   created_at?: string;
 }
 
@@ -96,6 +109,13 @@ export interface AIAnalysisUpdate {
   recommendation?: string | null;
   justification?: string | null;
   model_used?: string | null;
+  risk_level?: string | null;
+  strengths?: unknown[] | null;
+  weaknesses?: unknown[] | null;
+  suggested_allocation?: Record<string, number> | null;
+  raw_response?: Record<string, unknown> | null;
+  status?: string;
+  error_message?: string | null;
 }
 
 export interface AIAnalysis extends AIAnalysisRow {
@@ -131,6 +151,13 @@ export const aiAnalysisSchema = z.object({
   recommendation: z.string().nullable().optional(),
   justification: z.string().nullable().optional(),
   model_used: z.string().nullable().optional(),
+  risk_level: z.string().nullable().optional(),
+  strengths: z.array(z.unknown()).nullable().optional(),
+  weaknesses: z.array(z.unknown()).nullable().optional(),
+  suggested_allocation: z.record(z.string(), z.number()).nullable().optional(),
+  raw_response: z.record(z.string(), z.unknown()).nullable().optional(),
+  status: z.string().default('COMPLETED'),
+  error_message: z.string().nullable().optional(),
   created_at: z.string().datetime().optional(),
 });
 

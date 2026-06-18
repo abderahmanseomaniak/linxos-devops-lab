@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/providers/auth-provider"
 import { useRouter } from "next/navigation"
 import { type ReactNode, useEffect } from "react"
-import { Toaster } from "sonner"
+import { Toaster } from "@/components/ui/sonner"
 import { SearchIcon } from "lucide-react"
 
 export default function DashboardLayout({
@@ -34,7 +34,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <Toaster richColors position="top-right" />
+      <Toaster position="top-right" />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4" suppressHydrationWarning>
           <SidebarTrigger className="-ml-1" />

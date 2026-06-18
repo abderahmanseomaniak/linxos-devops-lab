@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,18 +18,11 @@ interface CategorySheetProps {
 }
 
 export function CategorySheet({ open, onOpenChange, category, onSave }: CategorySheetProps) {
-  const [name, setName] = useState(category?.name ?? "")
-  const [description, setDescription] = useState(category?.description ?? "")
-  const [isActive, setIsActive] = useState(category?.is_active ?? true)
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [isActive, setIsActive] = useState(true)
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!open) return
-    setName(category?.name ?? "")
-    setDescription(category?.description ?? "")
-    setIsActive(category?.is_active ?? true)
-  }, [category, open])
-  /* eslint-enable react-hooks/set-state-in-effect */
+  const formKey = open ? category?.id ?? "new" : "closed"
 
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")
@@ -39,6 +32,7 @@ export function CategorySheet({ open, onOpenChange, category, onSave }: Category
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <div key={formKey}>
         <SheetHeader className="mb-6">
           <SheetTitle>{category ? "Modifier" : "Nouvelle"} catégorie</SheetTitle>
           <SheetDescription>
@@ -61,6 +55,7 @@ export function CategorySheet({ open, onOpenChange, category, onSave }: Category
           <Button className="mt-2" onClick={handleSubmit}>
             {category ? "Mettre à jour" : "Créer"}
           </Button>
+        </div>
         </div>
       </SheetContent>
     </Sheet>

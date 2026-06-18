@@ -21,7 +21,7 @@ async function listCategories(): Promise<ProductCategory[]> {
     .order("name", { ascending: true })
 
   if (error) throw error
-  return (data ?? []) as ProductCategory[]
+  return (data ?? []) as unknown as ProductCategory[]
 }
 
 async function createCategory(data: ProductCategoryInsert): Promise<ProductCategory> {
@@ -32,23 +32,23 @@ async function createCategory(data: ProductCategoryInsert): Promise<ProductCateg
     .single()
 
   if (error) throw error
-  return created as ProductCategory
+  return created as unknown as ProductCategory
 }
 
 async function updateCategory(id: string, data: ProductCategoryUpdate): Promise<ProductCategory> {
   const { data: updated, error } = await supabase
     .from("product_categories")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select("*")
     .single()
 
   if (error) throw error
-  return updated as ProductCategory
+  return updated as unknown as ProductCategory
 }
 
 async function removeCategory(id: string): Promise<void> {
-  const { error } = await supabase.from("product_categories").delete().eq("id", id)
+  const { error } = await supabase.from("product_categories").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -84,7 +84,7 @@ async function listProducts(filters: ProductListFilters = {}): Promise<ProductLi
   }
 
   if (categoryId) {
-    query = query.eq("category_id", categoryId)
+    query = query.eq("category_id", categoryId as never)
   }
 
   const from = (page - 1) * pageSize
@@ -111,7 +111,7 @@ async function getProductById(id: string): Promise<Product | null> {
       category:product_categories(*)
     `
     )
-    .eq("id", id)
+    .eq("id", id as never)
     .single()
 
   if (error) throw error
@@ -138,7 +138,7 @@ async function updateProduct(id: string, data: ProductUpdate): Promise<Product> 
   const { data: updated, error } = await supabase
     .from("products")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(
       `
       *,
@@ -152,7 +152,7 @@ async function updateProduct(id: string, data: ProductUpdate): Promise<Product> 
 }
 
 async function removeProduct(id: string): Promise<void> {
-  const { error } = await supabase.from("products").delete().eq("id", id)
+  const { error } = await supabase.from("products").delete().eq("id", id as never)
   if (error) throw error
 }
 
@@ -169,7 +169,7 @@ async function getStocksByCampaign(campaignId: string): Promise<CampaignStock[]>
     )
 
   if (campaignId && campaignId !== "all") {
-    query = query.eq("campaign_id", campaignId)
+    query = query.eq("campaign_id", campaignId as never)
   }
 
   const { data, error } = await query.order("created_at", { ascending: false })
@@ -187,18 +187,23 @@ async function getStocksByProduct(productId: string): Promise<CampaignStock[]> {
       campaign:campaigns(*)
     `
     )
-    .eq("product_id", productId)
+    .eq("product_id", productId as never)
     .order("created_at", { ascending: false })
 
   if (error) throw error
   return (data ?? []) as unknown as CampaignStock[]
 }
 
+async function removeCampaignStock(id: string): Promise<void> {
+  const { error } = await supabase.from("campaign_stocks").delete().eq("id", id as never)
+  if (error) throw error
+}
+
 async function updateStock(id: string, data: CampaignStockUpdate): Promise<CampaignStock> {
   const { data: updated, error } = await supabase
     .from("campaign_stocks")
     .update(data as never)
-    .eq("id", id)
+    .eq("id", id as never)
     .select(`
       *,
       product:products(*)
@@ -240,10 +245,10 @@ async function listMovements(filters: MovementListFilters = {}): Promise<Movemen
       { count: "exact" }
     )
 
-  if (campaignId) query = query.eq("campaign_id", campaignId)
-  if (productId) query = query.eq("product_id", productId)
-  if (eventId) query = query.eq("event_id", eventId)
-  if (movementType) query = query.eq("movement_type", movementType)
+  if (campaignId) query = query.eq("campaign_id", campaignId as never)
+  if (productId) query = query.eq("product_id", productId as never)
+  if (eventId) query = query.eq("event_id", eventId as never)
+  if (movementType) query = query.eq("movement_type", movementType as never)
 
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
@@ -284,8 +289,8 @@ async function createMovement(data: InventoryMovementInsert): Promise<InventoryM
       const existing = await supabase
         .from("campaign_stocks")
         .select("*")
-        .eq("campaign_id", data.campaign_id)
-        .eq("product_id", data.product_id)
+        .eq("campaign_id", data.campaign_id as never)
+        .eq("product_id", data.product_id as never)
         .maybeSingle() as unknown as { data: { id: string; total_quantity: number; available_quantity: number; reserved_quantity: number } | null }
 
       if (existing.data) {
@@ -303,15 +308,15 @@ async function createMovement(data: InventoryMovementInsert): Promise<InventoryM
           updates.available_quantity = (e.available_quantity ?? 0) + qty
           updates.reserved_quantity = Math.max(0, (e.reserved_quantity ?? 0) - qty)
         }
-        await (supabase as any).from("campaign_stocks").update(updates).eq("id", e.id)
+        await supabase.from("campaign_stocks").update(updates as never).eq("id", e.id as never)
       } else if (type === "IN") {
-        await (supabase as any).from("campaign_stocks").insert({
+        await supabase.from("campaign_stocks").insert({
           campaign_id: data.campaign_id,
           product_id: data.product_id,
           total_quantity: qty,
           available_quantity: qty,
           reserved_quantity: 0,
-        })
+        } as never)
       }
     }
   } catch {
@@ -336,6 +341,7 @@ export const inventoryService = {
   // Stocks
   getStocksByCampaign,
   getStocksByProduct,
+  removeCampaignStock,
   updateStock,
   // Movements
   listMovements,

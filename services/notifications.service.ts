@@ -31,14 +31,14 @@ async function list(
     `,
       { count: "exact" }
     )
-    .eq("user_id", userId)
+    .eq("user_id", userId as never)
 
   if (isRead !== undefined) {
-    query = query.eq("is_read", isRead)
+    query = query.eq("is_read", isRead as never)
   }
 
   if (notificationType) {
-    query = query.eq("notification_type", notificationType)
+    query = query.eq("notification_type", notificationType as never)
   }
 
   const from = (page - 1) * pageSize
@@ -60,7 +60,7 @@ async function markAsRead(id: string): Promise<void> {
   const { error } = await supabase
     .from("notifications")
     .update({ is_read: true } as never)
-    .eq("id", id)
+    .eq("id", id as never)
 
   if (error) throw error
 }
@@ -69,8 +69,8 @@ async function markAllAsRead(userId: string): Promise<void> {
   const { error } = await supabase
     .from("notifications")
     .update({ is_read: true } as never)
-    .eq("user_id", userId)
-    .eq("is_read", false)
+    .eq("user_id", userId as never)
+    .eq("is_read", false as never)
 
   if (error) throw error
 }
@@ -95,8 +95,8 @@ async function getUnreadCount(userId: string): Promise<number> {
   const { count, error } = await supabase
     .from("notifications")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("is_read", false)
+    .eq("user_id", userId as never)
+    .eq("is_read", false as never)
 
   if (error) throw error
   return count ?? 0

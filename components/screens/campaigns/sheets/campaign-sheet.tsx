@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,22 +20,13 @@ interface CampaignSheetProps {
 }
 
 export function CampaignSheet({ open, onOpenChange, campaign, onSave }: CampaignSheetProps) {
-  const [name, setName] = useState(campaign?.name ?? "")
-  const [type, setType] = useState(campaign?.type ?? "")
-  const [status, setStatus] = useState<CampaignStatus>(campaign?.status ?? "DRAFT")
-  const [startDate, setStartDate] = useState(campaign?.start_date?.split("T")[0] ?? "")
-  const [endDate, setEndDate] = useState(campaign?.end_date?.split("T")[0] ?? "")
+  const [name, setName] = useState("")
+  const [type, setType] = useState("")
+  const [status, setStatus] = useState<CampaignStatus>("DRAFT")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!open) return
-    setName(campaign?.name ?? "")
-    setType(campaign?.type ?? "")
-    setStatus(campaign?.status ?? "DRAFT")
-    setStartDate(campaign?.start_date?.split("T")[0] ?? "")
-    setEndDate(campaign?.end_date?.split("T")[0] ?? "")
-  }, [campaign, open])
-  /* eslint-enable react-hooks/set-state-in-effect */
+  const formKey = open ? campaign?.id ?? "new" : "closed"
 
   const handleSubmit = () => {
     if (!name.trim()) return toast.error("Le nom est requis")
@@ -51,6 +42,7 @@ export function CampaignSheet({ open, onOpenChange, campaign, onSave }: Campaign
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <div key={formKey}>
         <SheetHeader className="mb-6">
           <SheetTitle>{campaign ? "Modifier" : "Nouvelle"} campagne</SheetTitle>
           <SheetDescription>
@@ -92,6 +84,7 @@ export function CampaignSheet({ open, onOpenChange, campaign, onSave }: Campaign
           <Button className="mt-2" onClick={handleSubmit}>
             {campaign ? "Mettre à jour" : "Créer"}
           </Button>
+        </div>
         </div>
       </SheetContent>
     </Sheet>

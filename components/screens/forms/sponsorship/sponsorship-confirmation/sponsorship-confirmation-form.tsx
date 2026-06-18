@@ -13,6 +13,7 @@ import { ContactFooter } from "./parts/contact-footer"
 import { FormNavigation } from "./parts/form-navigation"
 import { FormStepper } from "./parts/form-stepper"
 import { StepRenderer } from "./parts/step-renderer"
+import { OtpDialog } from "@/components/screens/forms/sponsorship/sponsorship-demande/parts/otp-dialog"
 
 const STEPS: readonly Step[] = [
   { id: 1, title: "Informations générales" },
@@ -24,7 +25,24 @@ const STEPS: readonly Step[] = [
 ]
 
 export function SponsorshipConfirmationForm({ trackingCode = "" }: { trackingCode?: string } = {}) {
-  const { form, step, submit, submitting, submissionError, result, reset } = useConfirmationForm(STEPS.length, trackingCode)
+  const {
+    form,
+    step,
+    submit,
+    submitting,
+    submissionError,
+    result,
+    reset,
+    otpDialogOpen,
+    otpValue,
+    otpError,
+    otpLoading,
+    onOtpValueChange,
+    onOtpVerify,
+    onOtpClose,
+    onOtpResend,
+    allocatedCans,
+  } = useConfirmationForm(STEPS.length, trackingCode)
 
   const handleStepPillClick = (stepId: number) => {
     if (stepId < step.current) step.goTo(stepId)
@@ -54,7 +72,7 @@ export function SponsorshipConfirmationForm({ trackingCode = "" }: { trackingCod
               </Typography>
             </div>
             <div className="flex gap-3 justify-center pt-2">
-              <Button variant="outline" asChild>
+              <Button variant="secondary" asChild>
                 <Link href={`/track?code=${trackingCode}`}>
                   <ArrowLeft className="size-4 mr-2" />
                   Suivre ma demande
@@ -80,7 +98,7 @@ export function SponsorshipConfirmationForm({ trackingCode = "" }: { trackingCod
           onStepClick={handleStepPillClick}
         />
 
-        <StepRenderer step={step.current} onEdit={step.goTo} />
+        <StepRenderer step={step.current} onEdit={step.goTo} allocatedCans={allocatedCans} />
 
         {submissionError && (
           <Typography variant="small" className="text-destructive text-center block">
@@ -99,6 +117,19 @@ export function SponsorshipConfirmationForm({ trackingCode = "" }: { trackingCod
 
         <ContactFooter />
       </div>
+
+      <OtpDialog
+        open={otpDialogOpen}
+        value={otpValue}
+        error={otpError}
+        loading={otpLoading}
+        length={6}
+        email={form.getValues("email")}
+        onValueChange={onOtpValueChange}
+        onVerify={onOtpVerify}
+        onClose={onOtpClose}
+        onResend={onOtpResend}
+      />
     </FormProvider>
   )
 }

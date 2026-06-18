@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
+import { WORKFLOW_COLORS } from "@/types/workflow.types"
 import { Label } from "@/components/ui/label"
 import { Typography } from "@/components/ui/typography"
 import { Separator } from "@/components/ui/separator"
@@ -22,9 +23,11 @@ import {
 } from "@/components/ui/alert-dialog"
 import { eventsOverviewService } from "@/services/events-overview.service"
 import { eventsActionsService } from "@/services/events-actions.service"
+import { supabase } from "@/services/supabase/client"
 import { useAuth } from "@/providers/auth-provider"
 import type { EventDetail } from "@/types/events-overview"
 import { toast } from "sonner"
+import { useRefreshStore } from "@/stores/refresh.store"
 
 interface DetailEventSheetProps {
   eventId: string | null
@@ -56,7 +59,6 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
   const [activeTab, setActiveTab] = useState("general")
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [comment, setComment] = useState("")
-  const [allocQty, setAllocQty] = useState("")
   const [trackingCode, setTrackingCode] = useState("")
   const [verifyScores, setVerifyScores] = useState({ visibility: "", quality: "", engagement: "", global: "" })
   const [selectedUgcId, setSelectedUgcId] = useState<string | null>(null)
@@ -66,11 +68,45 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
   const [showAllocateDialog, setShowAllocateDialog] = useState(false)
   const [showShipDialog, setShowShipDialog] = useState(false)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [showAiDialog, setShowAiDialog] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [showAcceptDialog, setShowAcceptDialog] = useState(false)
+  const [campaigns, setCampaigns] = useState<{ id: string; name: string }[]>([])
+  const [selectedCampaignId, setSelectedCampaignId] = useState("")
+  const [allocCans, setAllocCans] = useState("")
+  const [allocTshirts, setAllocTshirts] = useState("")
+  const [allocCaps, setAllocCaps] = useState("")
 
   const { user, isAdmin, isSponsoringManager } = useAuth()
   const userId = user?.id ?? ""
 
   const canDecide = isAdmin || isSponsoringManager
+  const triggerRefresh = useRefreshStore((s) => s.triggerRefresh)
+
+  const handleRunAiScoring = useCallback(async () => {
+    if (!eventId) return
+    setAiLoading(true)
+    try {
+      const res = await fetch("/api/ai/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventId }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || "Erreur lors de l'analyse IA")
+      }
+      toast.success("Analyse IA terminée")
+      const fresh = await eventsOverviewService.getById(eventId)
+      setDetail(fresh)
+      triggerRefresh("events")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur lors de l'analyse IA")
+    } finally {
+      setAiLoading(false)
+      setShowAiDialog(false)
+    }
+  }, [eventId, triggerRefresh])
 
   const doAction = useCallback(async (action: string, fn: () => Promise<void>) => {
     setActionLoading(action)
@@ -79,26 +115,38 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
       toast.success("Action effectuée avec succès")
       const fresh = await eventsOverviewService.getById(eventId!)
       setDetail(fresh)
+      triggerRefresh("events")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur lors de l'action")
     } finally {
       setActionLoading(null)
     }
-  }, [eventId])
+  }, [eventId, triggerRefresh])
 
   useEffect(() => {
     if (!open || !eventId) return
     setLoading(true)
     setComment("")
-    setAllocQty("")
+    setAllocCans("")
+    setAllocTshirts("")
+    setAllocCaps("")
     setTrackingCode("")
     setVerifyScores({ visibility: "", quality: "", engagement: "", global: "" })
     eventsOverviewService.getById(eventId).then((data) => {
       setDetail(data)
+      if (data?.ai_analysis?.suggested_allocation) {
+        const sa = data.ai_analysis.suggested_allocation
+        setAllocCans(String(sa.cans ?? ""))
+        setAllocTshirts(String(sa.tshirts ?? ""))
+        setAllocCaps(String(sa.caps ?? ""))
+      }
     }).catch(() => {
       toast.error("Erreur lors du chargement des détails")
     }).finally(() => {
       setLoading(false)
+    })
+    supabase.from("campaigns").select("id, name").eq("status", "ACTIVE").order("name").then(({ data }) => {
+      setCampaigns((data ?? []) as { id: string; name: string }[])
     })
   }, [eventId, open])
 
@@ -114,7 +162,13 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
           <SheetDescription>
             {detail?.club?.name ?? ""}
             {state && (
-              <Badge variant="secondary" className="ml-2">{state.label}</Badge>
+              <Badge
+                className="ml-2"
+                style={WORKFLOW_COLORS[state.code as keyof typeof WORKFLOW_COLORS] ? { backgroundColor: WORKFLOW_COLORS[state.code as keyof typeof WORKFLOW_COLORS], color: "#fff" } : undefined}
+                variant={WORKFLOW_COLORS[state.code as keyof typeof WORKFLOW_COLORS] ? undefined : "default"}
+              >
+                {state.label}
+              </Badge>
             )}
           </SheetDescription>
         </SheetHeader>
@@ -242,36 +296,169 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
             </TabsContent>
 
             <TabsContent value="ia" className="space-y-4 pt-4 ml-6">
-              {detail.ai_analysis ? (
-                <section>
-                  <Typography variant="h4" className="mb-3 text-sm font-semibold">Analyse IA</Typography>
-                  <div className="grid gap-2">
-                    <InfoRow label="Score" value={
-                      <span className={detail.ai_analysis.score != null
-                        ? detail.ai_analysis.score >= 70 ? "text-green-600 font-semibold"
-                        : detail.ai_analysis.score >= 40 ? "text-yellow-600 font-semibold"
-                        : "text-red-600 font-semibold"
-                        : ""
-                      }>
-                        {detail.ai_analysis.score != null ? `${detail.ai_analysis.score}/100` : "-"}
-                      </span>
-                    } />
-                    <InfoRow label="Recommandation" value={
-                      <Badge variant={
-                        detail.ai_analysis.recommendation === "APPROVED" ? "default" :
-                        detail.ai_analysis.recommendation === "REJECTED" ? "destructive" : "secondary"
-                      }>
-                        {detail.ai_analysis.recommendation ?? "-"}
-                      </Badge>
-                    } isBadge />
-                    <InfoRow label="Justification" value={detail.ai_analysis.justification} />
-                    <InfoRow label="Modèle" value={detail.ai_analysis.model_used} />
-                    <InfoRow label="Date analyse" value={formatDate(detail.ai_analysis.created_at)} />
+              {aiLoading || detail.ai_analysis?.status === "PROCESSING" ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Spinner className="size-6" />
+                  <Typography className="text-sm text-muted-foreground">Analyse IA en cours...</Typography>
+                </div>
+              ) : detail.ai_analysis && detail.ai_analysis.status === "COMPLETED" ? (
+                <>
+                  <div className="flex items-start gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className={`text-4xl font-bold ${
+                        detail.ai_analysis.score != null
+                          ? detail.ai_analysis.score >= 70 ? "text-green-600"
+                          : detail.ai_analysis.score >= 40 ? "text-yellow-600"
+                          : "text-red-600"
+                          : ""
+                      }`}>
+                        {detail.ai_analysis.score ?? "?"}
+                      </div>
+                      <Typography className="text-xs text-muted-foreground">/100</Typography>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant={
+                          detail.ai_analysis.recommendation === "ACCEPT" ? "default"
+                          : detail.ai_analysis.recommendation === "REJECT" ? "destructive"
+                          : "secondary"
+                        }>
+                          {detail.ai_analysis.recommendation === "ACCEPT" ? "Accepter"
+                          : detail.ai_analysis.recommendation === "REJECT" ? "Rejeter"
+                          : "À réviser"}
+                        </Badge>
+                        <Badge variant={
+                          detail.ai_analysis.risk_level === "LOW" ? "default"
+                          : detail.ai_analysis.risk_level === "HIGH" ? "destructive"
+                          : "secondary"
+                        }>
+                          Risque: {detail.ai_analysis.risk_level === "LOW" ? "Faible"
+                          : detail.ai_analysis.risk_level === "HIGH" ? "Élevé"
+                          : "Moyen"}
+                        </Badge>
+                      </div>
+                      <Typography className="text-xs text-muted-foreground">
+                        {detail.ai_analysis.model_used} • {formatDate(detail.ai_analysis.created_at)}
+                      </Typography>
+                    </div>
                   </div>
-                </section>
+
+                  {detail.ai_analysis.justification && (
+                    <section>
+                      <Typography variant="h4" className="mb-2 text-sm font-semibold">Raisonnement</Typography>
+                      <Typography className="text-sm text-muted-foreground bg-muted/50 rounded-md p-3">
+                        {detail.ai_analysis.justification}
+                      </Typography>
+                    </section>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {(detail.ai_analysis.strengths as string[] ?? []).length > 0 && (
+                      <section>
+                        <Typography variant="h4" className="mb-2 text-sm font-semibold text-green-600">Forces</Typography>
+                        <ul className="space-y-1">
+                          {(detail.ai_analysis.strengths as string[] ?? []).map((s, i) => (
+                            <li key={i} className="text-sm flex items-start gap-2">
+                              <span className="text-green-500 mt-0.5">+</span>
+                              <span>{s}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    )}
+                    {(detail.ai_analysis.weaknesses as string[] ?? []).length > 0 && (
+                      <section>
+                        <Typography variant="h4" className="mb-2 text-sm font-semibold text-red-600">Faiblesses</Typography>
+                        <ul className="space-y-1">
+                          {(detail.ai_analysis.weaknesses as string[] ?? []).map((w, i) => (
+                            <li key={i} className="text-sm flex items-start gap-2">
+                              <span className="text-red-500 mt-0.5">−</span>
+                              <span>{w}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    )}
+                  </div>
+
+                  {detail.ai_analysis.suggested_allocation && Object.keys(detail.ai_analysis.suggested_allocation).length > 0 && (
+                    <section>
+                      <Typography variant="h4" className="mb-2 text-sm font-semibold">Allocation suggérée</Typography>
+                      <div className="flex gap-3">
+                        {Object.entries(detail.ai_analysis.suggested_allocation).map(([key, val]) => (
+                          <div key={key} className="rounded-md border p-3 text-center min-w-[100px]">
+                            <Typography className="text-lg font-bold">{val}</Typography>
+                            <Typography className="text-xs text-muted-foreground capitalize">{key}</Typography>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {canDecide && (
+                    <div className="flex gap-2 pt-2">
+                      <Button size="sm" variant="default"
+                        onClick={() => {
+                          const sa = detail.ai_analysis?.suggested_allocation
+                          setAllocCans(String(sa?.cans ?? 500))
+                          setAllocTshirts(String(sa?.tshirts ?? 30))
+                          setAllocCaps(String(sa?.caps ?? 20))
+                          setSelectedCampaignId(detail.campaign?.id ?? "")
+                          setShowAcceptDialog(true)
+                        }}
+                        disabled={actionLoading !== null}>
+                        Accepter
+                      </Button>
+                      <Button size="sm" variant="destructive"
+                        onClick={() => setShowRejectDialog(true)}
+                        disabled={actionLoading !== null}>
+                        Rejeter
+                      </Button>
+                      <Button size="sm" variant="outline"
+                        onClick={() => setShowClarifyDialog(true)}
+                        disabled={actionLoading !== null}>
+                        Demander clarification
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setShowAiDialog(true)}
+                        disabled={aiLoading}>
+                        Relancer l&apos;analyse IA
+                      </Button>
+                    </div>
+                  )}
+
+                  <Button size="sm" variant="outline" onClick={() => setShowAiDialog(true)}
+                    disabled={aiLoading}>
+                    Relancer l&apos;analyse IA
+                  </Button>
+                </>
+              ) : detail.ai_analysis && detail.ai_analysis.status === "FAILED" ? (
+                <div className="py-8 text-center">
+                  <Typography className="text-sm text-destructive font-medium mb-2">
+                    L&apos;analyse IA a échoué
+                  </Typography>
+                  {detail.ai_analysis.error_message && (
+                    <Typography className="text-xs text-muted-foreground mb-4">
+                      {detail.ai_analysis.error_message}
+                    </Typography>
+                  )}
+                  {canDecide && (
+                    <Button size="sm" variant="outline" onClick={() => setShowAiDialog(true)}
+                      disabled={aiLoading}>
+                      Relancer l&apos;analyse IA
+                    </Button>
+                  )}
+                </div>
               ) : (
                 <div className="py-8 text-center text-muted-foreground text-sm">
                   Aucune analyse IA disponible.
+                  {canDecide && (
+                    <div className="mt-3">
+                      <Button size="sm" onClick={() => setShowAiDialog(true)}
+                        disabled={aiLoading}>
+                        Lancer l&apos;analyse IA
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </TabsContent>
@@ -283,7 +470,7 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
                   <div className="grid gap-2">
                     <InfoRow label="Statut" value={
                       <Badge variant={
-                        detail.state.code === "APPROVED" || detail.state.code === "CONFIRMED" ? "default" :
+                        detail.state.code === "VALIDATED" || detail.state.code === "CONFIRMED" ? "default" :
                         detail.state.code === "REJECTED" ? "destructive" : "secondary"
                       }>
                         {detail.state.label}
@@ -515,25 +702,8 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
 
         <div className="sticky bottom-0 -mx-6 mt-4 border-t bg-background px-6 py-3">
           <div className="flex flex-wrap gap-2">
-            {canDecide && detail?.state?.code === "UNDER_REVIEW" && (
-              <>
-                <Button size="sm" onClick={() => doAction("accept", () =>
-                  eventsActionsService.acceptEvent(eventId!, userId, undefined)
-                )} disabled={actionLoading !== null}>
-                  {actionLoading === "accept" ? <Spinner className="size-3" /> : null}
-                  Accepter
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => setShowRejectDialog(true)}
-                  disabled={actionLoading !== null}>
-                  Refuser
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => setShowClarifyDialog(true)}
-                  disabled={actionLoading !== null}>
-                  Demander clarification
-                </Button>
-              </>
-            )}
-            {canDecide && (detail?.state?.code === "APPROVED" || detail?.state?.code === "UNDER_REVIEW") && (
+           
+            {canDecide && (detail?.state?.code === "VALIDATED" || detail?.state?.code === "CONFIRMED") && (
               <Button size="sm" variant="outline" onClick={() => setShowAllocateDialog(true)}
                 disabled={actionLoading !== null}>
                 Allouer
@@ -595,40 +765,57 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
         </AlertDialog>
 
         <Dialog open={showAllocateDialog} onOpenChange={setShowAllocateDialog}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Créer une allocation</DialogTitle>
               <DialogDescription>
-                Définissez la quantité de produits à allouer.
+                Définissez la quantité de chaque produit à allouer.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <Label>Quantité</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  placeholder="Ex: 100"
-                  value={allocQty}
-                  onChange={(e) => setAllocQty(e.target.value)}
-                />
+                <Label className="mb-2 block">Quantités par produit</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-xs">Canettes</Label>
+                    <Input type="number" min={0} value={allocCans}
+                      onChange={(e) => setAllocCans(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">T-shirts</Label>
+                    <Input type="number" min={0} value={allocTshirts}
+                      onChange={(e) => setAllocTshirts(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Casquettes</Label>
+                    <Input type="number" min={0} value={allocCaps}
+                      onChange={(e) => setAllocCaps(e.target.value)} />
+                  </div>
+                </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setShowAllocateDialog(false); setAllocQty("") }}>
+              <Button variant="outline" onClick={() => { setShowAllocateDialog(false); setAllocCans(""); setAllocTshirts(""); setAllocCaps("") }}>
                 Annuler
               </Button>
               <Button onClick={() => {
-                const qty = parseInt(allocQty, 10)
-                if (isNaN(qty) || qty <= 0) {
-                  toast.error("Quantité invalide")
+                const qty = (parseInt(allocCans, 10) || 0) + (parseInt(allocTshirts, 10) || 0) + (parseInt(allocCaps, 10) || 0)
+                if (qty <= 0) {
+                  toast.error("Veuillez spécifier une quantité d'allocation")
                   return
                 }
+                const items = [
+                  { product_name: "Cannettes", quantity: parseInt(allocCans, 10) || 0 },
+                  { product_name: "T-shirt", quantity: parseInt(allocTshirts, 10) || 0 },
+                  { product_name: "Casquette", quantity: parseInt(allocCaps, 10) || 0 },
+                ].filter((i) => i.quantity > 0)
                 doAction("allocate", () => eventsActionsService.createAllocation(
-                  eventId!, detail?.campaign?.id ?? "", qty, userId,
+                  eventId!, detail?.campaign?.id ?? null, qty, userId, items,
                 ))
                 setShowAllocateDialog(false)
-                setAllocQty("")
+                setAllocCans("")
+                setAllocTshirts("")
+                setAllocCaps("")
               }} disabled={actionLoading !== null}>
                 Allouer
               </Button>
@@ -734,6 +921,107 @@ export function EventDetailSheet({ eventId, open, onOpenChange }: DetailEventShe
                 setSelectedUgcId(null)
               }} disabled={actionLoading !== null}>
                 Valider
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog open={showAiDialog} onOpenChange={setShowAiDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Lancer l&apos;analyse IA</AlertDialogTitle>
+              <AlertDialogDescription>
+                L&apos;intelligence artificielle va analyser la demande de sponsoring et fournir un score, une recommandation et une allocation suggérée. Cette opération peut prendre quelques instants.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={aiLoading}>Annuler</AlertDialogCancel>
+              <AlertDialogAction onClick={handleRunAiScoring} disabled={aiLoading}>
+                {aiLoading ? "Analyse en cours..." : "Lancer l'analyse"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <Dialog open={showAcceptDialog} onOpenChange={setShowAcceptDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Accepter l&apos;événement</DialogTitle>
+              <DialogDescription>
+                Liez l&apos;événement à une campagne et définissez l&apos;allocation des produits.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Campagne</Label>
+                <select
+                  value={selectedCampaignId}
+                  onChange={(e) => setSelectedCampaignId(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Sélectionner une campagne</option>
+                  {campaigns.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label className="mb-2 block">Allocation suggérée par l&apos;IA</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-xs">Canettes</Label>
+                    <Input type="number" min={0} value={allocCans}
+                      onChange={(e) => setAllocCans(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">T-shirts</Label>
+                    <Input type="number" min={0} value={allocTshirts}
+                      onChange={(e) => setAllocTshirts(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Casquettes</Label>
+                    <Input type="number" min={0} value={allocCaps}
+                      onChange={(e) => setAllocCaps(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAcceptDialog(false)}>
+                Annuler
+              </Button>
+              <Button onClick={() => {
+                if (!selectedCampaignId) {
+                  toast.error("Veuillez sélectionner une campagne")
+                  return
+                }
+                const qty = (parseInt(allocCans, 10) || 0) + (parseInt(allocTshirts, 10) || 0) + (parseInt(allocCaps, 10) || 0)
+                if (qty <= 0) {
+                  toast.error("Veuillez spécifier une quantité d'allocation")
+                  return
+                }
+                setShowAcceptDialog(false)
+                doAction("accept", async () => {
+                  const items = [
+                    { product_name: "Cannettes", quantity: parseInt(allocCans, 10) || 0 },
+                    { product_name: "T-shirt", quantity: parseInt(allocTshirts, 10) || 0 },
+                    { product_name: "Casquette", quantity: parseInt(allocCaps, 10) || 0 },
+                  ].filter((i) => i.quantity > 0)
+                  const res = await fetch("/api/events/accept", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      eventId, campaignId: selectedCampaignId, userId,
+                      allocatedQuantity: qty, items,
+                    }),
+                  })
+                  if (!res.ok) {
+                    const err = await res.json()
+                    throw new Error(err.error || "Erreur lors de l'acceptation")
+                  }
+                })
+              }} disabled={actionLoading !== null}>
+                Valider l&apos;acceptation
               </Button>
             </DialogFooter>
           </DialogContent>

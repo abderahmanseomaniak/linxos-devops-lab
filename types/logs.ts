@@ -1,3 +1,16 @@
+export interface ActivityLog {
+  id: string
+  userId: string
+  userName: string
+  action: string
+  entityType: string
+  entityId: string
+  entityName: string
+  description: string
+  timestamp: string
+  details: Record<string, string>
+}
+
 export interface LogEntry {
   id: string
   user_id: string

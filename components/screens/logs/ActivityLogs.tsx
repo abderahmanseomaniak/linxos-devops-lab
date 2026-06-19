@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { ActivityLog } from "@/types/logs"
+import type { ActivityLog, LogEntry } from "@/types/logs"
 import logsData from "@/data/logs.json"
 import { createLogsColumns } from "./parts/columns"
 import { LogsTableToolbar } from "./parts/table-logs-toolbar"
@@ -40,9 +40,22 @@ export function ActivityLogs() {
   const [selectedActions, setSelectedActions] = useState<string[]>([])
 
   const columns = createLogsColumns()
-  const data = logsData.logs as ActivityLog[]
+  const data = (logsData.logs as unknown as ActivityLog[]).map(
+    (log): LogEntry => ({
+      id: log.id,
+      user_id: log.userId,
+      user_name: log.userName,
+      action: log.action,
+      module: null,
+      entity_type: log.entityType,
+      entity_id: log.entityId,
+      description: log.description,
+      ip_address: null,
+      user_agent: null,
+      created_at: log.timestamp,
+    })
+  )
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
     data,
@@ -65,12 +78,12 @@ export function ActivityLogs() {
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value)
-    table.getColumn("userName")?.setFilterValue(value || undefined)
+    table.getColumn("user_name")?.setFilterValue(value || undefined)
   }
 
   const handleSearchClear = () => {
     setSearchValue("")
-    table.getColumn("userName")?.setFilterValue(undefined)
+    table.getColumn("user_name")?.setFilterValue(undefined)
   }
 
   const handleActionChange = (checked: boolean, value: string) => {

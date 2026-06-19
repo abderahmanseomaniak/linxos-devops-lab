@@ -15,7 +15,7 @@ const AppointmentCard = () => {
                 <CardContent className="flex flex-col gap-4">
                     <div className="space-y-3">
                         <Label className="text-muted-foreground">Available on March 18, 2026</Label>
-                        <ToggleGroup defaultValue={["9:00"]} spacing={2} className="flex-wrap">
+                        <ToggleGroup type="multiple" defaultValue={["9:00"]} spacing={2} className="flex-wrap">
                             <ToggleGroupItem value="9:00" className="cursor-pointer">9:00 AM</ToggleGroupItem>
                             <ToggleGroupItem value="10:30" className="cursor-pointer">10:30 AM</ToggleGroupItem>
                             <ToggleGroupItem value="11:00" className="cursor-pointer">11:00 AM</ToggleGroupItem>

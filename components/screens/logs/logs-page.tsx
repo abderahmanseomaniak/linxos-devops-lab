@@ -172,7 +172,7 @@ export function LogsPage() {
     <div className="space-y-4">
       <div className="space-y-1">
         <Typography variant="h3">Journalisation</Typography>
-        <Typography variant="muted">Consultez l'historique des actions</Typography>
+        <Typography variant="muted">Consultez l&apos;historique des actions</Typography>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">

@@ -19,7 +19,6 @@ import {
   IconUsers,
   IconCalendar,
   IconExternalLink,
-  IconWorld,
   IconClock,
   IconCircleCheck,
   IconCircleDashed,
@@ -74,7 +73,6 @@ export function ContentDetailsModal({
   onOpenChange,
   onStatusChange,
   onAddNote,
-  onOpenDrive,
 }: ContentDetailsModalProps) {
   const [showNoteInput, setShowNoteInput] = useState(false)
   const [noteContent, setNoteContent] = useState("")

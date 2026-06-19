@@ -10,12 +10,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import type { ActivityLog } from "@/types/logs"
+import type { LogEntry } from "@/types/logs"
 import { createLogsColumns } from "../parts/columns"
 import { DEFAULT_SORTING } from "../lib/constants"
 
 interface UseLogsTableProps {
-  data: ActivityLog[]
+  data: LogEntry[]
 }
 
 export function useLogsTable({ data }: UseLogsTableProps) {
@@ -27,7 +27,6 @@ export function useLogsTable({ data }: UseLogsTableProps) {
   const columns = createLogsColumns()
   const memoData = data
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
     data: memoData,

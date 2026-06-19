@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Typography } from "@/components/ui/typography"
 import { Spinner } from "@/components/ui/spinner"
-import { type DashboardStats, type DashboardGlobalProps, type KPIItem } from "@/types/dashboard-types"
+import { type DashboardStats, type KPIItem } from "@/types/dashboard-types"
 import { dashboardService } from "@/services/dashboard.service"
 import type { DashboardData as ServiceDashboardData } from "@/services/dashboard.service"
 import type { RecentEventRaw, PipelineStageRaw, UpcomingEventRaw, StockSummaryRaw } from "@/types/dashboard-types"
 import { useMountEffect } from "@/hooks/use-mount-effect"
-import { IconCalendar, IconFileText, IconUsers, IconEye, IconDownload } from "@tabler/icons-react"
+import { IconCalendar, IconEye, IconDownload } from "@tabler/icons-react"
 
 const STATE_BADGE_COLORS: Record<string, string> = {
   SUBMITTED: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -288,7 +288,7 @@ const StockOverviewSection = ({ stocks }: { stocks: StockSummaryRaw[] }) => {
 
 
 
-export function Main(_props: DashboardGlobalProps) {
+export function Main() {
   const [loading, setLoading] = useState(true)
   const [serviceData, setServiceData] = useState<ServiceDashboardData | null>(null)
   const [recentEvents, setRecentEvents] = useState<RecentEventRaw[]>([])
